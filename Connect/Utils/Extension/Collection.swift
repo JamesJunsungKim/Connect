@@ -1,0 +1,24 @@
+//
+//  Collection.swift
+//  Connect
+//
+//  Created by James Kim on 5/6/18.
+//  Copyright © 2018 James Kim. All rights reserved.
+//
+
+import Foundation
+import CoreData
+
+extension Collection where Iterator.Element: NSManagedObject {
+    public func fetchFaults() {
+        guard !self.isEmpty else { return }
+        guard let context = self.first?.managedObjectContext else { fatalError("Managed object must have context") }
+        let faults = self.filter { $0.isFault }
+        guard let object = faults.first else { return }
+        let request = NSFetchRequest<Iterator.Element>()
+        request.entity = object.entity
+        request.returnsObjectsAsFaults = false
+        request.predicate = NSPredicate(format: "self in %@", faults)
+        let _ = try! context.fetch(request)
+    }
+}
