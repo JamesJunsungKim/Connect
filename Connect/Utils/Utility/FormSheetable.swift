@@ -11,5 +11,4 @@ import UIKit
 protocol FormSheetable:AnyObject {
     var preferredSize: CGSize {get}
     func setup(fromVC: UIViewController, userInfo: [String:Any]?)
-    
 }

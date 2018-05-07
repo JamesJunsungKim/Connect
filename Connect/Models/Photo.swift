@@ -10,19 +10,54 @@ import UIKit
 import CoreData
 
 final class Photo: NSManagedObject {
-    @NSManaged fileprivate(set) var id: UUID
+    @NSManaged fileprivate(set) var id: String
     @NSManaged fileprivate(set) var imageData: Data
     @NSManaged fileprivate(set) var width: Double
     @NSManaged fileprivate(set) var height: Double
     @NSManaged fileprivate(set) var isDownloaded: Bool
     @NSManaged fileprivate(set) var url : URL
     
-    @NSManaged fileprivate(set) var profileUser: User?
-    @NSManaged fileprivate(set) var fromMessage: Message?
     
     public var ratio: Double {
         return width/height
     }
     
+    override func awakeFromInsert() {
+        
+    }
+    
+    
+    public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Photo {
+        let photo: Photo = moc.insertObject()
+        photo.id = UUID().uuidString
+        photo.isDownloaded = false
+        photo.imageData = image.jpegData
+        photo.width = Double(image.size.width)
+        photo.height = Double(image.size.height)
+        return photo
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: - Filepriavte
     
 }
+
+
+
+
+extension Photo: Managed {}
+
+
+
+
+
+
+

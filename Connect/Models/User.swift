@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 final class User: NSManagedObject {
-    @NSManaged fileprivate(set) var id: UUID
+    @NSManaged fileprivate(set) var id: String
     @NSManaged fileprivate(set) var name: String?
     @NSManaged fileprivate(set) var phoneNumber: NSNumber?
     @NSManaged fileprivate(set) var isFavorite: Bool
