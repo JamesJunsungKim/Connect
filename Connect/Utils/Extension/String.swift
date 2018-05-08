@@ -10,6 +10,7 @@ import Foundation
 
 
 extension String {
+    
     func removingCharacters(in set: CharacterSet) -> String {
         var chars = Substring(self)
         for idx in chars.indices.reversed() {
@@ -18,5 +19,9 @@ extension String {
             }
         }
         return String(chars)
+    }
+    
+    public func convertToCharacterSet()-> CharacterSet {
+        return CharacterSet(charactersIn: self)
     }
 }

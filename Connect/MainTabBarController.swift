@@ -25,6 +25,7 @@ class MainTabBarController: UITabBarController {
         tabBar.barTintColor = .white
         tabBar.shadowImage = UIImage()
     }
+    
     fileprivate func setupViewControllers() {
         let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController())
         let contactNav = templatenavController(unselected: #imageLiteral(resourceName: "contacts_unselected"), selected: #imageLiteral(resourceName: "contacts_selected"), rootViewController: ContactViewController())

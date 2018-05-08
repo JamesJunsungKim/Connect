@@ -23,20 +23,30 @@ private let connectContainer: NSPersistentContainer = {
     return container
 }()
 
-public func createConnectContainer(migrating: Bool = false, progress: Progress? = nil, completion: @escaping (NSPersistentContainer)->()) {
-    
-    connectContainer.loadPersistentStores(completionHandler: {_, error in
-        if error == nil {
-            DispatchQueue.main.async {completion(connectContainer)}
-        } else {
-            guard !migrating else {fatalError("was unable to migrate store")}
-            migrateStore(from: storeURL, to: storeURL, targetVersion: ConnectModelVersion.current, deleteSource: true, progress: progress)
-            createConnectContainer(migrating: true, progress: progress, completion: completion)
-        }
-    })
-    
-    
-    
-    
-    
+//public func createConnectContainer(migrating: Bool = false, progress: Progress? = nil, completion: @escaping (NSPersistentContainer)->()) {
+//
+//    connectContainer.loadPersistentStores(completionHandler: {_, error in
+//        if error == nil {
+//            DispatchQueue.main.async {completion(connectContainer)}
+//        } else {
+//            guard !migrating else {fatalError("was unable to migrate store")}
+//            migrateStore(from: storeURL, to: storeURL, targetVersion: ConnectModelVersion.current, deleteSource: true, progress: progress)
+//            createConnectContainer(migrating: true, progress: progress, completion: completion)
+//        }
+//    })
+//}
+
+public func createConnectContainer(completion: @escaping (NSPersistentContainer)->()) {
+    let container = NSPersistentContainer(name: "Connect")
+    container.loadPersistentStores { (_, error) in
+        guard error == nil else {fatalError()}
+        completion(container)
+    }
 }
+
+
+
+
+
+
+

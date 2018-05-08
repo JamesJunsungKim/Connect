@@ -19,15 +19,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         let mainTabbarController = MainTabBarController()
-    
+        
         setupScreen()
         setupCoreStack { context in mainTabbarController.context = context }
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
         
         window?.rootViewController = mainTabbarController
-        
+        checkIfUserIsSignedIn()
         return true
+    }
+    
+    private func setupScreen() {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
     }
     
     private func setupCoreStack(context:@escaping (NSManagedObjectContext)->()) {
@@ -37,11 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func setupScreen() {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.makeKeyAndVisible()
-    }
-    
     private func setupFirebase() {
         FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.min)
@@ -49,6 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func setupThirdPartyLogin(application: UIApplication,launchOptions:[UIApplicationLaunchOptionsKey: Any]?) {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func checkIfUserIsSignedIn() {
+        if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
+            let rootVC = window?.rootViewController
+            rootVC?.show(WalkThroughViewController(), sender: nil)
+        }
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {

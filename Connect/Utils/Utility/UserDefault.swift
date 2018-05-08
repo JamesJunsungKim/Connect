@@ -12,6 +12,7 @@ extension UserDefaults {
     
     enum UserDefaultKey : String {
         case imageResolution
+        case signedInUser
     }
     
     static func retrieveValue<T>(forKey key: UserDefaultKey, defaultValue:T) -> T {
@@ -27,7 +28,7 @@ extension UserDefaults {
     }
     
     
-    private static func checkIfValueExist(forKey key: UserDefaultKey)->Bool {
+    static func checkIfValueExist(forKey key: UserDefaultKey)->Bool {
         return UserDefaults.standard.object(forKey: key.rawValue) != nil
     }
     
