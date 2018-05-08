@@ -9,7 +9,7 @@
 import UIKit
 
 class PageCell: UICollectionViewCell {
-    public static let cellId = "pageCell"
+    public static let reuseIdentifier = "pageCell"
     
     // UI
     fileprivate var imageView: UIImageView!
@@ -48,7 +48,7 @@ extension PageCell {
         
         titleLabel = {
             let lb = UILabel()
-            lb.font = UIFont.boldSystemFont(ofSize: 15)
+            lb.font = UIFont.boldSystemFont(ofSize: 20)
             lb.textAlignment = .center
             return lb
         }()
@@ -57,6 +57,7 @@ extension PageCell {
         descriptionLabel = {
             let lb = UILabel()
             lb.textAlignment = .center
+            lb.numberOfLines = 0
             return lb
         }()
         
@@ -70,23 +71,25 @@ extension PageCell {
         group.forEach(self.addSubview(_:))
         
         imageView.snp.makeConstraints { (make) in
-            make.left.top.right.equalTo(self)
+            make.left.top.right.equalToSuperview()
             make.height.equalTo(self.bounds.height*5/7)
         }
         
         separatorLineView.snp.makeConstraints { (make) in
-            make.left.top.right.equalTo(imageView)
+            make.top.equalTo(imageView.snp.bottom)
+            make.left.right.equalToSuperview()
             make.height.equalTo(1)
         }
         
         titleLabel.snp.makeConstraints { (make) in
             make.centerX.equalTo(self)
-            make.top.equalTo(separatorLineView).offset(5)
+            make.top.equalTo(separatorLineView.snp.bottom)
         }
         
         descriptionLabel.snp.makeConstraints { (make) in
-            make.centerX.equalTo(self)
-            make.top.equalTo(titleLabel).offset(10)
+            make.top.equalTo(titleLabel.snp.bottom).offset(5)
+            make.left.right.equalToSuperview().offset(5)
+            make.bottom.equalToSuperview()
         }
         
         

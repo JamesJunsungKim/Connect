@@ -18,27 +18,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let mainTabbarController = MainTabBarController()
         
-        setupScreen()
-        setupCoreStack { context in mainTabbarController.context = context }
+        
+        setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
         
-        window?.rootViewController = mainTabbarController
+        setupScreenAndRootVC()
         checkIfUserIsSignedIn()
         return true
     }
     
-    private func setupScreen() {
+    private func setupScreenAndRootVC() {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
+        let mainTabbarController = MainTabBarController()
+        mainTabbarController.context = persistentContainer.viewContext
+        window?.rootViewController = mainTabbarController
     }
     
-    private func setupCoreStack(context:@escaping (NSManagedObjectContext)->()) {
-        createConnectContainer { (container) in
+    private func setupCoreStack() {
+        createConnectContainer {[unowned self] (container) in
             self.persistentContainer = container
-            context(container.viewContext)
         }
     }
     
@@ -54,7 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func checkIfUserIsSignedIn() {
         if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
             let rootVC = window?.rootViewController
-            rootVC?.show(WalkThroughViewController(), sender: nil)
+            let nav = UINavigationController(rootViewController: WalkThroughViewController())
+            rootVC?.show(nav, sender: nil)
         }
     }
     

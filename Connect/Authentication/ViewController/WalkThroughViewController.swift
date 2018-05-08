@@ -18,11 +18,10 @@ class WalkThroughViewController: UIViewController {
     fileprivate var signInDescriptionLabel: UILabel!
     fileprivate var signInButton: UIButton!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        
+        setupVC()
         addTargets()
     }
     
@@ -36,8 +35,13 @@ class WalkThroughViewController: UIViewController {
     fileprivate func setupVC() {
         view.backgroundColor = .white
     }
+    
     fileprivate func addTargets() {
-        
+//        createButton.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
+    }
+
+     @objc fileprivate func dismissVC() {
+        navigationController?.dismiss(animated: true, completion: nil)
     }
     
 }
@@ -48,7 +52,7 @@ extension WalkThroughViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PageCell.cellId, for: indexPath) as! PageCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PageCell.reuseIdentifier, for: indexPath) as! PageCell
         cell.configure(withPage: pages[indexPath.item])
         return cell
     }
@@ -63,7 +67,7 @@ extension WalkThroughViewController {
             layout.itemSize = CGSize(width: view.bounds.width, height: view.bounds.height*4/7)
             layout.minimumLineSpacing = 0
             let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            cv.register(PageCell.self, forCellWithReuseIdentifier: PageCell.cellId)
+            cv.register(PageCell.self, forCellWithReuseIdentifier: PageCell.reuseIdentifier)
             cv.backgroundColor = .white
             cv.isPagingEnabled = true
             cv.dataSource = self
@@ -95,7 +99,7 @@ extension WalkThroughViewController {
         }()
         
         signInButton = {
-            let bt = UIButton()
+            let bt = UIButton(type: .system)
             bt.setTitleColor(.mainBlue, for: .normal)
             bt.setTitle("Sign In", for: .normal)
             return bt
@@ -106,44 +110,38 @@ extension WalkThroughViewController {
             sv.axis = .horizontal
             sv.alignment = .center
             sv.distribution = .equalSpacing
-            sv.spacing = 7
+            sv.spacing = 0
             sv.addArrangedSubview(signInDescriptionLabel)
             sv.addArrangedSubview(signInButton)
             return sv
         }()
         
         let groupsForSubviews:[UIView] = [collectionView, pageControl,createButton, stackView]
-        groupsForSubviews.forEach(view.addSubview(_:))
+        groupsForSubviews.forEach(view.addSubview)
         
         collectionView.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(view)
+            make.top.left.right.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(view.bounds.height*4/7)
         }
         
         pageControl.snp.makeConstraints { (make) in
-            make.top.equalTo(collectionView).offset(10)
+            make.top.equalTo(collectionView.snp.bottom).offset(10)
             make.centerX.equalTo(view)
         }
         
         createButton.snp.makeConstraints { (make) in
-            make.top.equalTo(pageControl).offset(15)
+            make.top.equalTo(pageControl.snp.bottom).offset(15)
             make.centerX.equalTo(view)
             make.width.equalTo(200)
             make.height.equalTo(40)
         }
         
         stackView.snp.makeConstraints { (make) in
-            make.top.equalTo(createButton).offset(15)
-            make.width.equalTo(200)
+            make.top.equalTo(createButton.snp.bottom).offset(15)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(210)
             make.height.equalTo(35)
         }
-        
-        
-        
-        
-        
-        
-        
-        
     }
 }
 
