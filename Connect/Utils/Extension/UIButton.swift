@@ -10,12 +10,11 @@
 import UIKit
 
 extension UIButton {
-    public static func create(title: String, isTextBold:Bool = false ,titleColor: UIColor = .black, fontSize: CGFloat = 10, backgroundColor: UIColor = .clear) -> UIButton {
+    public static func create(title: String,titleColor: UIColor = .black, fontSize: CGFloat = 10, backgroundColor: UIColor = .clear) -> UIButton {
         let bt = UIButton(type: .system)
         bt.backgroundColor = backgroundColor
-        let attributedString = NSAttributedString(string: title, attributes: <#T##[NSAttributedStringKey : Any]?#>)
-        [NSAttributedStringKey.foregroundColor:titleColor, NSAttributedStringKey.font: UIFont.mainFont(size: fontSize)]
-//        bt.setAttributedTitle(<#T##title: NSAttributedString?##NSAttributedString?#>, for: <#T##UIControlState#>)
+        let attributedString = NSAttributedString(string: title, attributes: [NSAttributedStringKey.foregroundColor:titleColor, NSAttributedStringKey.font: UIFont.mainFont(size: fontSize)])
+        bt.setAttributedTitle(attributedString, for: .normal)
         return bt
         
     }

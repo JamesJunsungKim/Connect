@@ -25,6 +25,13 @@ extension UIView {
         self.layer.masksToBounds = true
     }
     
+    public func setupBorder(color: UIColor, width: CGFloat) {
+        self.layer.borderColor = color.cgColor
+        self.layer.borderWidth = width
+    }
+    
+    // MARK: - static
+    
     public static func createSeparator(color: UIColor = .lightGray) -> UIView {
         let v = UIView()
         v.backgroundColor = color

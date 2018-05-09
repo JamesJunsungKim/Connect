@@ -17,4 +17,8 @@ extension UIImageView {
         iv.clipsToBounds = true
         return iv
     }
+    
+    public func fitTo(size: CGSize) {
+        self.frame = CGRect(x: frame.minX, y: frame.minY, width: size.width, height: size.height)
+    }
 }

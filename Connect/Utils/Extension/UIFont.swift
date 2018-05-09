@@ -10,6 +10,6 @@ import UIKit
 
 extension UIFont {
     static public func mainFont(size:CGFloat)->UIFont {
-        return UIFont(name: "Avenir Next Regular", size: size)!
+        return UIFont(name: "Avenir Next", size: size)!
     }
 }
