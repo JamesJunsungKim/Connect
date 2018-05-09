@@ -25,9 +25,9 @@ class WalkThroughViewController: UIViewController {
         addTargets()
     }
     
-    
-    //MARK: - Actions
-    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.navigationBar.isHidden = true
+    }
     
     //MAKR: - Fileprivate
     fileprivate let pages = Page.fetchPages()
@@ -37,16 +37,22 @@ class WalkThroughViewController: UIViewController {
     }
     
     fileprivate func addTargets() {
-//        createButton.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
+        createButton.addTarget(self, action: #selector(createButtonClicked), for: .touchUpInside)
+        signInButton.addTarget(self, action: #selector(signInButtonClicked), for: .touchUpInside)
     }
 
-     @objc fileprivate func dismissVC() {
-        navigationController?.dismiss(animated: true, completion: nil)
+     @objc fileprivate func createButtonClicked() {
+        navigationController?.pushViewController(SignUpViewController(), animated: true)
+    }
+    
+    @objc fileprivate func signInButtonClicked() {
+        navigationController?.pushViewController(SignInViewController(), animated: true)
     }
     
 }
 
-extension WalkThroughViewController: UICollectionViewDataSource {
+extension WalkThroughViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    // DataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return pages.count
     }
@@ -55,6 +61,12 @@ extension WalkThroughViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PageCell.reuseIdentifier, for: indexPath) as! PageCell
         cell.configure(withPage: pages[indexPath.item])
         return cell
+    }
+    
+    //CollectionViewDelegate
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let pageNumber = Int(targetContentOffset.pointee.x / view.bounds.width)
+        pageControl.currentPage = pageNumber
     }
 }
 
@@ -68,9 +80,11 @@ extension WalkThroughViewController {
             layout.minimumLineSpacing = 0
             let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
             cv.register(PageCell.self, forCellWithReuseIdentifier: PageCell.reuseIdentifier)
+            cv.showsHorizontalScrollIndicator = false
             cv.backgroundColor = .white
             cv.isPagingEnabled = true
             cv.dataSource = self
+            cv.delegate = self
             return cv
         }()
         
@@ -84,10 +98,11 @@ extension WalkThroughViewController {
         
         createButton = {
             let bt = UIButton(type: .system)
+            
             bt.backgroundColor = .mainBlue
             bt.setTitleColor(.white, for: .normal)
-            let attributedString = NSAttributedString(string: "Create Account", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 15)])
-            bt.setAttributedTitle(attributedString, for: .normal)
+            bt.setCornerRadious(value: 5)
+            bt.setTitle("Create Account", for: .normal)
             return bt
         }()
         
@@ -120,8 +135,8 @@ extension WalkThroughViewController {
         groupsForSubviews.forEach(view.addSubview)
         
         collectionView.snp.makeConstraints { (make) in
-            make.top.left.right.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(view.bounds.height*4/7)
+            make.top.left.right.equalTo(view)
+            make.height.equalTo(view.bounds.height*5/7)
         }
         
         pageControl.snp.makeConstraints { (make) in

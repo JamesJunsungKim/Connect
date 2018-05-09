@@ -42,7 +42,8 @@ extension UIColor {
     }
     
     static var mainBlue: UIColor {
-        return color(R: 52, G: 152, B: 219)
+//        return color(R: 67, G: 116, B: 178)
+        return eateryBlue
     }
     
     static var transparentEateryBlue: UIColor {

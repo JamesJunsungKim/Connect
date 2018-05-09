@@ -19,4 +19,15 @@ extension UIView {
         }
         return nil
     }
+    
+    public func setCornerRadious(value: CGFloat) {
+        self.layer.cornerRadius = value
+        self.layer.masksToBounds = true
+    }
+    
+    public static func createSeparator(color: UIColor = .lightGray) -> UIView {
+        let v = UIView()
+        v.backgroundColor = color
+        return v
+    }
 }

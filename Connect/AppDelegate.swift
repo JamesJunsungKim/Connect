@@ -56,6 +56,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
             let rootVC = window?.rootViewController
             let nav = UINavigationController(rootViewController: WalkThroughViewController())
+            let nvBar = nav.navigationBar
+            nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
+            nvBar.tintColor = .white
             rootVC?.show(nav, sender: nil)
         }
     }

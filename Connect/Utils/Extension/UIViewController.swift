@@ -17,7 +17,6 @@ extension UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    
     func presentFormSheet(targetVC: FormSheetable, userInfo: [String:Any]?, completion:((UIViewController)->())? = nil) {
         guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
         target.modalPresentationStyle = .formSheet
@@ -41,7 +40,12 @@ extension UIViewController {
         if completion != nil {completion!(target)}
     }
     
-    
+    func presentDefault(targetVC: DefaultViewController, userInfo:[String:Any]?, completion:((UIViewController)->())? = nil) {
+        guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
+        present(target, animated: true, completion: nil)
+        targetVC.setup(fromVC: self, userInfo: userInfo)
+        if completion != nil {completion!(target)}
+    }
     
     
     

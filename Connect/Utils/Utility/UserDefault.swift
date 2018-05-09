@@ -27,7 +27,6 @@ extension UserDefaults {
         UserDefaults.standard.removeObject(forKey: key.rawValue)
     }
     
-    
     static func checkIfValueExist(forKey key: UserDefaultKey)->Bool {
         return UserDefaults.standard.object(forKey: key.rawValue) != nil
     }

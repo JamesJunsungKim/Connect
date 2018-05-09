@@ -42,4 +42,24 @@ extension UITextField {
         layer.borderWidth = 0.0
     }
     
+    public static func create(placeHolder: String, text: String = "", textSize: CGFloat = 10, color: UIColor = .black, keyboardType: UIKeyboardType = .default) -> UITextField {
+        let tf = UITextField()
+        tf.placeholder = placeHolder
+        tf.text = text
+        tf.font = UIFont.mainFont(size: textSize)
+        tf.keyboardType = keyboardType
+        return tf
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
