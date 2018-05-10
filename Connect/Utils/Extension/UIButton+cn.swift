@@ -16,6 +16,15 @@ extension UIButton {
         let attributedString = NSAttributedString(string: title, attributes: [NSAttributedStringKey.foregroundColor:titleColor, NSAttributedStringKey.font: UIFont.mainFont(size: fontSize)])
         bt.setAttributedTitle(attributedString, for: .normal)
         return bt
-        
     }
+    
+    open override var isEnabled: Bool {
+        didSet {
+            backgroundColor = isEnabled ? .mainBlue : .lightGray
+            alpha = isEnabled ? 1 : 0.5
+        }
+    }
+    
+    
+    
 }

@@ -38,7 +38,8 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupVC()
-        setupTextFields()
+        addTargets()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,46 +49,48 @@ class SignUpViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc fileprivate func cancelBtnClicked() {
-        nameTextFieldEditingDidEnd()
-        emailTextFieldEditingDidEnd()
-        passwordTextFieldEditingDidEnd()
-    }
     
     @objc fileprivate func facebookBtnClicked() {
-        
+        // facebook account
     }
     
     @objc fileprivate func createBtnClicked() {
-        
+        // create an user account
+        NonCDUser.create(name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: { (user) in
+            
+        }) { (error) in
+            
+        }
     }
     
     // MARK: - Filepriavte logic part.
-    fileprivate var thirdPartyHeightConstraint: Constraint!
+    fileprivate let animationDuration = 0.3
     
+    fileprivate var thirdPartyHeightConstraint: Constraint!
     fileprivate var nameWarningHeightConstraint: Constraint!
-
     fileprivate var emailWarningHeightConstraint: Constraint!
-
     fileprivate var passwordWarningHeightConstraint: Constraint!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
-        
-        // navigationbar
-        let cancelBtn = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelBtnClicked))
-        navigationItem.rightBarButtonItem = cancelBtn
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(userDidTapview))
+        view.addGestureRecognizer(tapGesture)
     }
     
-    fileprivate func setupTextFields() {
+    fileprivate func addTargets() {
         nameTextField.addTarget(self, action: #selector(nameTextFieldEditingDidBegin), for: .editingDidBegin)
         nameTextField.addTarget(self, action: #selector(nameTextFieldEditingDidEnd), for: .editingDidEnd)
+        nameTextField.addTarget(self, action: #selector(enableOrDisableCreatButton), for: .editingChanged)
         
         emailTextField.addTarget(self, action: #selector(emailTextFieldEditingDidBegin), for: .editingDidBegin)
         emailTextField.addTarget(self, action: #selector(emailTextFieldEditingDidEnd), for: .editingDidEnd)
+        emailTextField.addTarget(self, action: #selector(enableOrDisableCreatButton), for: .editingChanged)
         
         passwordTextField.addTarget(self, action: #selector(passwordTextFieldEditingDidBegin), for: .editingDidBegin)
         passwordTextField.addTarget(self, action: #selector(passwordTextFieldEditingDidEnd), for: .editingDidEnd)
+        passwordTextField.addTarget(self, action: #selector(enableOrDisableCreatButton), for: .editingChanged)
+        
+        createAccountButton.addTarget(self, action: #selector(createBtnClicked), for: .touchUpInside)
     }
     
     fileprivate func showOrHideThirdPartyLoginView(shouldHide flag: Bool) {
@@ -108,24 +111,31 @@ class SignUpViewController: UIViewController {
         }
     }
     
+    @objc fileprivate func userDidTapview() {
+        showOrHideThirdPartyLoginView(shouldHide: false)
+    }
+    
+    @objc fileprivate func enableOrDisableCreatButton() {
+        _ = checkIfReadyToMoveToNextPage()
+    }
+    
     @objc fileprivate func nameTextFieldEditingDidBegin() {
         showOrHideThirdPartyLoginView(shouldHide: true)
         placeHolderBeginningAnimation(label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 58, bottomMargin: 35)
        
     }
     @objc fileprivate func nameTextFieldEditingDidEnd() {
-        _ = validateName()
+        showOrHideNameWarningLabel(nameIsValid: validateName())
         placeHolderEndingAnimation(textField: nameTextField, label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
     @objc fileprivate func emailTextFieldEditingDidBegin() {
         showOrHideThirdPartyLoginView(shouldHide: true)
-        
         placeHolderBeginningAnimation(label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 56.5, bottomMargin: 35)
     }
     
     @objc fileprivate func emailTextFieldEditingDidEnd() {
-        _ = validateEmail()
+        showOrHideEmailWarningLabel(emailIsValid: validateEmail())
         placeHolderEndingAnimation(textField: emailTextField, label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
@@ -135,35 +145,41 @@ class SignUpViewController: UIViewController {
     }
     
     @objc fileprivate func passwordTextFieldEditingDidEnd() {
-        _ = validatePassword()
+        showOrHidePasswordWarningLabel(passwordIsValid: validatePassword())
         placeHolderEndingAnimation(textField: passwordTextField, label: passwordPlaceHolderLabel, separatorLine: passwordSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
     fileprivate func validateName()-> Bool {
-        let isValid = nameTextField.hasText
-        UIView.animate(withDuration: 0.8) {
+        return nameTextField.hasText
+    }
+    
+    fileprivate func showOrHideNameWarningLabel(nameIsValid isValid: Bool) {
+        UIView.animate(withDuration: animationDuration ) {
             self.nameWarningLabel.isHidden = isValid
             self.nameWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
-        return isValid
+    }
+
+    fileprivate func validateEmail()->Bool {
+        return emailTextField.validateForEmail()
     }
     
-    fileprivate func validateEmail()->Bool {
-        let isValid = emailTextField.validateForEmail()
-        UIView.animate(withDuration: 0.8) {
+    fileprivate func showOrHideEmailWarningLabel(emailIsValid isValid: Bool) {
+        UIView.animate(withDuration: animationDuration ) {
             self.emailWarningLabel.isHidden = isValid
             self.emailWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
-        return isValid
     }
     
     fileprivate func validatePassword()->Bool {
-        let isValid = passwordTextField.text!.count > 5
-        UIView.animate(withDuration: 0.8) {
+        return passwordTextField.text!.count > 5
+    }
+    
+    fileprivate func showOrHidePasswordWarningLabel(passwordIsValid isValid: Bool) {
+        UIView.animate(withDuration: animationDuration ) {
             self.passwordWarningLabel.isHidden = isValid
             self.passwordWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
-        return isValid
     }
     
     fileprivate func checkIfReadyToMoveToNextPage()->Bool {
@@ -226,7 +242,6 @@ extension SignUpViewController {
             let title = NSAttributedString(string: "Create Account", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17), NSAttributedStringKey.foregroundColor:UIColor.white])
             bt.setAttributedTitle(title, for: .normal)
             bt.isEnabled = false
-            bt.addTarget(self, action: #selector(createBtnClicked), for: .touchUpInside)
             return bt
         }()
         

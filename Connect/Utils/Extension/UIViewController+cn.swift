@@ -59,7 +59,7 @@ extension UIViewController {
         label.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         label.textColor = UIColor.mainBlue
         
-        UIView.animate(withDuration: 0.8) {
+        UIView.animate(withDuration: 0.2) {
             self.view.layoutIfNeeded()
         }
     }
@@ -72,7 +72,7 @@ extension UIViewController {
             }
             label.textColor = .lightGray
             label.transform = .identity
-            UIView.animate(withDuration: 0.8) {
+            UIView.animate(withDuration: 0.2) {
                 self.view.layoutIfNeeded()
             }
         }

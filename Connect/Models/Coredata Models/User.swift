@@ -33,6 +33,7 @@ final class User: NSManagedObject, BaseModel {
     }
     
     
+    // MARK: - Static
     
     
     // MARK: - Fileprivate
