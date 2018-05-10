@@ -10,37 +10,41 @@ import UIKit
 
 extension UITextField {
     
-    func validateForEmail()->Bool {
+    func validateForEmail() -> Bool {
         let arg = "[A-Z0-9a-z._%+-]+@[A-Z0-9a-z.-]+\\.[A-Za-z]{2,64}"
         let predicate = NSPredicate(format: "SELF MATCHES %@", arg)
-        if !predicate.evaluate(with:self.text!) {
-            isNotValid()
-            return false
-        } else {
-            resetValidation()
-            return true
-        }
+        return predicate.evaluate(with: text!)
     }
     
-    func validateIfHasText()-> Bool {
+    func validateForNumber() -> Bool {
+        let arg = "^[0-9]+(\\.[0-9]+)?$"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", arg)
+        return predicate.evaluate(with: text!)
+    }
+    
+    func validateIfHasTextAndMakeBorderColored()-> Bool {
         if hasText {
-            resetValidation()
+            makeBorderBlack()
             return true
         } else {
-            isNotValid()
+            makeBorderRed()
             return false
         }
     }
     
-    func isNotValid() {
+    func makeBorderRed(width: CGFloat = 1.0) {
         layer.borderColor = UIColor.red.cgColor
-        layer.borderWidth = 1.0
+        layer.borderWidth = width
     }
     
-    func resetValidation() {
+    func makeBorderBlack(width: CGFloat = 0) {
         layer.borderColor = UIColor.black.cgColor
-        layer.borderWidth = 0.0
+        layer.borderWidth = width
     }
+    
+    
+    
+    // MARK: static funcs
     
     public static func create(placeHolder: String, textSize: CGFloat = 10, color: UIColor = .black, keyboardType: UIKeyboardType = .default) -> UITextField {
         let tf = UITextField()

@@ -15,6 +15,11 @@ class SignUpViewController: UIViewController {
     fileprivate var facebookLoginButton: UIButton!
     fileprivate var thirdPartyLoginView: UIView!
     
+    fileprivate var orLabel: UILabel!
+    fileprivate var nameSeparatorLine: UIView!
+    fileprivate var emailSeparatorLine: UIView!
+    fileprivate var passwordSeparatorLine: UIView!
+    
     fileprivate var nameTextField: UITextField!
     fileprivate var emailTextField: UITextField!
     fileprivate var passwordTextField: UITextField!
@@ -33,6 +38,7 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupVC()
+        setupTextFields()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,21 +46,29 @@ class SignUpViewController: UIViewController {
         navigationController?.navigationBar.isHidden = false
     }
     
+    // MARK: - Actions
     
+    @objc fileprivate func cancelBtnClicked() {
+        nameTextFieldEditingDidEnd()
+        emailTextFieldEditingDidEnd()
+        passwordTextFieldEditingDidEnd()
+    }
     
-    // MARK: - Fileprivate
+    @objc fileprivate func facebookBtnClicked() {
+        
+    }
+    
+    @objc fileprivate func createBtnClicked() {
+        
+    }
+    
+    // MARK: - Filepriavte logic part.
     fileprivate var thirdPartyHeightConstraint: Constraint!
     
-    fileprivate var nameLeadingConstraint: Constraint!
-    fileprivate var nameBottomConstraint: Constraint!
     fileprivate var nameWarningHeightConstraint: Constraint!
-    
-    fileprivate var emailLeadingConstraint: Constraint!
-    fileprivate var emailBottomConstraint: Constraint!
+
     fileprivate var emailWarningHeightConstraint: Constraint!
-    
-    fileprivate var passwordLeadingConstraint: Constraint!
-    fileprivate var passwordBottomConstraint: Constraint!
+
     fileprivate var passwordWarningHeightConstraint: Constraint!
     
     fileprivate func setupVC() {
@@ -65,9 +79,99 @@ class SignUpViewController: UIViewController {
         navigationItem.rightBarButtonItem = cancelBtn
     }
     
-    @objc fileprivate func cancelBtnClicked() {
+    fileprivate func setupTextFields() {
+        nameTextField.addTarget(self, action: #selector(nameTextFieldEditingDidBegin), for: .editingDidBegin)
+        nameTextField.addTarget(self, action: #selector(nameTextFieldEditingDidEnd), for: .editingDidEnd)
         
+        emailTextField.addTarget(self, action: #selector(emailTextFieldEditingDidBegin), for: .editingDidBegin)
+        emailTextField.addTarget(self, action: #selector(emailTextFieldEditingDidEnd), for: .editingDidEnd)
+        
+        passwordTextField.addTarget(self, action: #selector(passwordTextFieldEditingDidBegin), for: .editingDidBegin)
+        passwordTextField.addTarget(self, action: #selector(passwordTextFieldEditingDidEnd), for: .editingDidEnd)
     }
+    
+    fileprivate func showOrHideThirdPartyLoginView(shouldHide flag: Bool) {
+        if flag {
+            UIView.animate(withDuration: 1) {[unowned self] in
+                self.thirdPartyLoginView.alpha = 0
+                self.orLabel.alpha = 0
+                self.thirdPartyHeightConstraint.update(offset: 50)
+                self.view.layoutIfNeeded()
+            }
+        } else {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { [unowned self] in
+                self.thirdPartyLoginView.alpha = 1
+                self.orLabel.alpha = 1
+                self.thirdPartyHeightConstraint.update(offset: 125)
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+    }
+    
+    @objc fileprivate func nameTextFieldEditingDidBegin() {
+        showOrHideThirdPartyLoginView(shouldHide: true)
+        placeHolderBeginningAnimation(label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 58, bottomMargin: 35)
+       
+    }
+    @objc fileprivate func nameTextFieldEditingDidEnd() {
+        _ = validateName()
+        placeHolderEndingAnimation(textField: nameTextField, label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+    }
+    
+    @objc fileprivate func emailTextFieldEditingDidBegin() {
+        showOrHideThirdPartyLoginView(shouldHide: true)
+        
+        placeHolderBeginningAnimation(label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 56.5, bottomMargin: 35)
+    }
+    
+    @objc fileprivate func emailTextFieldEditingDidEnd() {
+        _ = validateEmail()
+        placeHolderEndingAnimation(textField: emailTextField, label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+    }
+    
+    @objc fileprivate func passwordTextFieldEditingDidBegin() {
+        showOrHideThirdPartyLoginView(shouldHide: true)
+        placeHolderBeginningAnimation(label: passwordPlaceHolderLabel, separatorLine: passwordSeparatorLine, leadingMargin: 58, bottomMargin: 35)
+    }
+    
+    @objc fileprivate func passwordTextFieldEditingDidEnd() {
+        _ = validatePassword()
+        placeHolderEndingAnimation(textField: passwordTextField, label: passwordPlaceHolderLabel, separatorLine: passwordSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+    }
+    
+    fileprivate func validateName()-> Bool {
+        let isValid = nameTextField.hasText
+        UIView.animate(withDuration: 0.8) {
+            self.nameWarningLabel.isHidden = isValid
+            self.nameWarningHeightConstraint.update(offset: isValid ? 0 : 30)
+        }
+        return isValid
+    }
+    
+    fileprivate func validateEmail()->Bool {
+        let isValid = emailTextField.validateForEmail()
+        UIView.animate(withDuration: 0.8) {
+            self.emailWarningLabel.isHidden = isValid
+            self.emailWarningHeightConstraint.update(offset: isValid ? 0 : 30)
+        }
+        return isValid
+    }
+    
+    fileprivate func validatePassword()->Bool {
+        let isValid = passwordTextField.text!.count > 5
+        UIView.animate(withDuration: 0.8) {
+            self.passwordWarningLabel.isHidden = isValid
+            self.passwordWarningHeightConstraint.update(offset: isValid ? 0 : 30)
+        }
+        return isValid
+    }
+    
+    fileprivate func checkIfReadyToMoveToNextPage()->Bool {
+        let isValid = validateName() && validateEmail() && validatePassword()
+        createAccountButton.isEnabled = isValid
+        return isValid
+    }
+    
 }
 
 extension SignUpViewController {
@@ -76,25 +180,25 @@ extension SignUpViewController {
         facebookLoginButton = {
             let bt = UIButton(type: .system)
             bt.backgroundColor = .clear
-            bt.setTitleColor(UIColor.color(R: 68, G: 89, B: 150), for: .normal)
-            let title = NSAttributedString(string: "Sign up with Facebook", attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 13)])
+            let title = NSAttributedString(string: "Sign up with Facebook", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 13), NSAttributedStringKey.foregroundColor:UIColor.color(R: 68, G: 89, B: 150)])
             bt.setAttributedTitle(title, for: .normal)
+            bt.addTarget(self, action: #selector(facebookBtnClicked), for: .touchUpInside)
             return bt
         }()
         
         let facebookLogoImageView = UIImageView.create(image: UIImage(named: "facebookIcon")!)
         
-        let orLabel = UILabel.create(text: "or", textAlignment: .center, textColor: .black, fontSize: 13)
+        orLabel = UILabel.create(text: "or", textAlignment: .center, textColor: .black, fontSize: 13)
         orLabel.backgroundColor = .white
         
         
         let orSeparatorLine = UIView.createSeparator()
         
-        let nameSeparatorLine = UIView.createSeparator()
+        nameSeparatorLine = UIView.createSeparator()
         
-        let emailSeparatorLine = UIView.createSeparator()
+        emailSeparatorLine = UIView.createSeparator()
         
-        let passwordSeparatorLine = UIView.createSeparator()
+        passwordSeparatorLine = UIView.createSeparator()
         
         nameTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
         
@@ -109,11 +213,11 @@ extension SignUpViewController {
         
         passwordPlaceHolderLabel = UILabel.create(text: "Password", textAlignment: .left, textColor: .lightGray, fontSize: 19)
         
-        nameWarningLabel = UILabel.create(text: "You can not leave it empty", textAlignment: .center, textColor: .red, fontSize: 14)
+        nameWarningLabel = UILabel.create(text: "You can't leave it empty. Please enter your name", textAlignment: .left, textColor: .red, fontSize: 14)
         
-        emailWarningLabel = UILabel.create(text: "Invalid Email Address. Please check it again", textAlignment: .center, textColor: .red, fontSize: 14)
+        emailWarningLabel = UILabel.create(text: "Invalid Email Address. Please check it again", textAlignment: .left, textColor: .red, fontSize: 14)
         
-        passwordWarningLabel = UILabel.create(text: "Password must includ at least 6 characters", textAlignment: .center, textColor: .red, fontSize: 14)
+        passwordWarningLabel = UILabel.create(text: "Password must includ at least 6 characters", textAlignment: .left, textColor: .red, fontSize: 14)
         
         createAccountButton = {
             let bt = UIButton(type: .system)
@@ -121,19 +225,14 @@ extension SignUpViewController {
             bt.setCornerRadious(value: 10)
             let title = NSAttributedString(string: "Create Account", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 17), NSAttributedStringKey.foregroundColor:UIColor.white])
             bt.setAttributedTitle(title, for: .normal)
+            bt.isEnabled = false
+            bt.addTarget(self, action: #selector(createBtnClicked), for: .touchUpInside)
             return bt
         }()
         
         let termAgreementLabel = UILabel.create(text: "By clicking 'Creat Account', you are agreeing to the Terms of Use and Privacy Policy of Connect.", textAlignment: .center, textColor: .lightGray, fontSize: 13)
         
-        let facebookStackView : UIStackView = {
-            let stv = UIStackView()
-            stv.axis = .horizontal
-            stv.spacing = 0
-            stv.addArrangedSubview(facebookLogoImageView)
-            stv.addArrangedSubview(facebookLoginButton)
-            return stv
-        }()
+        let facebookStackView = UIStackView.create(views: [facebookLogoImageView, facebookLoginButton], axis: .horizontal, alignment: .center, distribution: .equalSpacing, spacing: 5)
         
         thirdPartyLoginView = {
             let v = UIView()
@@ -154,7 +253,7 @@ extension SignUpViewController {
             make.top.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.width.equalTo(180)
-            make.height.equalTo(30)
+            make.height.equalTo(20)
         }
         
         facebookLogoImageView.fitTo(size: CGSize(width: 20, height: 20))
@@ -167,7 +266,7 @@ extension SignUpViewController {
         
         orSeparatorLine.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().offset(5)
+            make.bottom.equalToSuperview().offset(-5)
             make.height.equalTo(0.5)
             make.width.equalTo(90)
         }
@@ -181,7 +280,7 @@ extension SignUpViewController {
         
         namePlaceHolderLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(75)
-            make.bottom.equalTo(nameSeparatorLine.snp.top).offset(5)
+            make.bottom.equalTo(nameSeparatorLine.snp.top).offset(-5)
         }
         
         nameSeparatorLine.snp.makeConstraints { (make) in
@@ -194,11 +293,11 @@ extension SignUpViewController {
         nameWarningLabel.snp.makeConstraints { (make) in
             make.top.equalTo(nameSeparatorLine.snp.bottom)
             make.centerX.equalToSuperview()
-            make.height.equalTo(30)
+            self.nameWarningHeightConstraint = make.height.equalTo(0).constraint
         }
         
         emailTextField.snp.makeConstraints { (make) in
-            make.top.equalTo(nameWarningLabel.snp.bottom).offset(30)
+            make.top.equalTo(nameWarningLabel.snp.bottom).offset(40)
             make.left.equalToSuperview().offset(60)
             make.right.equalToSuperview().offset(-60)
             make.height.equalTo(30)
@@ -206,7 +305,7 @@ extension SignUpViewController {
         
         emailPlaceHolderLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(75)
-            make.bottom.equalTo(emailSeparatorLine.snp.top).offset(5)
+            make.bottom.equalTo(emailSeparatorLine.snp.top).offset(-5)
         }
         
         emailSeparatorLine.snp.makeConstraints { (make) in
@@ -219,11 +318,11 @@ extension SignUpViewController {
         emailWarningLabel.snp.makeConstraints { (make) in
             make.top.equalTo(emailSeparatorLine.snp.bottom)
             make.centerX.equalToSuperview()
-            make.height.equalTo(30)
+            self.emailWarningHeightConstraint = make.height.equalTo(0).constraint
         }
         
         passwordTextField.snp.makeConstraints { (make) in
-            make.top.equalTo(emailWarningLabel.snp.bottom).offset(30)
+            make.top.equalTo(emailWarningLabel.snp.bottom).offset(40)
             make.left.equalToSuperview().offset(60)
             make.right.equalToSuperview().offset(-60)
             make.height.equalTo(30)
@@ -231,7 +330,7 @@ extension SignUpViewController {
         
         passwordPlaceHolderLabel.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(75)
-            make.bottom.equalTo(passwordSeparatorLine.snp.top).offset(5)
+            make.bottom.equalTo(passwordSeparatorLine.snp.top).offset(-5)
         }
         
         passwordSeparatorLine.snp.makeConstraints { (make) in
@@ -244,7 +343,7 @@ extension SignUpViewController {
         passwordWarningLabel.snp.makeConstraints { (make) in
             make.top.equalTo(passwordSeparatorLine.snp.bottom)
             make.centerX.equalToSuperview()
-            make.height.equalTo(30)
+            self.passwordWarningHeightConstraint = make.height.equalTo(0).constraint
         }
         
         createAccountButton.snp.makeConstraints { (make) in
@@ -255,11 +354,10 @@ extension SignUpViewController {
         }
         
         termAgreementLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(createAccountButton.snp.bottom).offset(5)
+            make.top.equalTo(createAccountButton.snp.bottom).offset(10)
             make.left.equalToSuperview().offset(60)
             make.right.equalToSuperview().offset(-60)
             make.height.equalTo(40)
-            
         }
         
         

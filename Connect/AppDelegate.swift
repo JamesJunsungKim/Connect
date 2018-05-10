@@ -25,7 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
         
         setupScreenAndRootVC()
-        checkIfUserIsSignedIn()
         return true
     }
     
@@ -35,6 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mainTabbarController = MainTabBarController()
         mainTabbarController.context = persistentContainer.viewContext
         window?.rootViewController = mainTabbarController
+        
+        if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
+            let rootVC = window?.rootViewController
+            let nav = UINavigationController(rootViewController: WalkThroughViewController())
+            let nvBar = nav.navigationBar
+            nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
+            nvBar.tintColor = .white
+            rootVC?.present(nav, animated: false, completion: nil)
+        }
     }
     
     private func setupCoreStack() {
@@ -50,17 +58,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func setupThirdPartyLogin(application: UIApplication,launchOptions:[UIApplicationLaunchOptionsKey: Any]?) {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
-    }
-    
-    private func checkIfUserIsSignedIn() {
-        if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
-            let rootVC = window?.rootViewController
-            let nav = UINavigationController(rootViewController: WalkThroughViewController())
-            let nvBar = nav.navigationBar
-            nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
-            nvBar.tintColor = .white
-            rootVC?.show(nav, sender: nil)
-        }
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
