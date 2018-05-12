@@ -9,12 +9,12 @@
 import UIKit
 import CoreData
 import SwiftyJSON
-import FirebaseDatabase
+import Firebase
 
 final class User: NSManagedObject, BaseModel {
     
-    @NSManaged fileprivate(set) var id: String
-    @NSManaged fileprivate(set) var name: String?
+    @NSManaged fileprivate(set) var uid: String?
+    @NSManaged fileprivate(set) var name: String
     @NSManaged fileprivate(set) var phoneNumber: String?
     @NSManaged fileprivate(set) var emailAddress: String
     @NSManaged fileprivate(set) var isFavorite: Bool
@@ -33,7 +33,28 @@ final class User: NSManagedObject, BaseModel {
     }
     
     
+    
     // MARK: - Static
+    public static func create(into moc: NSManagedObjectContext, name: String, email: String, isOnwer: Bool) {
+        let user: User = moc.insertObject()
+        user.name = name
+        user.emailAddress = email
+        user.isOwner = isOnwer
+    }
+    
+    public static func createAndRegister(into moc: NSManagedObjectContext, name:String, email: String, password: String, completion:@escaping (User)->(), failure:@escaping (Error)->()) {
+        
+        Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
+            guard error == nil else {
+                logError(error!.localizedDescription)
+                failure(error!)
+                return
+            }
+//            user.id = user_!.uid
+//            completion(user)
+        }
+        
+    }
     
     
     // MARK: - Fileprivate

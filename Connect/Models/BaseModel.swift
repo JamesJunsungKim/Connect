@@ -12,11 +12,18 @@ import SwiftyJSON
 
 protocol BaseModel {
     static var dbReference: DatabaseReference {get}
-//    init(json: JSON) throws
+    static func unwrapFrom(userInfo:[String:Any]) -> Self
+    
 }
 
 
 extension BaseModel {
+    
+    static func unwrapFrom(userInfo: [String:Any]) -> Self {
+        let className = String(describing: Self.self)
+        return (userInfo[className] as! Self)
+    }
+    
     static func list(configure:(DatabaseReference)->(DatabaseReference), completion:@escaping([Self])->(), onFailed failure: @escaping(Error)->Void) {
         logInfo("List request for \(Self.self)")
         let ref = configure(dbReference)
@@ -31,7 +38,6 @@ extension BaseModel {
             }
         }
     }
-    
     
     
     static func prettyJSON(with dictionary: [String: Any]) -> String {

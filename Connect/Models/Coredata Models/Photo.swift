@@ -10,13 +10,12 @@ import UIKit
 import CoreData
 
 final class Photo: NSManagedObject {
-    @NSManaged fileprivate(set) var id: String
+    @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var imageData: Data
     @NSManaged fileprivate(set) var width: Double
     @NSManaged fileprivate(set) var height: Double
     @NSManaged fileprivate(set) var isDownloaded: Bool
     @NSManaged fileprivate(set) var url : URL
-    
     
     public var ratio: Double {
         return width/height
@@ -29,7 +28,7 @@ final class Photo: NSManagedObject {
     
     public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Photo {
         let photo: Photo = moc.insertObject()
-        photo.id = UUID().uuidString
+        photo.uid = UUID().uuidString
         photo.isDownloaded = false
         photo.imageData = image.jpegData
         photo.width = Double(image.size.width)

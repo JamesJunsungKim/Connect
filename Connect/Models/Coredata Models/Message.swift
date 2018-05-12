@@ -11,7 +11,7 @@ import CoreData
 import SwiftyJSON
 
 fileprivate struct Key {
-    static let id = "id"
+    static let uid = "uid"
     static let text = "text"
     static let timeStamp = "timeStamp"
     static let toUser = "toUser"
@@ -20,7 +20,7 @@ fileprivate struct Key {
 }
 
 final class Message: NSManagedObject {
-    @NSManaged fileprivate(set) var id: String
+    @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var text: String?
     @NSManaged fileprivate(set) var timeStamp: Date
     
@@ -53,7 +53,7 @@ final class Message: NSManagedObject {
     // MARK: - Fileprivate
     fileprivate static func createBaseMessage(moc: NSManagedObjectContext) -> Message {
         let message: Message = moc.insertObject()
-        message.id = UUID().uuidString
+        message.uid = UUID().uuidString
         message.timeStamp = Date()
         return message
     }

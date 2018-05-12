@@ -8,12 +8,10 @@
 import Foundation
 import CoreData
 import SwiftyJSON
-import FirebaseAuth
-import FirebaseDatabase
+import Firebase
 
-struct NonCDUser {
-    
-    var id: String?
+struct NonCDUser:BaseModel {
+    var uid: String?
     let name: String
     var phoneNumber: String?
     let emailAddress: String
@@ -23,30 +21,39 @@ struct NonCDUser {
     var contacts = [NonCDUser]()
     var profilePhoto: NonCDPhoto?
     var groups = [Group]()
+    
+    static var dbReference: DatabaseReference {
+        return FireDatabase.user.reference
+    }
 }
 
 extension NonCDUser {
+    
+    public struct Key {
+        static let user = "NonCDUser"
+    }
+    
     init(name: String, email:String) {
-        self.id = nil; self.phoneNumber = nil; self.contacts = []; self.profilePhoto = nil; self.groups = []
+        self.uid = nil; self.phoneNumber = nil; self.contacts = []; self.profilePhoto = nil; self.groups = []
         self.name = name; self.emailAddress = email
     }
     
-    
-    
     // MARK: - Static
-    
-    public static func create(name:String, email: String, password: String, completion:@escaping (NonCDUser)->(), failure:@escaping (Error)->()) -> NonCDUser {
+    public static func create(name:String, email: String, password: String, completion:@escaping (NonCDUser)->(), failure:@escaping (Error)->()) {
         var user = NonCDUser(name: name, email: email)
         Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
-            guard error != nil, let user_ = user_ else {
+            guard error == nil else {
                 failure(error!)
                 return
             }
-            user.id = user_.uid
+            
+            user.uid = user_!.uid
             completion(user)
         }
-        return user
+        
     }
+    
+    
     
     // MARK: - Fileprivate
     

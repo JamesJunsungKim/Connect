@@ -15,7 +15,9 @@ import FBSDKCoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var persistentContainer: NSPersistentContainer!
-    var window: UIWindow?
+    
+    fileprivate var mainWindow: UIWindow?
+    fileprivate var signupWindow: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
@@ -28,20 +30,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    //MARK: - Public
+    public func switchToMainWindow() {
+        mainWindow?.makeKeyAndVisible()
+    }
+    
+    public func switchToSignUpWindow() {
+        signupWindow?.makeKeyAndVisible()
+    }
+    
+    //MARK: - Private
     private func setupScreenAndRootVC() {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.makeKeyAndVisible()
+        mainWindow = UIWindow(frame: UIScreen.main.bounds)
+        signupWindow = UIWindow(frame: UIScreen.main.bounds)
+        
         let mainTabbarController = MainTabBarController()
         mainTabbarController.context = persistentContainer.viewContext
-        window?.rootViewController = mainTabbarController
+        mainWindow?.rootViewController = mainTabbarController
         
         if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
-            let rootVC = window?.rootViewController
             let nav = UINavigationController(rootViewController: WalkThroughViewController())
             let nvBar = nav.navigationBar
             nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
             nvBar.tintColor = .white
-            rootVC?.present(nav, animated: false, completion: nil)
+            
+            signupWindow?.rootViewController = nav
+            signupWindow?.makeKeyAndVisible()
         }
     }
     
@@ -63,7 +77,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         let handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         return handled
-        
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

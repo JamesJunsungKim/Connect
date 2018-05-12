@@ -25,8 +25,8 @@ pod 'DateToolsSwift'
 pod 'TPKeyboardAvoiding'
 pod 'SnapKit'
 pod 'Hero'
-
-
+pod 'PopupDialog'
+pod 'ARSLineProgress'
 
 
   target 'ConnectTests' do

@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import ARSLineProgress
 
 class SignUpViewController: UIViewController {
     
@@ -55,11 +56,13 @@ class SignUpViewController: UIViewController {
     }
     
     @objc fileprivate func createBtnClicked() {
-        // create an user account
-        NonCDUser.create(name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: { (user) in
-            
-        }) { (error) in
-            
+        ARSLineProgress.show()
+        NonCDUser.create(name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: {[unowned self] (user) in
+            ARSLineProgress.hide()
+            self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [NonCDUser.Key.user:user])
+        }) {[unowned self] _ in
+            ARSLineProgress.hide()
+            self.presentDefaultError()
         }
     }
     
@@ -105,7 +108,7 @@ class SignUpViewController: UIViewController {
             UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { [unowned self] in
                 self.thirdPartyLoginView.alpha = 1
                 self.orLabel.alpha = 1
-                self.thirdPartyHeightConstraint.update(offset: 125)
+                self.thirdPartyHeightConstraint.update(offset: 95)
                 self.view.layoutIfNeeded()
             }, completion: nil)
         }
@@ -116,37 +119,49 @@ class SignUpViewController: UIViewController {
     }
     
     @objc fileprivate func enableOrDisableCreatButton() {
+        if validateName() {
+            showOrHideNameWarningLabel(nameIsValid: validateName())
+        }
+        
+        if validateEmail() {
+            showOrHideEmailWarningLabel(emailIsValid: validateEmail())
+        }
+        
+        if validatePassword() {
+            showOrHidePasswordWarningLabel(passwordIsValid: validatePassword())
+        }
+        
         _ = checkIfReadyToMoveToNextPage()
     }
     
     @objc fileprivate func nameTextFieldEditingDidBegin() {
         showOrHideThirdPartyLoginView(shouldHide: true)
-        placeHolderBeginningAnimation(label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 58, bottomMargin: 35)
+        placeHolderBeginningAnimation(label: namePlaceHolderLabel, bottomView: nameSeparatorLine, leadingMargin: 58, bottomMargin: 35)
        
     }
     @objc fileprivate func nameTextFieldEditingDidEnd() {
         showOrHideNameWarningLabel(nameIsValid: validateName())
-        placeHolderEndingAnimation(textField: nameTextField, label: namePlaceHolderLabel, separatorLine: nameSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+        placeHolderEndingAnimation(textField: nameTextField, label: namePlaceHolderLabel, bottomView: nameSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
     @objc fileprivate func emailTextFieldEditingDidBegin() {
         showOrHideThirdPartyLoginView(shouldHide: true)
-        placeHolderBeginningAnimation(label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 56.5, bottomMargin: 35)
+        placeHolderBeginningAnimation(label: emailPlaceHolderLabel, bottomView: emailSeparatorLine, leadingMargin: 56.5, bottomMargin: 35)
     }
     
     @objc fileprivate func emailTextFieldEditingDidEnd() {
         showOrHideEmailWarningLabel(emailIsValid: validateEmail())
-        placeHolderEndingAnimation(textField: emailTextField, label: emailPlaceHolderLabel, separatorLine: emailSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+        placeHolderEndingAnimation(textField: emailTextField, label: emailPlaceHolderLabel, bottomView: emailSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
     @objc fileprivate func passwordTextFieldEditingDidBegin() {
         showOrHideThirdPartyLoginView(shouldHide: true)
-        placeHolderBeginningAnimation(label: passwordPlaceHolderLabel, separatorLine: passwordSeparatorLine, leadingMargin: 58, bottomMargin: 35)
+        placeHolderBeginningAnimation(label: passwordPlaceHolderLabel, bottomView: passwordSeparatorLine, leadingMargin: 58, bottomMargin: 35)
     }
     
     @objc fileprivate func passwordTextFieldEditingDidEnd() {
         showOrHidePasswordWarningLabel(passwordIsValid: validatePassword())
-        placeHolderEndingAnimation(textField: passwordTextField, label: passwordPlaceHolderLabel, separatorLine: passwordSeparatorLine, leadingMargin: 75, bottomMargin: 5)
+        placeHolderEndingAnimation(textField: passwordTextField, label: passwordPlaceHolderLabel, bottomView: passwordSeparatorLine, leadingMargin: 75, bottomMargin: 5)
     }
     
     fileprivate func validateName()-> Bool {

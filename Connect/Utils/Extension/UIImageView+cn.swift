@@ -10,6 +10,15 @@ import UIKit
 
 extension UIImageView {
     
+    public func fitTo(size: CGSize) {
+        self.frame = CGRect(x: frame.minX, y: frame.minY, width: size.width, height: size.height)
+    }
+    
+    public func setImage(with image: UIImage) {
+        self.image = image
+    }
+    
+    // MARK: - Static
     public static func create(image: UIImage) -> UIImageView {
         let iv = UIImageView()
         iv.image = image
@@ -18,7 +27,5 @@ extension UIImageView {
         return iv
     }
     
-    public func fitTo(size: CGSize) {
-        self.frame = CGRect(x: frame.minX, y: frame.minY, width: size.width, height: size.height)
-    }
+    
 }

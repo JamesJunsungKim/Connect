@@ -11,7 +11,8 @@ import FirebaseStorage
 
 enum FireStorage {
     case root
-    case photo
+    case profilePhoto
+    case messagePhoto
     
     var reference: StorageReference {
         switch self {
@@ -26,7 +27,8 @@ enum FireStorage {
     
     fileprivate var path: String {
         switch self {
-        case .photo: return ""
+        case .profilePhoto: return ""
+        case .messagePhoto: return ""
         default: return ""
         }
     }

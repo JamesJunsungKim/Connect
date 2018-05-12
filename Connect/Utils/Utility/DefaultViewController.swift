@@ -8,6 +8,6 @@
 
 import UIKit
 
-protocol DefaultViewController:AnyObject {
+protocol DefaultViewController: AnyObject {
     func setup(fromVC: UIViewController, userInfo: [String:Any]?)
 }
