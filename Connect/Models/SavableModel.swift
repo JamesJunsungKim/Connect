@@ -24,6 +24,7 @@ extension SavableModel {
                 logError(error!.localizedDescription)
                 failure(error!)
                 return}
+            
             storageRefernece.downloadURL(completion: { (url, error) in
                 guard let url = url, error == nil else {
                     logError(error!.localizedDescription)
@@ -35,3 +36,17 @@ extension SavableModel {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

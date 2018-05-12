@@ -217,11 +217,10 @@ extension SignUpViewController {
             return bt
         }()
         
-        let facebookLogoImageView = UIImageView.create(image: UIImage(named: "facebookIcon")!)
+        let facebookLogoImageView = UIImageView.create(withImage: "facebookIcon")
         
         orLabel = UILabel.create(text: "or", textAlignment: .center, textColor: .black, fontSize: 13)
         orLabel.backgroundColor = .white
-        
         
         let orSeparatorLine = UIView.createSeparator()
         

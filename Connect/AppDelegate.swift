@@ -25,8 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
-        
-        setupScreenAndRootVC()
+//        setupScreenAndRootVC()
+        testMode(targetVC: SetupDetailAccountViewController())
         return true
     }
     
@@ -43,17 +43,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setupScreenAndRootVC() {
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         signupWindow = UIWindow(frame: UIScreen.main.bounds)
-        
+
         let mainTabbarController = MainTabBarController()
         mainTabbarController.context = persistentContainer.viewContext
         mainWindow?.rootViewController = mainTabbarController
-        
+        mainWindow?.makeKeyAndVisible()
+
         if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
             let nav = UINavigationController(rootViewController: WalkThroughViewController())
             let nvBar = nav.navigationBar
             nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
             nvBar.tintColor = .white
-            
+
             signupWindow?.rootViewController = nav
             signupWindow?.makeKeyAndVisible()
         }
@@ -72,6 +73,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func setupThirdPartyLogin(application: UIApplication,launchOptions:[UIApplicationLaunchOptionsKey: Any]?) {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func testMode(targetVC: UIViewController) {
+        mainWindow = UIWindow(frame: UIScreen.main.bounds)
+        mainWindow?.makeKeyAndVisible()
+        mainWindow?.rootViewController = targetVC
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {

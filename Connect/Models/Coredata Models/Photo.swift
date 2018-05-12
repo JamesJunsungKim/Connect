@@ -25,7 +25,6 @@ final class Photo: NSManagedObject {
         
     }
     
-    
     public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Photo {
         let photo: Photo = moc.insertObject()
         photo.uid = UUID().uuidString

@@ -9,4 +9,4 @@
 import UIKit
 
 private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-let context = appDelegate.persistentContainer.viewContext
+let mainContext = appDelegate.persistentContainer.viewContext

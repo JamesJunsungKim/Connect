@@ -12,7 +12,7 @@ import PKHUD
 class SetupDetailAccountViewController: UIViewController {
     
     // UI
-    fileprivate var profileImage: UIImageView!
+    fileprivate var profileImageButton: UIButton!
     fileprivate var finishButton: UIButton!
     
     override func viewDidLoad() {
@@ -45,8 +45,9 @@ class SetupDetailAccountViewController: UIViewController {
     }
     
     fileprivate func addtarget() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
-        profileImage.addGestureRecognizer(tap)
+        profileImageButton.addTarget(self, action: #selector(didTapImage), for: .touchUpInside)
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
+//        profileImage.addGestureRecognizer(tap)
     }
     
 }
@@ -61,7 +62,7 @@ extension SetupDetailAccountViewController: DefaultViewController {
 extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         guard let image = unwrapEditImageOrOriginal(fromInfo: info) else {fatalError("Image must exist")}
-        profileImage.setImage(with: image)
+        profileImageButton.setImage(image, for: .normal)
         finishButton.isEnabled = true
     }
 }
@@ -69,8 +70,7 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 // UI
 extension SetupDetailAccountViewController {
     fileprivate func setupUI(){
-        profileImage = UIImageView.create(image: UIImage(named: "profile_image")!)
-        profileImage.isUserInteractionEnabled = true
+        profileImageButton = UIButton.create(withImage: "profile_image", tintColor: .black)
         
         let profileTitleLabel = UILabel.create(text: "Set a profile photo", textAlignment: .center, textColor: .black, fontSize: 21, numberofLine: 1)
         
@@ -80,10 +80,10 @@ extension SetupDetailAccountViewController {
         finishButton.setCornerRadious(value: 10)
         finishButton.isEnabled = false
         
-        let group: [UIView] = [profileImage, profileTitleLabel, profileDescriptionLabel, finishButton]
+        let group: [UIView] = [profileImageButton, profileTitleLabel, profileDescriptionLabel, finishButton]
         group.forEach(view.addSubview(_:))
         
-        profileImage.snp.makeConstraints { (make) in
+        profileImageButton.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(40)
             make.width.height.equalTo(120)
@@ -91,7 +91,7 @@ extension SetupDetailAccountViewController {
         
         profileTitleLabel.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.top.equalTo(profileImage.snp.bottom).offset(10)
+            make.top.equalTo(profileImageButton.snp.bottom).offset(10)
         }
         
         profileDescriptionLabel.snp.makeConstraints { (make) in

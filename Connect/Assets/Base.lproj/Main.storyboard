@@ -17,6 +17,14 @@
                     <view key="view" contentMode="scaleToFill" id="Qp2-9E-8QY">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1as-nL-raS">
+                                <rect key="frame" x="123" y="120" width="158" height="185"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" title="Button" image="profile_image"/>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="UyL-WK-6ak"/>
                     </view>
@@ -24,7 +32,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m5C-kX-URI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-640" y="403"/>
+            <point key="canvasLocation" x="-640.79999999999995" y="402.54872563718146"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="ccX-Ez-5od">
@@ -65,5 +73,6 @@
     </scenes>
     <resources>
         <image name="contacts_selected" width="30" height="30"/>
+        <image name="profile_image" width="100" height="100"/>
     </resources>
 </document>

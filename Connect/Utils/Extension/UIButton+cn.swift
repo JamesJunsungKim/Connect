@@ -10,13 +10,6 @@
 import UIKit
 
 extension UIButton {
-    public static func create(title: String,titleColor: UIColor = .black, fontSize: CGFloat = 10, backgroundColor: UIColor = .clear) -> UIButton {
-        let bt = UIButton(type: .system)
-        bt.backgroundColor = backgroundColor
-        let attributedString = NSAttributedString(string: title, attributes: [NSAttributedStringKey.foregroundColor:titleColor, NSAttributedStringKey.font: UIFont.mainFont(size: fontSize)])
-        bt.setAttributedTitle(attributedString, for: .normal)
-        return bt
-    }
     
     open override var isEnabled: Bool {
         didSet {
@@ -25,6 +18,25 @@ extension UIButton {
         }
     }
     
+    // MARK: - static
+    public static func create(title: String, titleColor: UIColor = .black, fontSize: CGFloat = 10, backgroundColor: UIColor = .clear) -> UIButton {
+        let bt = UIButton(type: .system)
+        bt.backgroundColor = backgroundColor
+        let attributedString = NSAttributedString(string: title, attributes: [NSAttributedStringKey.foregroundColor:titleColor, NSAttributedStringKey.font: UIFont.mainFont(size: fontSize)])
+        bt.setAttributedTitle(attributedString, for: .normal)
+        return bt
+    }
+    
+    public static func create(withImage imageName: String, tintColor: UIColor) -> UIButton {
+        let bt = UIButton(type: .system)
+        let img = UIImage(named: imageName)
+        bt.setImage(img, for: .normal)
+        bt.tintColor = tintColor
+        bt.backgroundColor = .clear
+        return bt
+    }
     
     
 }
+
+
