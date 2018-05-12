@@ -27,26 +27,18 @@ class MainTabBarController: UITabBarController {
     }
     
     fileprivate func setupViewControllers() {
-        let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController())
-        let contactNav = templatenavController(unselected: #imageLiteral(resourceName: "contacts_unselected"), selected: #imageLiteral(resourceName: "contacts_selected"), rootViewController: ContactViewController())
-        let messageNav = templatenavController(unselected: #imageLiteral(resourceName: "message_unselected"), selected: #imageLiteral(resourceName: "message_selected"), rootViewController: MessageViewController())
-        let notificationNav = templatenavController(unselected: #imageLiteral(resourceName: "notification_unselected"), selected: #imageLiteral(resourceName: "notification_selected"), rootViewController: NotificationViewController())
-        let settingsNav = templatenavController(unselected: #imageLiteral(resourceName: "settings_unselected"), selected: #imageLiteral(resourceName: "settings_selected"), rootViewController: SettingsViewController())
+        let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController(), withLargetitle: true)
+        let contactNav = templatenavController(unselected: #imageLiteral(resourceName: "contacts_unselected"), selected: #imageLiteral(resourceName: "contacts_selected"), rootViewController: ContactViewController(), withLargetitle: true)
+        let messageNav = templatenavController(unselected: #imageLiteral(resourceName: "message_unselected"), selected: #imageLiteral(resourceName: "message_selected"), rootViewController: MessageViewController(), withLargetitle: false)
+        let notificationNav = templatenavController(unselected: #imageLiteral(resourceName: "notification_unselected"), selected: #imageLiteral(resourceName: "notification_selected"), rootViewController: NotificationViewController(), withLargetitle: true)
+        let settingsNav = templatenavController(unselected: #imageLiteral(resourceName: "settings_unselected"), selected: #imageLiteral(resourceName: "settings_selected"), rootViewController: SettingsViewController(), withLargetitle: true)
         
         viewControllers = [homeNav, contactNav, messageNav, notificationNav, settingsNav]
     }
 
-    fileprivate func templatenavController(unselected: UIImage, selected: UIImage, rootViewController: UIViewController)-> UINavigationController {
+    fileprivate func templatenavController(unselected: UIImage, selected: UIImage, rootViewController: UIViewController, withLargetitle flag: Bool)-> UINavigationController {
         let navController = UINavigationController(rootViewController: rootViewController)
-        let nvBar = navController.navigationBar
-        nvBar.barStyle = .black
-        nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
-        nvBar.tintColor = .white
-        nvBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
-        
-        if #available(iOS 11.0, *) {
-            nvBar.prefersLargeTitles = true
-        }
+        navController.navigationBar.setupToMainBlueTheme(withLargeTitle: flag)
         
         let tbItem = navController.tabBarItem
         tbItem?.image = unselected

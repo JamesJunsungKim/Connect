@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseStorage
 import PKHUD
 
 class SetupDetailAccountViewController: UIViewController {
@@ -28,9 +29,11 @@ class SetupDetailAccountViewController: UIViewController {
     }
     
     @objc fileprivate func finishBtnClicked() {
-        // save the pictures to database
-        
-        // create a coredata instance for this user
+        Photo.insertAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, success: {[unowned self] (photo) in
+            self.user.setProfilePhoto(with: photo)
+        }) {[unowned self] _ in
+            self.presentDefaultError()
+        }
         
         // switch the root vc to the main tab bar controller
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -38,7 +41,7 @@ class SetupDetailAccountViewController: UIViewController {
     }
     
     // MARK: - Fileprivate
-    fileprivate var user: NonCDUser!
+    fileprivate var user: User!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -46,22 +49,21 @@ class SetupDetailAccountViewController: UIViewController {
     
     fileprivate func addtarget() {
         profileImageButton.addTarget(self, action: #selector(didTapImage), for: .touchUpInside)
-//        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
-//        profileImage.addGestureRecognizer(tap)
     }
     
 }
 
 extension SetupDetailAccountViewController: DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        let user = NonCDUser.unwrapFrom(userInfo: userInfo!)
+        let user = User.unwrapFrom(userInfo: userInfo!)
         self.user = user
     }
 }
 
 extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        guard let image = unwrapEditImageOrOriginal(fromInfo: info) else {fatalError("Image must exist")}
+        guard let image = unwrapEditImageOrOriginal(fromInfo: info)?.withRenderingMode(.alwaysOriginal) else {fatalError("Image must exist")}
+        picker.dismiss(animated: true, completion: nil)
         profileImageButton.setImage(image, for: .normal)
         finishButton.isEnabled = true
     }
@@ -70,7 +72,7 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 // UI
 extension SetupDetailAccountViewController {
     fileprivate func setupUI(){
-        profileImageButton = UIButton.create(withImage: "profile_image", tintColor: .black)
+        profileImageButton = UIButton.create(withImageName: "profile_image")
         
         let profileTitleLabel = UILabel.create(text: "Set a profile photo", textAlignment: .center, textColor: .black, fontSize: 21, numberofLine: 1)
         

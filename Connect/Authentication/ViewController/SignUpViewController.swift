@@ -57,9 +57,9 @@ class SignUpViewController: UIViewController {
     
     @objc fileprivate func createBtnClicked() {
         ARSLineProgress.show()
-        NonCDUser.create(name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: {[unowned self] (user) in
+        User.createAndRegister(into: mainContext, name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: {[unowned self]  (user) in
             ARSLineProgress.hide()
-            self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [NonCDUser.Key.user:user])
+            self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [User.Key.user:user])
         }) {[unowned self] _ in
             ARSLineProgress.hide()
             self.presentDefaultError()
@@ -217,7 +217,7 @@ extension SignUpViewController {
             return bt
         }()
         
-        let facebookLogoImageView = UIImageView.create(withImage: "facebookIcon")
+        let facebookLogoImageView = UIImageView.create(withImageName: "facebookIcon")
         
         orLabel = UILabel.create(text: "or", textAlignment: .center, textColor: .black, fontSize: 13)
         orLabel.backgroundColor = .white

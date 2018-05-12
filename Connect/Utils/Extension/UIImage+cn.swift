@@ -39,8 +39,7 @@ extension UIImage {
     }
     
     
-    
-    
+    // MARK: - Static
     
     
     

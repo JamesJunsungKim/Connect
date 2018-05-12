@@ -24,6 +24,13 @@ final class User: NSManagedObject, BaseModel {
     @NSManaged fileprivate(set) var profilePhoto: Photo?
     @NSManaged fileprivate(set) var groups: Set<Group>?
     
+    struct Key {
+        static let user = "User"
+        static let uid = "uid"; static let name = "name"
+        static let phoneNumber = "phoneNumber";
+        static let email = "emailAddress"
+    }
+    
     static var dbReference: DatabaseReference {
         return FireDatabase.user.reference
     }
@@ -32,28 +39,40 @@ final class User: NSManagedObject, BaseModel {
         primitiveIsFavorite = false
     }
     
+    // MARK: - Public
+    
+    public func setProfilePhoto(with photo: Photo) {
+        profilePhoto = photo
+    }
     
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext, name: String, email: String, isOnwer: Bool) {
+    public static func create(into moc: NSManagedObjectContext, name: String, email: String, isOnwer: Bool = false)->User {
         let user: User = moc.insertObject()
         user.name = name
         user.emailAddress = email
         user.isOwner = isOnwer
+        return user
     }
     
     public static func createAndRegister(into moc: NSManagedObjectContext, name:String, email: String, password: String, completion:@escaping (User)->(), failure:@escaping (Error)->()) {
         
+        let user = User.create(into: moc, name: name, email: email, isOnwer: true)
         Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
                 return
             }
-//            user.id = user_!.uid
-//            completion(user)
+            user.uid = user_!.uid
+            UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
+            completion(user)
         }
-        
+    }
+    
+    public static func fetchCurrentUser() -> User {
+        let predicate = NSPredicate(format: "User.uid", <#T##args: CVarArg...##CVarArg#>)
+        User.findOrFetch(in: mainContext, matching: <#T##NSPredicate#>)
     }
     
     

@@ -19,7 +19,7 @@ extension UIImageView {
     }
     
     // MARK: - Static
-    public static func create(withImage imageName: String) -> UIImageView {
+    public static func create(withImageName imageName: String) -> UIImageView {
         let iv = UIImageView()
         let image = UIImage(named: imageName)
         iv.image = image
@@ -28,5 +28,21 @@ extension UIImageView {
         return iv
     }
     
+    public static func create(withImage image: UIImage) -> UIImageView {
+        let iv = UIImageView()
+        iv.image = image
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        return iv
+    }
+    
     
 }
+
+
+
+
+
+
+
+

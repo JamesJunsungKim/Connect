@@ -12,7 +12,7 @@ extension UserDefaults {
     
     enum UserDefaultKey : String {
         case imageResolution
-        case signedInUser
+        case uidForSignedInUser
     }
     
     static func retrieveValue<T>(forKey key: UserDefaultKey, defaultValue:T) -> T {

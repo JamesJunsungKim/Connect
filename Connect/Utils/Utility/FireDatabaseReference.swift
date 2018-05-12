@@ -15,6 +15,7 @@ enum FireDatabase {
     
     case user
     case contacts
+    case photos
     case message(userUid: String)
     case notification
     case settings

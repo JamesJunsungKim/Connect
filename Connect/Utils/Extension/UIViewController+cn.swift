@@ -65,9 +65,16 @@ extension UIViewController {
     
     func presentImagePicker(pickerDelegate: (UIImagePickerControllerDelegate & UINavigationControllerDelegate), sourceType: UIImagePickerControllerSourceType = .photoLibrary) {
         let imagePicker = UIImagePickerController()
+        let nvBar = imagePicker.navigationBar
+        nvBar.barStyle = .black
+        nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
+        nvBar.tintColor = .white
+        nvBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        
         imagePicker.delegate = pickerDelegate
         imagePicker.sourceType = sourceType
         imagePicker.allowsEditing = true
+        
         self.present(imagePicker, animated: true, completion: nil)
     }
     
@@ -81,7 +88,7 @@ extension UIViewController {
         label.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         label.textColor = UIColor.mainBlue
         
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: 0.5) {
             self.view.layoutIfNeeded()
         }
     }
@@ -94,7 +101,7 @@ extension UIViewController {
             }
             label.textColor = .lightGray
             label.transform = .identity
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(withDuration: 0.5) {
                 self.view.layoutIfNeeded()
             }
         }

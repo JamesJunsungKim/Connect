@@ -27,11 +27,17 @@ extension UIButton {
         return bt
     }
     
-    public static func create(withImage imageName: String, tintColor: UIColor) -> UIButton {
+    public static func create(withImageName imageName: String) -> UIButton {
         let bt = UIButton(type: .system)
-        let img = UIImage(named: imageName)
+        let img = UIImage(named: imageName)?.withRenderingMode(.alwaysOriginal)
         bt.setImage(img, for: .normal)
-        bt.tintColor = tintColor
+        bt.backgroundColor = .clear
+        return bt
+    }
+    
+    public static func create(withImage image: UIImage) -> UIButton {
+        let bt = UIButton(type: .system)
+        bt.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
         bt.backgroundColor = .clear
         return bt
     }

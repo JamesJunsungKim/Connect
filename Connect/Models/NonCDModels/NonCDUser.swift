@@ -50,7 +50,6 @@ extension NonCDUser {
             user.uid = user_!.uid
             completion(user)
         }
-        
     }
     
     

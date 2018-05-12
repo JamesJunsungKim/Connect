@@ -9,10 +9,7 @@
 import Foundation
 import Firebase
 
-struct NonCDPhoto: SavableModel {
-    static var storageRefernece: StorageReference {
-        return FireStorage.profilePhoto.reference
-    }
+struct NonCDPhoto: uploadableModel {
     
     static var dbReference: DatabaseReference {
         return FireDatabase.root.reference

@@ -25,8 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
-//        setupScreenAndRootVC()
-        testMode(targetVC: SetupDetailAccountViewController())
+        setupScreenAndRootVC()
+//        testMode(targetVC: SetupDetailAccountViewController())
         return true
     }
     
@@ -49,11 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainWindow?.rootViewController = mainTabbarController
         mainWindow?.makeKeyAndVisible()
 
-        if !UserDefaults.checkIfValueExist(forKey: .signedInUser) {
+        if !UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
             let nav = UINavigationController(rootViewController: WalkThroughViewController())
-            let nvBar = nav.navigationBar
-            nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
-            nvBar.tintColor = .white
+            nav.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
 
             signupWindow?.rootViewController = nav
             signupWindow?.makeKeyAndVisible()

@@ -11,21 +11,20 @@ import CoreData
 import FirebaseStorage
 import ARSLineProgress
 
-protocol SavableModel: BaseModel {
-    static var storageRefernece: StorageReference {get}
+protocol uploadableModel: BaseModel {
+    
 }
 
 
-extension SavableModel {
-    
-    static func upload(data: Data, success: @escaping (String)->(), failure: @escaping (Error)->()) {
-        _ = storageRefernece.putData(data, metadata: nil) { (metadata, error) in
+extension uploadableModel {
+    static func upload(data: Data, toStorage reference: StorageReference ,success: @escaping (String)->(), failure: @escaping (Error)->()) {
+        _ = reference.putData(data, metadata: nil) { (metadata, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
                 return}
             
-            storageRefernece.downloadURL(completion: { (url, error) in
+            reference.downloadURL(completion: { (url, error) in
                 guard let url = url, error == nil else {
                     logError(error!.localizedDescription)
                     failure(error!)
