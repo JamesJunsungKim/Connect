@@ -14,20 +14,19 @@ extension UIImage {
         case fullResolution
         case profileResolution
         case defaultResolution
+        
+        var resolution: CGFloat {
+            switch self {
+            case .fullResolution: return 1.0
+            case .profileResolution: return 0.1
+            case .defaultResolution:
+                return UserDefaults.retrieveValue(forKey: .defaultResolution, defaultValue: 0.2)
+            }
+        }
     }
     
     func jpegData(forKey key: Key) -> Data {
-        var resolution: CGFloat!
-        switch key {
-        case .fullResolution:
-            resolution = 1
-        case .defaultResolution:
-            resolution = UserDefaults.retrieveValue(forKey: .defaultResolution, defaultValue: 0.2)
-        case .profileResolution:
-            resolution = 0.1
-        }
-        
-        guard let result = UIImageJPEGRepresentation(self, resolution) else {fatalError("Cannot convert it into data")}
+        guard let result = UIImageJPEGRepresentation(self, key.resolution) else {fatalError("Cannot convert it into data")}
         return result
     }
     

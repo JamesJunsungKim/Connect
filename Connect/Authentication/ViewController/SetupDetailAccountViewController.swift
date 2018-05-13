@@ -33,7 +33,6 @@ class SetupDetailAccountViewController: UIViewController {
         Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
             self.user.uploadToServer(success: {
-                _ = mainContext.saveOrRollback()
                 ARSLineProgress.showSuccess(andThen: {
                     UserDefaults.store(object: self.user.uid!, forKey: .uidForSignedInUser)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate

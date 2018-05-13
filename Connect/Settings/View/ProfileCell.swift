@@ -26,14 +26,14 @@ class ProfileCell: UITableViewCell {
     public func configure(withUser user: User) {
         profileImageView.image = user.profilePhoto!.image
         nameLabel.text = user.name
-        statusLabel.text = user.statusMessage.unwrapOr(defaultValue: "Status message will be displayed here.")
+        statusLabel.text = user.statusMessage.unwrapOr(defaultValue: "Your status message will be displayed here.")
     }
    
     
     fileprivate func setupUI() {
         profileImageView = UIImageView.create(withImage: UIImage(), contentMode: .scaleAspectFill)
         profileImageView.setCornerRadious(value: 30)
-        nameLabel = UILabel.create(text: "Name", textAlignment: .left, textColor: .black, fontSize: 17, numberofLine: 1)
+        nameLabel = UILabel.create(text: "Name", textAlignment: .left, textColor: .black, fontSize: 20, numberofLine: 1)
         statusLabel = UILabel.create(text: "Your status message will be displayed here", textAlignment: .left, textColor: .black, fontSize: 14, numberofLine: 1)
         
         let group: [UIView] = [profileImageView, nameLabel, statusLabel]

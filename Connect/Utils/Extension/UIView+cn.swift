@@ -40,7 +40,7 @@ extension UIView {
     
     // MARK: - static
     
-    public static func createSeparator(color: UIColor = .lightGray) -> UIView {
+    public static func create(withColor color: UIColor = .lightGray) -> UIView {
         let v = UIView()
         v.backgroundColor = color
         return v

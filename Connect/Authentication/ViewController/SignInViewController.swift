@@ -54,7 +54,6 @@ class SignInViewController: UIViewController {
     @objc fileprivate func signInBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         User.loginAndFetchAndCreate(into: mainContext, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
-            _ = mainContext.saveOrRollback()
             ARSLineProgress.showSuccess(andThen: {
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.switchToMainWindow(withUser: user)
@@ -198,11 +197,11 @@ extension SignInViewController {
         orLabel = UILabel.create(text: "or", textAlignment: .center, textColor: .black, fontSize: 13)
         orLabel.backgroundColor = .white
         
-        let orSeparatorLine = UIView.createSeparator()
+        let orSeparatorLine = UIView.create()
         
-        emailSeparatorLine = UIView.createSeparator()
+        emailSeparatorLine = UIView.create()
         
-        passwordSeparatorLine = UIView.createSeparator()
+        passwordSeparatorLine = UIView.create()
         
         emailTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
         

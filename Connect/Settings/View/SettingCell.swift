@@ -28,9 +28,8 @@ class SettingCell: UITableViewCell {
     
     fileprivate func setupUI() {
         settingImageView = UIImageView.create(withImage: UIImage())
-        settingImageView.setCornerRadious(value: 25)
         
-        titleLabel = UILabel.create(text: "Title", textAlignment: .left, textColor: .black, fontSize: 14, numberofLine: 1)
+        titleLabel = UILabel.create(text: "Title", textAlignment: .left, textColor: .black, fontSize: 17, numberofLine: 1)
         
         let rightArrowImageView = UIImageView.create(withImageName: "right_arrow")
         let group : [UIView] = [settingImageView, titleLabel, rightArrowImageView]
@@ -39,7 +38,7 @@ class SettingCell: UITableViewCell {
         settingImageView.snp.makeConstraints { (make) in
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(25)
-            make.width.height.equalTo(50)
+            make.width.height.equalTo(40)
         }
         
         titleLabel.snp.makeConstraints { (make) in
