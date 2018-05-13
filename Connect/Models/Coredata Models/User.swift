@@ -70,9 +70,21 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public static func fetchCurrentUser() -> User {
-        let predicate = NSPredicate(format: "User.uid", <#T##args: CVarArg...##CVarArg#>)
-        User.findOrFetch(in: mainContext, matching: <#T##NSPredicate#>)
+    public static func loginAndFetchDataFromServer(withEmail email: String, password: String, success:@escaping ()->(), failure:@escaping (Error)->()) {
+        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
+            guard error == nil else {
+                logError(error!.localizedDescription)
+                failure(error!)
+                return
+            }
+            let uid = user!.uid
+            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: <#T##(DataSnapshot) -> Void#>)
+        }
+    }
+    
+    public static func fetchSignedInUser() -> User {
+        let predicate = User.predicate(format: "%K == %d", #keyPath(uid), UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser))
+        return User.findOrFetch(in: mainContext, matching: predicate)!
     }
     
     

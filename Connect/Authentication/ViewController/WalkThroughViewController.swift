@@ -29,7 +29,18 @@ class WalkThroughViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
-    //MAKR: - Fileprivate
+    // MARK: - Actions
+    
+    @objc fileprivate func createButtonClicked() {
+        presentDefaultVC(targetVC: SignUpViewController(), userInfo: nil)
+    }
+    
+    @objc fileprivate func signInButtonClicked() {
+        presentDefaultVC(targetVC: SignInViewController(), userInfo: nil)
+    }
+    
+    
+    // MAKR: - Fileprivate
     fileprivate let pages = Page.fetchPages()
     
     fileprivate func setupVC() {
@@ -41,13 +52,6 @@ class WalkThroughViewController: UIViewController {
         signInButton.addTarget(self, action: #selector(signInButtonClicked), for: .touchUpInside)
     }
 
-     @objc fileprivate func createButtonClicked() {
-        navigationController?.pushViewController(SignUpViewController(), animated: true)
-    }
-    
-    @objc fileprivate func signInButtonClicked() {
-        navigationController?.pushViewController(SignInViewController(), animated: true)
-    }
     
 }
 

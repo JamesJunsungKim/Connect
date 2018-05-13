@@ -24,8 +24,8 @@ extension UIViewController {
         present(pop, animated: true, completion: nil)
     }
     
-    func presentDefaultError(okAction: (()->())? = nil) {
-        let pop = PopupDialog(title: "Error", message: "Something went wrong.. \nPlease try it again")
+    func presentDefaultError(message: String = "Something went wrong.. \nPlease try it again" ,okAction: (()->())? = nil) {
+        let pop = PopupDialog(title: "Error", message: message)
         let okBtn = PopupDialogButton(title: "Ok") {if okAction != nil {okAction!()}}
         pop.addButton(okBtn)
         present(pop, animated: true, completion: nil)
@@ -65,12 +65,7 @@ extension UIViewController {
     
     func presentImagePicker(pickerDelegate: (UIImagePickerControllerDelegate & UINavigationControllerDelegate), sourceType: UIImagePickerControllerSourceType = .photoLibrary) {
         let imagePicker = UIImagePickerController()
-        let nvBar = imagePicker.navigationBar
-        nvBar.barStyle = .black
-        nvBar.barTintColor = UIColor.eateryBlue.navigationBarAdjusted
-        nvBar.tintColor = .white
-        nvBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
-        
+        imagePicker.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
         imagePicker.delegate = pickerDelegate
         imagePicker.sourceType = sourceType
         imagePicker.allowsEditing = true

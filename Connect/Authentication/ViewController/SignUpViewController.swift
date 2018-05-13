@@ -13,7 +13,7 @@ import ARSLineProgress
 class SignUpViewController: UIViewController {
     
     //MARK: - UI
-    fileprivate var facebookLoginButton: UIButton!
+    fileprivate var facebookSignUpButton: UIButton!
     fileprivate var thirdPartyLoginView: UIView!
     
     fileprivate var orLabel: UILabel!
@@ -53,21 +53,26 @@ class SignUpViewController: UIViewController {
     
     @objc fileprivate func facebookBtnClicked() {
         // facebook account
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.switchToMainWindow()
     }
     
     @objc fileprivate func createBtnClicked() {
-        ARSLineProgress.show()
+        ARSLineProgress.ars_showOnView(view)
         User.createAndRegister(into: mainContext, name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: {[unowned self]  (user) in
-            ARSLineProgress.hide()
-            self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [User.Key.user:user])
-        }) {[unowned self] _ in
-            ARSLineProgress.hide()
-            self.presentDefaultError()
+            ARSLineProgress.showSuccess()
+            DispatchTime.waitFor(milliseconds: 1000, completion: {
+                self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [User.Key.user:user])
+            })
+        }) {[unowned self] error in
+            ARSLineProgress.hideWithCompletionBlock {
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            }
         }
     }
     
     // MARK: - Filepriavte logic part.
-    fileprivate let animationDuration = 0.3
+    fileprivate let animationDuration = 0.8
     
     fileprivate var thirdPartyHeightConstraint: Constraint!
     fileprivate var nameWarningHeightConstraint: Constraint!
@@ -170,7 +175,7 @@ class SignUpViewController: UIViewController {
     
     fileprivate func showOrHideNameWarningLabel(nameIsValid isValid: Bool) {
         UIView.animate(withDuration: animationDuration ) {
-            self.nameWarningLabel.isHidden = isValid
+            self.nameWarningLabel.alpha = isValid ? 0 : 1
             self.nameWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
     }
@@ -181,7 +186,7 @@ class SignUpViewController: UIViewController {
     
     fileprivate func showOrHideEmailWarningLabel(emailIsValid isValid: Bool) {
         UIView.animate(withDuration: animationDuration ) {
-            self.emailWarningLabel.isHidden = isValid
+            self.emailWarningLabel.alpha = isValid ? 0 : 1
             self.emailWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
     }
@@ -192,7 +197,7 @@ class SignUpViewController: UIViewController {
     
     fileprivate func showOrHidePasswordWarningLabel(passwordIsValid isValid: Bool) {
         UIView.animate(withDuration: animationDuration ) {
-            self.passwordWarningLabel.isHidden = isValid
+            self.passwordWarningLabel.alpha = isValid ? 0 : 1
             self.passwordWarningHeightConstraint.update(offset: isValid ? 0 : 30)
         }
     }
@@ -205,10 +210,16 @@ class SignUpViewController: UIViewController {
     
 }
 
+extension SignUpViewController:DefaultViewController {
+    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
+        // no-op
+    }
+}
+
 extension SignUpViewController {
     fileprivate func setupUI() {
         
-        facebookLoginButton = {
+        facebookSignUpButton = {
             let bt = UIButton(type: .system)
             bt.backgroundColor = .clear
             let title = NSAttributedString(string: "Sign up with Facebook", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 13), NSAttributedStringKey.foregroundColor:UIColor.color(R: 68, G: 89, B: 150)])
@@ -261,7 +272,7 @@ extension SignUpViewController {
         
         let termAgreementLabel = UILabel.create(text: "By clicking 'Creat Account', you are agreeing to the Terms of Use and Privacy Policy of Connect.", textAlignment: .center, textColor: .lightGray, fontSize: 13)
         
-        let facebookStackView = UIStackView.create(views: [facebookLogoImageView, facebookLoginButton], axis: .horizontal, alignment: .center, distribution: .equalSpacing, spacing: 5)
+        let facebookStackView = UIStackView.create(views: [facebookLogoImageView, facebookSignUpButton], axis: .horizontal, alignment: .center, distribution: .equalSpacing, spacing: 5)
         
         thirdPartyLoginView = {
             let v = UIView()

@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIView {
-    func getParentViewController() -> UIViewController? {
+    public func getParentViewController() -> UIViewController? {
         var parentResponder: UIResponder? = self
         while parentResponder != nil {
             parentResponder = parentResponder!.next
@@ -28,6 +28,14 @@ extension UIView {
     public func setupBorder(color: UIColor, width: CGFloat) {
         self.layer.borderColor = color.cgColor
         self.layer.borderWidth = width
+    }
+    
+    public func snapshot() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(bounds.size, false, UIScreen.main.scale)
+        drawHierarchy(in: bounds, afterScreenUpdates: true)
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return result!
     }
     
     // MARK: - static

@@ -19,6 +19,10 @@ extension UserDefaults {
         return checkIfValueExist(forKey: key) ? UserDefaults.standard.object(forKey: key.rawValue) as! T : defaultValue
     }
     
+    static func retrieveValueOrFatalError<T>(forKey key: UserDefaultKey) ->T {
+        return UserDefaults.standard.object(forKey: key.rawValue) as! T
+    }
+    
     static func store(object: Any, forKey key: UserDefaultKey) {
         UserDefaults.standard.setValue(object, forKey: key.rawValue)
     }

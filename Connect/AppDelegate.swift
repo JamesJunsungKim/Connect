@@ -25,18 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
-        setupScreenAndRootVC()
-//        testMode(targetVC: SetupDetailAccountViewController())
+//        setupScreenAndRootVC()
+        testMode(targetVC: WalkThroughViewController())
         return true
     }
     
     //MARK: - Public
     public func switchToMainWindow() {
         mainWindow?.makeKeyAndVisible()
+        mainWindow?.windowLevel = UIWindowLevelAlert
     }
     
     public func switchToSignUpWindow() {
         signupWindow?.makeKeyAndVisible()
+        signupWindow?.windowLevel = UIWindowLevelAlert
     }
     
     //MARK: - Private
@@ -48,11 +50,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabbarController.context = persistentContainer.viewContext
         mainWindow?.rootViewController = mainTabbarController
         mainWindow?.makeKeyAndVisible()
-
+        
         if !UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
             let nav = UINavigationController(rootViewController: WalkThroughViewController())
             nav.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
-
             signupWindow?.rootViewController = nav
             signupWindow?.makeKeyAndVisible()
         }

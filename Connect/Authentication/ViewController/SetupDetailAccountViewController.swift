@@ -8,7 +8,7 @@
 
 import UIKit
 import FirebaseStorage
-import PKHUD
+import ARSLineProgress
 
 class SetupDetailAccountViewController: UIViewController {
     
@@ -29,15 +29,19 @@ class SetupDetailAccountViewController: UIViewController {
     }
     
     @objc fileprivate func finishBtnClicked() {
+        ARSLineProgress.ars_showOnView(view)
         Photo.insertAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, success: {[unowned self] (photo) in
-            self.user.setProfilePhoto(with: photo)
-        }) {[unowned self] _ in
-            self.presentDefaultError()
+            ARSLineProgress.showSuccess()
+            DispatchTime.waitFor(milliseconds: 1000, completion: {
+                self.user.setProfilePhoto(with: photo)
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.switchToMainWindow()
+            })
+        }) {[unowned self] error in
+            ARSLineProgress.hide()
+            self.presentDefaultError(message: error.localizedDescription, okAction: nil)
         }
         
-        // switch the root vc to the main tab bar controller
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.switchToMainWindow()
     }
     
     // MARK: - Fileprivate
@@ -49,8 +53,8 @@ class SetupDetailAccountViewController: UIViewController {
     
     fileprivate func addtarget() {
         profileImageButton.addTarget(self, action: #selector(didTapImage), for: .touchUpInside)
+        finishButton.addTarget(self, action: #selector(finishBtnClicked), for: .touchUpInside)
     }
-    
 }
 
 extension SetupDetailAccountViewController: DefaultViewController {

@@ -27,8 +27,8 @@ enum FireStorage {
     
     fileprivate var path: String {
         switch self {
-        case .profilePhoto(let user): return "profile/\(user.uid!)"
-        case .messagePhoto: return ""
+        case .profilePhoto(let user): return "photo/profile/\(user.uid!)"
+        case .messagePhoto: return "photo/message/"
         default: return ""
         }
     }

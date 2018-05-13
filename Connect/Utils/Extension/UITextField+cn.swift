@@ -22,23 +22,18 @@ extension UITextField {
         return predicate.evaluate(with: text!)
     }
     
-    func validateIfHasTextAndMakeBorderColored()-> Bool {
+    func validateIfHasTextAndMakeBorderColored(with color: UIColor)-> Bool {
         if hasText {
-            makeBorderBlack()
+            makeBorder(color: .black, width: 0)
             return true
         } else {
-            makeBorderRed()
+            makeBorder(color: .red)
             return false
         }
     }
     
-    func makeBorderRed(width: CGFloat = 1.0) {
-        layer.borderColor = UIColor.red.cgColor
-        layer.borderWidth = width
-    }
-    
-    func makeBorderBlack(width: CGFloat = 0) {
-        layer.borderColor = UIColor.black.cgColor
+    func makeBorder(color: UIColor, width: CGFloat = 1.0) {
+        layer.borderColor = color.cgColor
         layer.borderWidth = width
     }
     
