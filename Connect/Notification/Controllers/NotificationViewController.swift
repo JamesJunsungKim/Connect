@@ -8,8 +8,9 @@
 import UIKit
 import SnapKit
 
-class NotificationViewController: UIViewController {
+class NotificationViewController: UIViewController, UserInvolvedController {
     
+    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()

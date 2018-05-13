@@ -8,8 +8,9 @@
 import UIKit
 import SnapKit
 
-class MessageViewController: UIViewController {
+class MessageViewController: UIViewController, UserInvolvedController {
     
+    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()

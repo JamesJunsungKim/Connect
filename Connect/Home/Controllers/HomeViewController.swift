@@ -9,8 +9,9 @@
 import UIKit
 import SnapKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, UserInvolvedController {
     
+    var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()

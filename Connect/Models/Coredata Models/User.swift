@@ -16,8 +16,9 @@ final class User: NSManagedObject, BaseModel {
     
     @NSManaged fileprivate(set) var uid: String?
     @NSManaged fileprivate(set) var name: String
-    @NSManaged fileprivate(set) var phoneNumber: String?
     @NSManaged fileprivate(set) var emailAddress: String
+    @NSManaged fileprivate(set) var phoneNumber: String?
+    @NSManaged fileprivate(set) var statusMessage: String?
     @NSManaged fileprivate(set) var isFavorite: Bool
     @NSManaged fileprivate(set) var isOwner: Bool
     
@@ -29,6 +30,7 @@ final class User: NSManagedObject, BaseModel {
         static let user = "User"
         static let uid = "uid"; static let name = "name"
         static let phoneNumber = "phoneNumber"
+        static let statusMessage = "statusMessage"
         static let email = "emailAddress"
         static let isFavorite = "isFavorite"
         static let isOwner = "isOwner"
@@ -76,6 +78,7 @@ final class User: NSManagedObject, BaseModel {
             Key.name: name,
             Key.email: emailAddress,
             Key.phoneNumber: phoneNumber.unwrapOrNull(),
+            Key.statusMessage: statusMessage.unwrapOrNull(),
             Key.isFavorite: isFavorite,
             Key.isOwner: isOwner,
             Key.profilePhoto: profilePhoto!.toDictionary()
@@ -92,6 +95,7 @@ final class User: NSManagedObject, BaseModel {
         user.isOwner = isOnwer
         user.isFavorite = isFavorite
         user.phoneNumber = nil
+        user.statusMessage = nil
         return user
     }
     
@@ -142,9 +146,17 @@ final class User: NSManagedObject, BaseModel {
         let isFavorite = json[Key.isFavorite].boolValue
         let isOwner = json[Key.isOwner].boolValue
         
-        // need to add contacts, profile photo, and group.
-        
         let user = User.create(into: moc, uid: uid, name: name, email: email, isOnwer: isOwner, isFavorite: isFavorite)
+        
+        if let status = json[Key.statusMessage].string {
+            user.statusMessage = status
+        }
+        
+        if let phone = json[Key.phoneNumber].string {
+            user.phoneNumber = phone
+        }
+        
+        // need to add contacts, profile photo, and group.
         if let profileJSON = json[Key.profilePhoto] as? JSON{
             Photo.convertAndCreate(fromJSON: profileJSON, into: moc, withType: .fullResolution) { (photo) in
                 user.profilePhoto = photo

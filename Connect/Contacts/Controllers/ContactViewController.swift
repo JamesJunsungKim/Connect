@@ -8,8 +8,9 @@
 import UIKit
 import SnapKit
 
-class ContactViewController: UIViewController {
+class ContactViewController: UIViewController, UserInvolvedController {
     
+    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()

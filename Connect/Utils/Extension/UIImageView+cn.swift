@@ -28,10 +28,10 @@ extension UIImageView {
         return iv
     }
     
-    public static func create(withImage image: UIImage) -> UIImageView {
+    public static func create(withImage image: UIImage, contentMode: UIViewContentMode = .scaleAspectFit) -> UIImageView {
         let iv = UIImageView()
         iv.image = image
-        iv.contentMode = .scaleAspectFit
+        iv.contentMode = contentMode
         iv.clipsToBounds = true
         return iv
     }

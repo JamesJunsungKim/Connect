@@ -9,7 +9,11 @@
 import UIKit
 import CoreData
 
-class MainTabBarController: UITabBarController {
+protocol UserInvolvedController:AnyObject {
+    var user: User! {get set}
+}
+
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     public var context: NSManagedObjectContext!
     public var currentUser: User!
@@ -18,22 +22,23 @@ class MainTabBarController: UITabBarController {
         super.viewDidLoad()
         setupTabbar()
         setupViewControllers()
+        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
-            checkSignInUserAndFetch()
-        }
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        checkSignInUserAndFetch()
+        guard let nav = viewController as? UINavigationController, let destination = nav.viewControllers.first as? UserInvolvedController else {fatalError()}
+        destination.user = currentUser
+        return true
     }
     
     // MARK: - Fileprivate
-    
     
     fileprivate func setupTabbar() {
         tabBar.backgroundColor = .white
         tabBar.barTintColor = .white
         tabBar.shadowImage = UIImage()
+        self.delegate = self
     }
     
     fileprivate func setupViewControllers() {
@@ -58,6 +63,7 @@ class MainTabBarController: UITabBarController {
     }
     
     fileprivate func checkSignInUserAndFetch() {
+        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) else {return}
         guard currentUser != nil else {
             currentUser = User.fetchSignedInUser()
             return

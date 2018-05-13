@@ -48,6 +48,9 @@ final class Photo: NSManagedObject, uploadableModel {
         return dict
     }
     
+    public var image: UIImage {
+        return UIImage(data: imageData)!
+    }
     
     // MARK: - Static
     public static func create(into moc: NSManagedObjectContext, image: UIImage, withType key:UIImage.Key) -> Photo {

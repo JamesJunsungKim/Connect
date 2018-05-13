@@ -47,6 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setupScreenAndRootVC() {
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         signupWindow = UIWindow(frame: UIScreen.main.bounds)
+        
+//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
 
         let mainTabbarController = MainTabBarController()
         mainTabbarController.context = persistentContainer.viewContext
