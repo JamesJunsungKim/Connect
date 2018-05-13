@@ -49,12 +49,19 @@ class SignInViewController: UIViewController {
     
     @objc fileprivate func facebookSignInBtnClicked() {
         // facebook account
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.switchToMainWindow()
     }
     
     @objc fileprivate func signInBtnClicked() {
-        
+        ARSLineProgress.ars_showOnView(view)
+        User.loginAndFetchAndCreate(into: mainContext, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
+            _ = mainContext.saveOrRollback()
+            ARSLineProgress.showSuccess(andThen: {
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.switchToMainWindow(withUser: user)
+            })
+        }) {[unowned self] (error) in
+            self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+        }
     }
     
     // MARK: - Filepriavte logic part.

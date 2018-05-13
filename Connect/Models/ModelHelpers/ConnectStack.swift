@@ -39,11 +39,7 @@ private let connectContainer: NSPersistentContainer = {
 public func createConnectContainer(completion: @escaping (NSPersistentContainer)->()) {
     let container = NSPersistentContainer(name: "Connect")
     container.loadPersistentStores { (_, error) in
-        guard error == nil else {
-            print(error!)
-            print("\n\n")
-            print(error!.localizedDescription)
-            fatalError()}
+        guard error == nil else {fatalError()}
         completion(container)
     }
 }

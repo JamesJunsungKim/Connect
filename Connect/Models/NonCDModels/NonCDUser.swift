@@ -21,10 +21,7 @@ struct NonCDUser:BaseModel {
     var contacts = [NonCDUser]()
     var profilePhoto: NonCDPhoto?
     var groups = [Group]()
-    
-    static var dbReference: DatabaseReference {
-        return FireDatabase.user.reference
-    }
+
 }
 
 extension NonCDUser {

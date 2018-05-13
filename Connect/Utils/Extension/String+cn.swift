@@ -24,4 +24,9 @@ extension String {
     public func convertToCharacterSet()-> CharacterSet {
         return CharacterSet(charactersIn: self)
     }
+    
+    public func convertedToURL()-> URL {
+        guard let url = URL(string: self) else {fatalError("wrong type")}
+        return url
+    }
 }

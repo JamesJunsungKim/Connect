@@ -10,28 +10,28 @@ import Foundation
 
 extension UserDefaults {
     
-    enum UserDefaultKey : String {
-        case imageResolution
+    enum Key : String {
+        case defaultResolution
         case uidForSignedInUser
     }
     
-    static func retrieveValue<T>(forKey key: UserDefaultKey, defaultValue:T) -> T {
+    static func retrieveValue<T>(forKey key: Key, defaultValue:T) -> T {
         return checkIfValueExist(forKey: key) ? UserDefaults.standard.object(forKey: key.rawValue) as! T : defaultValue
     }
     
-    static func retrieveValueOrFatalError<T>(forKey key: UserDefaultKey) ->T {
-        return UserDefaults.standard.object(forKey: key.rawValue) as! T
+    static func retrieveValueOrFatalError(forKey key: Key)->Any {
+        return UserDefaults.standard.object(forKey: key.rawValue)!
     }
     
-    static func store(object: Any, forKey key: UserDefaultKey) {
+    static func store(object: Any, forKey key: Key) {
         UserDefaults.standard.setValue(object, forKey: key.rawValue)
     }
     
-    static func removeValue(forKey key: UserDefaultKey) {
+    static func removeValue(forKey key: Key) {
         UserDefaults.standard.removeObject(forKey: key.rawValue)
     }
     
-    static func checkIfValueExist(forKey key: UserDefaultKey)->Bool {
+    static func checkIfValueExist(forKey key: Key)->Bool {
         return UserDefaults.standard.object(forKey: key.rawValue) != nil
     }
     

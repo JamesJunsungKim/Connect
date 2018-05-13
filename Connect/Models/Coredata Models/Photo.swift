@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import SwiftyJSON
 import Firebase
 import CoreData
+import SDWebImage
 
 final class Photo: NSManagedObject, uploadableModel {
     static var dbReference: DatabaseReference {
@@ -26,23 +28,41 @@ final class Photo: NSManagedObject, uploadableModel {
         return width/height
     }
     
+    struct Key {
+        static let photo = "Photo"; static let uid = "uid"
+        static let width = "width"; static let height = "height"
+        static let url = "url"
+    }
+    
     override func awakeFromInsert() {
         
     }
     
-    public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Photo {
+    // MARK: - Public
+    
+    public func toDictionary() -> [String:Any] {
+        let dict: [String:Any] = [
+            Key.uid : uid,
+            Key.url : url!
+        ]
+        return dict
+    }
+    
+    
+    // MARK: - Static
+    public static func create(into moc: NSManagedObjectContext, image: UIImage, withType key:UIImage.Key) -> Photo {
         let photo: Photo = moc.insertObject()
         photo.uid = UUID().uuidString
         photo.isDownloaded = false
-        photo.imageData = image.jpegData
+        photo.imageData = image.jpegData(forKey: key)
         photo.width = Double(image.size.width)
         photo.height = Double(image.size.height)
         return photo
     }
     
-    public static func insertAndUpload(into moc: NSManagedObjectContext, toReference reference: StorageReference, withImage image: UIImage, success:@escaping (Photo)->(), failure:@escaping (Error)->())  {
-        let photo = Photo.insert(into: moc, image: image)
-        upload(data: image.jpegData, toStorage: reference, success: { (url) in
+    public static func createAndUpload(into moc: NSManagedObjectContext, toReference reference: StorageReference, withImage image: UIImage, withType key: UIImage.Key, success:@escaping (Photo)->(), failure:@escaping (Error)->())  {
+        let photo = Photo.create(into: moc, image: image, withType: key)
+        upload(data: photo.imageData, toStorage: reference, success: { (url) in
             photo.url = url
             success(photo)
         }) { (error) in
@@ -50,11 +70,16 @@ final class Photo: NSManagedObject, uploadableModel {
         }
     }
     
-    
-    
-    
-    
-    
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, withType key: UIImage.Key, completion: @escaping (Photo)->()) {
+        let uid = json[Key.uid].stringValue
+        let urlString = json[Key.url].stringValue
+        
+        UIImageView().sd_setImage(with: urlString.convertedToURL()) { (image, error, _, _) in
+            let photo = Photo.create(into: moc, image: image!, withType: key)
+            photo.uid = uid
+            completion(photo)
+        }
+    }
     
     
     

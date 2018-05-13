@@ -10,10 +10,27 @@ import UIKit
 
 extension UIImage {
     
-    public var jpegData: Data {
-        guard let result = UIImageJPEGRepresentation(self, UserDefaults.retrieveValue(forKey: .imageResolution, defaultValue: 0.2)) else {fatalError("Cannot convert it into data")}
+    enum Key:String {
+        case fullResolution
+        case profileResolution
+        case defaultResolution
+    }
+    
+    func jpegData(forKey key: Key) -> Data {
+        var resolution: CGFloat!
+        switch key {
+        case .fullResolution:
+            resolution = 1
+        case .defaultResolution:
+            resolution = UserDefaults.retrieveValue(forKey: .defaultResolution, defaultValue: 0.2)
+        case .profileResolution:
+            resolution = 0.1
+        }
+        
+        guard let result = UIImageJPEGRepresentation(self, resolution) else {fatalError("Cannot convert it into data")}
         return result
     }
+    
     
     public var pngData: Data? {
         return UIImagePNGRepresentation(self)

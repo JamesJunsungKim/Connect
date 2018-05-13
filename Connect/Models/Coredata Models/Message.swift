@@ -43,7 +43,7 @@ final class Message: NSManagedObject {
     //2) send message with photo
     public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Message {
         let message = createBaseMessage(moc: moc)
-        let photo = Photo.insert(into: moc, image: image)
+        let photo = Photo.create(into: moc, image: image, withType: .defaultResolution)
         message.photo = photo
         return message
     }

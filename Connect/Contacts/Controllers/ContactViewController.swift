@@ -13,11 +13,17 @@ class ContactViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupVC()
         setupNavigationBar()
-        view.backgroundColor = .red
+        
     }
     
     //MARK: - Filepriavte
+    fileprivate func setupVC() {
+        view.backgroundColor = .white
+    }
+    
     fileprivate func setupNavigationBar() {
+        navigationItem.title = "Contacts"
     }
 }

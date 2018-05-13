@@ -13,11 +13,15 @@ class MessageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupVC()
         setupNavigationBar()
-        view.backgroundColor = .white
     }
     
     //MARK: - Filepriavte
+    fileprivate func setupVC() {
+        view.backgroundColor = .white
+    }
+    
     fileprivate func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
     }

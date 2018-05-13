@@ -11,9 +11,7 @@ import FirebaseDatabase
 import SwiftyJSON
 
 protocol BaseModel {
-    static var dbReference: DatabaseReference {get}
     static func unwrapFrom(userInfo:[String:Any]) -> Self
-    
 }
 
 
@@ -24,10 +22,9 @@ extension BaseModel {
         return (userInfo[className] as! Self)
     }
     
-    static func list(configure:(DatabaseReference)->(DatabaseReference), completion:@escaping([Self])->(), onFailed failure: @escaping(Error)->Void) {
+    static func list(from reference:DatabaseReference, completion:@escaping([Self])->(), onFailed failure: @escaping(Error)->Void) {
         logInfo("List request for \(Self.self)")
-        let ref = configure(dbReference)
-        ref.observeSingleEvent(of: .value) { (snapshot) in
+        reference.observeSingleEvent(of: .value) { (snapshot) in
             guard let dics = snapshot.value as? [JSON] else {fatalError("wrong format of data")}
             do {
 //                let items = try dics.map{try Self(json:$0)}

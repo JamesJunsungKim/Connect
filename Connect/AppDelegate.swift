@@ -25,15 +25,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application,launchOptions: launchOptions)
-//        setupScreenAndRootVC()
-        testMode(targetVC: WalkThroughViewController())
+        setupScreenAndRootVC()
+//        testMode(targetVC: WalkThroughViewController())
         return true
     }
     
     //MARK: - Public
-    public func switchToMainWindow() {
+    public func switchToMainWindow(withUser user: User) {
         mainWindow?.makeKeyAndVisible()
         mainWindow?.windowLevel = UIWindowLevelAlert
+        let rootVC = mainWindow?.rootViewController as! MainTabBarController
+        rootVC.currentUser = user
     }
     
     public func switchToSignUpWindow() {
@@ -105,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        mainContext.saveOrRollback()
     }
 
 

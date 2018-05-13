@@ -53,15 +53,12 @@ class SignUpViewController: UIViewController {
     
     @objc fileprivate func facebookBtnClicked() {
         // facebook account
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.switchToMainWindow()
     }
     
     @objc fileprivate func createBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         User.createAndRegister(into: mainContext, name: nameTextField.text!, email: emailTextField.text!, password: passwordTextField.text!, completion: {[unowned self]  (user) in
-            ARSLineProgress.showSuccess()
-            DispatchTime.waitFor(milliseconds: 1000, completion: {
+            ARSLineProgress.showSuccess(andThen: {
                 self.presentDefaultVC(targetVC: SetupDetailAccountViewController(), userInfo: [User.Key.user:user])
             })
         }) {[unowned self] error in

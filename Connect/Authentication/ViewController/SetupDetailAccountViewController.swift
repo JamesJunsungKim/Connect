@@ -30,12 +30,18 @@ class SetupDetailAccountViewController: UIViewController {
     
     @objc fileprivate func finishBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
-        Photo.insertAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, success: {[unowned self] (photo) in
-            ARSLineProgress.showSuccess()
-            DispatchTime.waitFor(milliseconds: 1000, completion: {
-                self.user.setProfilePhoto(with: photo)
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.switchToMainWindow()
+        Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, withType: .profileResolution, success: {[unowned self] (photo) in
+            self.user.setProfilePhoto(with: photo)
+            self.user.uploadToServer(success: {
+                _ = mainContext.saveOrRollback()
+                ARSLineProgress.showSuccess(andThen: {
+                    UserDefaults.store(object: self.user.uid!, forKey: .uidForSignedInUser)
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.switchToMainWindow(withUser: self.user)
+                })
+            }, failure: {[unowned self] (error) in
+                ARSLineProgress.hide()
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
             })
         }) {[unowned self] error in
             ARSLineProgress.hide()

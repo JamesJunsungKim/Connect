@@ -31,7 +31,7 @@ enum FireDatabase {
     
     fileprivate var path: String {
         switch self {
-        case .user(let uid): return "users/\(uid)"
+        case .user(let uid): return "users/\(uid)/"
         case .message(let uid): return "messages/\(uid)"
         default: return ""
         }

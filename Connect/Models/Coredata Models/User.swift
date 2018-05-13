@@ -9,7 +9,8 @@
 import UIKit
 import CoreData
 import SwiftyJSON
-import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
 final class User: NSManagedObject, BaseModel {
     
@@ -27,12 +28,13 @@ final class User: NSManagedObject, BaseModel {
     struct Key {
         static let user = "User"
         static let uid = "uid"; static let name = "name"
-        static let phoneNumber = "phoneNumber";
+        static let phoneNumber = "phoneNumber"
         static let email = "emailAddress"
-    }
-    
-    static var dbReference: DatabaseReference {
-        return FireDatabase.user.reference
+        static let isFavorite = "isFavorite"
+        static let isOwner = "isOwner"
+        static let contacts = "contacts"
+        static let profilePhoto = "profilePhoto"
+        static let groups = "groups"
     }
     
     override func awakeFromInsert() {
@@ -41,23 +43,61 @@ final class User: NSManagedObject, BaseModel {
     
     // MARK: - Public
     
+    public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
+        let ref = FireDatabase.user(uid: uid!).reference
+        ref.setValue(toDictionary()) { (error, _) in
+            guard error == nil else {
+                logError(error!.localizedDescription)
+                failure(error!)
+                return
+            }
+            success()
+        }
+    }
+    
+    public func signOut(success:()->(), failure: @escaping (Error)->()) {
+        do {
+            try Auth.auth().signOut()
+            UserDefaults.removeValue(forKey: .uidForSignedInUser)
+            success()
+        } catch let error{
+            logError(error.localizedDescription)
+            failure(error)
+        }
+    }
+    
     public func setProfilePhoto(with photo: Photo) {
         profilePhoto = photo
     }
     
+    public func toDictionary() -> [String:Any] {
+         let dict:[String:Any] = [
+            Key.uid : uid!,
+            Key.name: name,
+            Key.email: emailAddress,
+            Key.phoneNumber: phoneNumber.unwrapOrNull(),
+            Key.isFavorite: isFavorite,
+            Key.isOwner: isOwner,
+            Key.profilePhoto: profilePhoto!.toDictionary()
+        ]
+        return dict
+    }
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext, name: String, email: String, isOnwer: Bool = false)->User {
+    public static func create(into moc: NSManagedObjectContext,uid: String?, name: String, email: String, isOnwer: Bool = false, isFavorite:Bool = false)->User {
         let user: User = moc.insertObject()
+        user.uid = uid
         user.name = name
         user.emailAddress = email
         user.isOwner = isOnwer
+        user.isFavorite = isFavorite
+        user.phoneNumber = nil
         return user
     }
     
     public static func createAndRegister(into moc: NSManagedObjectContext, name:String, email: String, password: String, completion:@escaping (User)->(), failure:@escaping (Error)->()) {
         
-        let user = User.create(into: moc, name: name, email: email, isOnwer: true)
+        let user = User.create(into: moc, uid: nil, name: name, email: email, isOnwer: true)
         Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -70,7 +110,7 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public static func loginAndFetchDataFromServer(withEmail email: String, password: String, success:@escaping ()->(), failure:@escaping (Error)->()) {
+    public static func loginAndFetchAndCreate(into moc: NSManagedObjectContext,withEmail email: String, password: String, success:@escaping (User)->(), failure:@escaping (Error)->()) {
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -78,13 +118,39 @@ final class User: NSManagedObject, BaseModel {
                 return
             }
             let uid = user!.uid
-            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: <#T##(DataSnapshot) -> Void#>)
+            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: { (snapshot) in
+                guard let json = snapshot.value as? JSON else {fatalError("wrong data")}
+                User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
+                    UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
+                    success(user)
+                })
+            })
         }
     }
     
     public static func fetchSignedInUser() -> User {
-        let predicate = User.predicate(format: "%K == %d", #keyPath(uid), UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser))
+        let uid = UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String
+        let predicate = NSPredicate(format: "%K == %@", #keyPath(User.uid), uid)
         return User.findOrFetch(in: mainContext, matching: predicate)!
+    }
+    
+    public static func convertAndCreate(fromJSON json: JSON,into moc: NSManagedObjectContext, completion: @escaping (User)->()) {
+        
+        let uid = json[Key.uid].stringValue
+        let name = json[Key.name].stringValue
+        let email = json[Key.email].stringValue
+        let isFavorite = json[Key.isFavorite].boolValue
+        let isOwner = json[Key.isOwner].boolValue
+        
+        // need to add contacts, profile photo, and group.
+        
+        let user = User.create(into: moc, uid: uid, name: name, email: email, isOnwer: isOwner, isFavorite: isFavorite)
+        if let profileJSON = json[Key.profilePhoto] as? JSON{
+            Photo.convertAndCreate(fromJSON: profileJSON, into: moc, withType: .fullResolution) { (photo) in
+                user.profilePhoto = photo
+                completion(user)
+            }
+        }
     }
     
     
