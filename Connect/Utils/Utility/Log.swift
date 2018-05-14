@@ -18,6 +18,26 @@ enum LogEvent: String {
     case severe = "[Severe 🔥]"
 }
 
+func enterMemoryLog(type: AnyClass) {
+    let newEntry = NSStringFromClass(type).components(separatedBy: ".")[1]
+    memoryArray.append(newEntry)
+    let sum = reduce(array: memoryArray)
+    logInfo("New entry in Memery \nnew:\(newEntry)\n"+sum+"\n")
+}
+
+func leaveMomeryLog(type:AnyClass) {
+    let deletedEntry = NSStringFromClass(type).components(separatedBy: ".")[1]
+    guard let index = memoryArray.index(of: deletedEntry) else {fatalError()}
+    memoryArray.remove(at: index)
+    let sum = reduce(array: memoryArray)
+    logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")
+}
+
+private func reduce(array: [String])->String {
+    let sum = array.reduce("") {$0+"\n\($1)"}
+    return sum
+}
+
 func logDebug(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.debug, fileName: fileName, line: line, column: column, funcName: funcName)
 }

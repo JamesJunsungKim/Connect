@@ -13,6 +13,7 @@ extension UserDefaults {
     enum Key : String {
         case defaultResolution
         case uidForSignedInUser
+        case isAccountPrivate
     }
     
     static func retrieveValue<T>(forKey key: Key, defaultValue:T) -> T {

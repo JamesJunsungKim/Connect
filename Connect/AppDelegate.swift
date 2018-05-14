@@ -21,10 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        
         setupCoreStack()
         setupFirebase()
-        setupThirdPartyLogin(application:application,launchOptions: launchOptions)
+        setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
 //        testMode(targetVC: WalkThroughViewController())
         return true
@@ -70,8 +69,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func setupFirebase() {
-        FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.min)
+        FirebaseApp.configure()
     }
     
     private func setupThirdPartyLogin(application: UIApplication,launchOptions:[UIApplicationLaunchOptionsKey: Any]?) {

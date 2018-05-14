@@ -9,4 +9,7 @@
 import UIKit
 
 private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
 let mainContext = appDelegate.persistentContainer.viewContext
+
+var memoryArray: [String] = []

@@ -18,9 +18,13 @@ class SetupDetailAccountViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        enterMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addtarget()
+    }
+    deinit {
+        leaveMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions

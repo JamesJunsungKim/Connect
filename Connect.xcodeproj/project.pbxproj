@@ -58,6 +58,8 @@
 		6C90C1A0209F06FF006FF995 /* FormSheetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C90C19F209F06FF006FF995 /* FormSheetable.swift */; };
 		6C90C1A2209F0816006FF995 /* PopOverable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C90C1A1209F0816006FF995 /* PopOverable.swift */; };
 		6C94371420A46D9B001AF098 /* SetupDetailAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C94371320A46D9B001AF098 /* SetupDetailAccountViewController.swift */; };
+		6CB3084620A9263B00D813B6 /* SettingAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3084520A9263B00D813B6 /* SettingAttribute.swift */; };
+		6CB3084820A929C800D813B6 /* SettingAttributeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3084720A929C800D813B6 /* SettingAttributeCell.swift */; };
 		6CBE603120A28C37004C16F0 /* DefaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBE603020A28C37004C16F0 /* DefaultViewController.swift */; };
 		6CBE603320A28CDF004C16F0 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBE603220A28CDF004C16F0 /* SignUpViewController.swift */; };
 		6CC10A5E20A66CFB00B91CF1 /* UIImagePickeDelegate+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC10A5D20A66CFB00B91CF1 /* UIImagePickeDelegate+cn.swift */; };
@@ -148,6 +150,8 @@
 		6C90C19F209F06FF006FF995 /* FormSheetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormSheetable.swift; sourceTree = "<group>"; };
 		6C90C1A1209F0816006FF995 /* PopOverable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopOverable.swift; sourceTree = "<group>"; };
 		6C94371320A46D9B001AF098 /* SetupDetailAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupDetailAccountViewController.swift; sourceTree = "<group>"; };
+		6CB3084520A9263B00D813B6 /* SettingAttribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingAttribute.swift; sourceTree = "<group>"; };
+		6CB3084720A929C800D813B6 /* SettingAttributeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingAttributeCell.swift; sourceTree = "<group>"; };
 		6CBE603020A28C37004C16F0 /* DefaultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultViewController.swift; sourceTree = "<group>"; };
 		6CBE603220A28CDF004C16F0 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		6CC10A5D20A66CFB00B91CF1 /* UIImagePickeDelegate+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImagePickeDelegate+cn.swift"; sourceTree = "<group>"; };
@@ -262,6 +266,7 @@
 			children = (
 				6CD46B1620A13D7A0085740B /* Page.swift */,
 				1A62A2F120A86BEB00108161 /* Setting.swift */,
+				6CB3084520A9263B00D813B6 /* SettingAttribute.swift */,
 			);
 			path = HelperModels;
 			sourceTree = "<group>";
@@ -272,7 +277,7 @@
 				6CD46B0720A135FD0085740B /* Coredata Models */,
 				6CD46B0820A136040085740B /* NonCDModels */,
 				6C62F88020A6731700E2FD20 /* HelperModels */,
-				6C90C18B209EF9C8006FF995 /* ModelHelpers */,
+				6C90C18B209EF9C8006FF995 /* CoreData helpers */,
 				6C4E72E5209ED01700653058 /* Protocol */,
 				6C4E72E8209ED2CA00653058 /* Connect.xcdatamodeld */,
 				6CD46B0920A136500085740B /* BaseModel.swift */,
@@ -424,14 +429,14 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
-		6C90C18B209EF9C8006FF995 /* ModelHelpers */ = {
+		6C90C18B209EF9C8006FF995 /* CoreData helpers */ = {
 			isa = PBXGroup;
 			children = (
 				6C4E72DF209ECDD300653058 /* ConnectStack.swift */,
 				6C4E72E3209ECFB500653058 /* ConnectMergePolicy.swift */,
 				6C4E72E1209ECE4C00653058 /* ConnectModelVersion.swift */,
 			);
-			path = ModelHelpers;
+			path = "CoreData helpers";
 			sourceTree = "<group>";
 		};
 		6C90C19E209F06F2006FF995 /* Utility */ = {
@@ -502,6 +507,7 @@
 			children = (
 				6CC281AB20A8455B00DC2F1B /* ProfileCell.swift */,
 				6CC281AD20A8457800DC2F1B /* SettingCell.swift */,
+				6CB3084720A929C800D813B6 /* SettingAttributeCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -797,6 +803,7 @@
 				6C4E72D8209ECCD600653058 /* Collection+cn.swift in Sources */,
 				6C90C1A0209F06FF006FF995 /* FormSheetable.swift in Sources */,
 				6CD46B0E20A136B70085740B /* NonCDPhoto.swift in Sources */,
+				6CB3084620A9263B00D813B6 /* SettingAttribute.swift in Sources */,
 				6CC281AE20A8457800DC2F1B /* SettingCell.swift in Sources */,
 				6C6AE4D720A28DAA005B016B /* SignInViewController.swift in Sources */,
 				6C6AE4DB20A295BB005B016B /* UILabel+cn.swift in Sources */,
@@ -830,6 +837,7 @@
 				1A51707C20A09891004383EB /* UserDefault+cn.swift in Sources */,
 				6C90C197209EFF2E006FF995 /* Message.swift in Sources */,
 				1A51708020A0A102004383EB /* Date+cn.swift in Sources */,
+				6CB3084820A929C800D813B6 /* SettingAttributeCell.swift in Sources */,
 				6C4E72DA209ECCEE00653058 /* Migration.swift in Sources */,
 				6CD46B0420A135DF0085740B /* FireDatabaseReference.swift in Sources */,
 				6CBE603320A28CDF004C16F0 /* SignUpViewController.swift in Sources */,

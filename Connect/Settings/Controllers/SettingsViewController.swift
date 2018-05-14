@@ -20,8 +20,13 @@ class SettingsViewController: UIViewController, UserInvolvedController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        enterMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
+    }
+    
+    deinit {
+        leaveMomeryLog(type: self.classForCoder)
     }
     
     //MARK: - Filepriavte
@@ -75,10 +80,12 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             // go to edit profile
+            presentDefaultVC(targetVC: DetailProfileViewController(), userInfo: [User.Key.user:user])
         } else {
             // go to change settings.
         }
     }
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "PROFILE"
