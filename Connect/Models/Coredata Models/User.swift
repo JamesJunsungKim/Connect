@@ -57,6 +57,10 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
+    public func unwrapStatusMessageOrDefault() -> String {
+        return statusMessage.unwrapOr(defaultValue: "Your message will be displayed to your contacts.")
+    }
+    
     public func signOut(success:()->(), failure: @escaping (Error)->()) {
         do {
             try Auth.auth().signOut()
@@ -123,10 +127,13 @@ final class User: NSManagedObject, BaseModel {
             }
             let uid = user!.uid
             FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: { (snapshot) in
-                guard let json = snapshot.value as? JSON else {fatalError("wrong data")}
+                guard let dict = snapshot.value else {fatalError()}
+                let json = JSON(dict)
                 User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
-                    UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
+                    UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
                     success(user)
+                }, failure: { (error) in
+                    failure(error)
                 })
             })
         }
@@ -138,7 +145,7 @@ final class User: NSManagedObject, BaseModel {
         return User.findOrFetch(in: mainContext, matching: predicate)!
     }
     
-    public static func convertAndCreate(fromJSON json: JSON,into moc: NSManagedObjectContext, completion: @escaping (User)->()) {
+    public static func convertAndCreate(fromJSON json: JSON,into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->()) {
         
         let uid = json[Key.uid].stringValue
         let name = json[Key.name].stringValue
@@ -157,14 +164,16 @@ final class User: NSManagedObject, BaseModel {
         }
         
         // need to add contacts, profile photo, and group.
-        if let profileJSON = json[Key.profilePhoto] as? JSON{
-            Photo.convertAndCreate(fromJSON: profileJSON, into: moc, withType: .fullResolution) { (photo) in
+        if json[Key.profilePhoto].null == nil{
+            let profileJSON = json[Key.profilePhoto]
+            Photo.convertAndCreate(fromJSON: profileJSON, into: moc, withType: .fullResolution, completion: { (photo) in
                 user.profilePhoto = photo
                 completion(user)
+            }) { (error) in
+                failure(error)
             }
         }
     }
-    
     
     // MARK: - Fileprivate
     

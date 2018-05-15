@@ -24,9 +24,9 @@ class DetailProfileViewController: UIViewController, UserInvolvedController {
     override func viewDidLoad() {
         super.viewDidLoad()
         enterMemoryLog(type: self.classForCoder)
-        
         setupVC()
         addTarget()
+
     }
     
     deinit {
@@ -35,8 +35,12 @@ class DetailProfileViewController: UIViewController, UserInvolvedController {
     
     // MARK: - Actions
     
+    @objc fileprivate func profileImageTapped() {
+        
+    }
+    
     @objc fileprivate func nameTapped() {
-        // segue to edit name
+        presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user])
     }
     
     // MARK: - Filepriavte
@@ -45,18 +49,23 @@ class DetailProfileViewController: UIViewController, UserInvolvedController {
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.title = "Edit Profile"
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     fileprivate func addTarget() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(nameTapped))
         nameLabel.addGestureRecognizer(tap)
+        
+        profileButton.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)
     }
     
     fileprivate func configureUI() {
         profileButton.setImage(user.profilePhoto!.image.withRenderingMode(.alwaysOriginal), for: .normal)
         nameLabel.text = user.name
+    }
+    
+    fileprivate func targetAttribute(forIndexPath indexPath: IndexPath) -> SettingAttribute {
+        return userSettingAttributes.first(where: {$0.targetIndexPath == indexPath})!
     }
     
 }
@@ -65,7 +74,7 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     
     // MARK:- Tableview DataSource
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -80,8 +89,7 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SettingAttributeCell.reuseIdentifier, for: indexPath) as! SettingAttributeCell
-        let targetAttribute = userSettingAttributes.first(where: {$0.targetIndexPath == indexPath})!
-        cell.configure(withAttribute: targetAttribute)
+        cell.configure(withAttribute: targetAttribute(forIndexPath: indexPath), withUser: user)
         return cell
     }
     
@@ -91,7 +99,27 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     
     // MARK: - Tableview Delegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        switch targetAttribute(forIndexPath: indexPath).type {
+        case .label: break
+        case .toggle: break
+        case .onlyAction:
+        presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed. it can not be undo.", okAction: {[unowned self] in
+            self.user.signOut(success: {
+                // remove data for user and messages.
+                User.deleteAll(fromMOC: mainContext)
+                Photo.deleteAll(fromMOC: mainContext)
+//                Message.deleteAll(fromMOC: mainContext)
+                
+                UserDefaults.removeValue(forKey: .uidForSignedInUser)
+                
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.switchToSignUpWindow()
+                
+            }, failure: { (error) in
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            })
+        }, cancelAction: nil)
+        }
     }
     
     
@@ -111,6 +139,7 @@ extension DetailProfileViewController:DefaultViewController {
         
         profileButton = UIButton.create(withImageName: "profile_image")
         nameLabel = UILabel.create(text: "Name", textAlignment: .center, textColor: .black, fontSize: 17, numberofLine: 1)
+        nameLabel.isUserInteractionEnabled = true
         
         let pencilImageView = UIImageView.create(withImageName: "gray_pencil")
         
@@ -123,13 +152,13 @@ extension DetailProfileViewController:DefaultViewController {
         
         profileButton.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(40)
+            make.top.equalToSuperview().offset(25)
             make.size.equalTo(CGSize(width: 80, height: 80))
         }
         
         nameLabel.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.top.equalTo(profileButton.snp.bottom).offset(20)
+            make.top.equalTo(profileButton.snp.bottom).offset(10)
         }
         
         pencilImageView.snp.makeConstraints { (make) in
@@ -146,7 +175,9 @@ extension DetailProfileViewController:DefaultViewController {
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) in
-            make.left.right.bottom.top.equalTo(view.safeAreaLayoutGuide)
+            tableView.contentInset = UIEdgeInsetsMake(getHeightOfNavigationBarAndStatusBar(), 0, 0, 0)
+            
+            make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     

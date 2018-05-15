@@ -62,6 +62,16 @@ extension Managed where Self:NSManagedObject {
         return name
     }
     
+    public static func deleteAll(fromMOC context: NSManagedObjectContext) {
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        do {
+            try context.execute(deleteRequest)
+        } catch let error{
+            logError(error.localizedDescription)
+        }
+    }
+    
     public static func findOrCreate(in context: NSManagedObjectContext, matching predicate: NSPredicate, configure:(Self)->())->Self {
         if let obj = findOrFetch(in: context, matching: predicate) {
             return obj

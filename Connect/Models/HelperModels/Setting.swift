@@ -14,30 +14,21 @@ enum SettingType {
     case data
     case help
     case invite
-    
-    var indexPath: IndexPath {
-        switch self {
-        case .contact: return IndexPath(row: 0, section: 1)
-        case .notification: return IndexPath(row: 1, section: 1)
-        case .data: return IndexPath(row: 2, section: 1)
-        case .help: return IndexPath(row: 0, section: 2)
-        case .invite: return IndexPath(row: 1, section: 2)
-        }
-    }
 }
 
 struct Setting {
     let type: SettingType
     let imageName: String
     let title: String
+    let indexPath: IndexPath
     
     public static func fetchDefaultSettings() -> [Setting] {
         return [
-            Setting(type: .contact, imageName: "contact_setting", title: "Contacts"),
-            Setting(type: .notification, imageName: "notification_setting", title: "Notification"),
-            Setting(type: .data, imageName: "data_setting", title: "Data Usage"),
-            Setting(type: .help, imageName: "help_setting", title: "Help"),
-            Setting(type: .invite, imageName: "invite_setting", title: "Invite your friends")
+            Setting(type: .contact, imageName: "contact_setting", title: "Contacts", indexPath: IndexPath(row: 0, section: 1)),
+            Setting(type: .notification, imageName: "notification_setting", title: "Notification", indexPath: IndexPath(row: 1, section: 1)),
+            Setting(type: .data, imageName: "data_setting", title: "Data Usage", indexPath: IndexPath(row: 2, section: 1)),
+            Setting(type: .help, imageName: "help_setting", title: "Help", indexPath: IndexPath(row: 0, section: 2)),
+            Setting(type: .invite, imageName: "invite_setting", title: "Invite your friends", indexPath: IndexPath(row: 1, section: 2))
         ]
     }
     

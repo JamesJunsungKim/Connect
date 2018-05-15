@@ -63,6 +63,7 @@ class SignInViewController: UIViewController {
                 appDelegate.switchToMainWindow(withUser: user)
             })
         }) {[unowned self] (error) in
+            ARSLineProgress.hide()
             self.presentDefaultError(message: error.localizedDescription, okAction: nil)
         }
     }

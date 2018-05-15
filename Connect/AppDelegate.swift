@@ -31,15 +31,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Public
     public func switchToMainWindow(withUser user: User) {
+        mainWindow = UIWindow(frame: UIScreen.main.bounds)
         mainWindow?.makeKeyAndVisible()
         mainWindow?.windowLevel = UIWindowLevelAlert
-        let rootVC = mainWindow?.rootViewController as! MainTabBarController
-        rootVC.currentUser = user
+        
+        let main = MainTabBarController()
+        mainWindow?.rootViewController = MainTabBarController()
+        main.currentUser = user
+        
+        signupWindow = nil
     }
     
     public func switchToSignUpWindow() {
+        signupWindow = UIWindow(frame: UIScreen.main.bounds)
         signupWindow?.makeKeyAndVisible()
         signupWindow?.windowLevel = UIWindowLevelAlert
+        
+        signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController())
+        
+        mainWindow = nil
     }
     
     //MARK: - Private
@@ -47,17 +57,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         signupWindow = UIWindow(frame: UIScreen.main.bounds)
         
-//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
-
         let mainTabbarController = MainTabBarController()
         mainTabbarController.context = persistentContainer.viewContext
         mainWindow?.rootViewController = mainTabbarController
         mainWindow?.makeKeyAndVisible()
         
+//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
+        
         if !UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
-            let nav = UINavigationController(rootViewController: WalkThroughViewController())
-            nav.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
-            signupWindow?.rootViewController = nav
+            mainWindow = nil
+            signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController())
             signupWindow?.makeKeyAndVisible()
         }
     }

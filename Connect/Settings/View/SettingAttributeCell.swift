@@ -21,7 +21,8 @@ class SettingAttributeCell: UITableViewCell {
         setupUI()
     }
     
-    public func configure(withAttribute attribute: SettingAttribute) {
+    public func configure(withAttribute attribute: SettingAttribute, withUser user: User) {
+        // UI
         switch attribute.type {
         case .label:
             contentLabel.text = attribute.content
@@ -32,11 +33,25 @@ class SettingAttributeCell: UITableViewCell {
         case .onlyAction:
             toggle.isHidden = true
             contentLabel.isHidden = true
+            titleLabel.textColor = .red
             titleLabel.snp.remakeConstraints { (make) in
                 make.centerX.centerY.equalToSuperview()
             }
         }
         titleLabel.text = attribute.title
+        
+        // update UI with data
+        switch attribute.contentType {
+        case .status:
+            contentLabel.text = user.unwrapStatusMessageOrDefault()
+        case .email:
+            contentLabel.text = user.emailAddress
+        case .phoneNumber:
+            contentLabel.text = user.phoneNumber.unwrapOr(defaultValue: "Enter your phone number")
+        case .isAccountPrivate:
+            toggle.isOn = UserDefaults.retrieveValue(forKey: .isAccountPrivate, defaultValue: false)
+        case .auctionNotRequired: break /*no-op*/
+        }
     }
     
     
@@ -48,9 +63,9 @@ class SettingAttributeCell: UITableViewCell {
 
 extension SettingAttributeCell {
     fileprivate func setupUI(){
-        titleLabel = UILabel.create(text: "title", textAlignment: .left, textColor: .black, fontSize: 17, numberofLine: 1)
+        titleLabel = UILabel.create(text: "title", textAlignment: .left, textColor: .black, fontSize: 15, numberofLine: 1)
         
-        contentLabel = UILabel.create(text: "content", textAlignment: .left, textColor: .black, fontSize: 17, numberofLine: 1)
+        contentLabel = UILabel.create(text: "content", textAlignment: .left, textColor: .black, fontSize: 13, numberofLine: 1)
         
         toggle = UISwitch()
         toggle.onTintColor = .mainBlue

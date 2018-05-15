@@ -30,6 +30,8 @@ class SettingsViewController: UIViewController, UserInvolvedController {
     }
     
     //MARK: - Filepriavte
+    fileprivate var settings = Setting.fetchDefaultSettings()
+    
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Settings"
@@ -37,7 +39,9 @@ class SettingsViewController: UIViewController, UserInvolvedController {
         tableView.dataSource = self
     }
     
-    fileprivate var settings = Setting.fetchDefaultSettings()
+    fileprivate func targetSetting(forIndexPath indexPath: IndexPath) -> Setting {
+        return settings.first(where: {$0.indexPath == indexPath})!
+    }
     
 }
 
@@ -62,8 +66,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingCell.reuseIdentifier, for: indexPath) as! SettingCell
-            let targetSetting = settings.first(where: {$0.type.indexPath == indexPath})!
-            cell.configure(withSetting: targetSetting)
+            cell.configure(withSetting: targetSetting(forIndexPath: indexPath))
             return cell
         }
     }

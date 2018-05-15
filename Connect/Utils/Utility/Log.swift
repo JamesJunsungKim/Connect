@@ -27,7 +27,7 @@ func enterMemoryLog(type: AnyClass) {
 
 func leaveMomeryLog(type:AnyClass) {
     let deletedEntry = NSStringFromClass(type).components(separatedBy: ".")[1]
-    guard let index = memoryArray.index(of: deletedEntry) else {fatalError()}
+    guard let index = memoryArray.index(of: deletedEntry) else {return}
     memoryArray.remove(at: index)
     let sum = reduce(array: memoryArray)
     logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")

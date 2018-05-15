@@ -13,9 +13,6 @@ import CoreData
 import SDWebImage
 
 final class Photo: NSManagedObject, uploadableModel {
-    static var dbReference: DatabaseReference {
-        return FireDatabase.contacts.reference
-    }
     
     @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var imageData: Data
@@ -73,16 +70,26 @@ final class Photo: NSManagedObject, uploadableModel {
         }
     }
     
-    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, withType key: UIImage.Key, completion: @escaping (Photo)->()) {
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, withType key: UIImage.Key, completion: @escaping (Photo)->(), failure: @escaping (Error)->()) {
         let uid = json[Key.uid].stringValue
         let urlString = json[Key.url].stringValue
         
-        UIImageView().sd_setImage(with: urlString.convertedToURL()) { (image, error, _, _) in
+        SDWebImageManager.shared().imageDownloader?.downloadImage(with: urlString.convertedToURL(), options: SDWebImageDownloaderOptions.highPriority, progress: nil, completed: { (image, _, error, _) in
+            guard error == nil else {
+                logError(error!.localizedDescription)
+                failure(error!)
+                return
+            }
             let photo = Photo.create(into: moc, image: image!, withType: key)
             photo.uid = uid
             completion(photo)
-        }
+        })
+        
+        
     }
+    
+    
+
     
     
     

@@ -11,9 +11,7 @@ import CoreData
 import FirebaseStorage
 import ARSLineProgress
 
-protocol uploadableModel: BaseModel {
-    
-}
+protocol uploadableModel: BaseModel {}
 
 
 extension uploadableModel {
