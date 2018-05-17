@@ -27,5 +27,17 @@ final class Request: NSManagedObject {
         }
         return r
     }
+    
+    override func awakeFromInsert() {
+        
+    }
+    
+    override func awakeFromFetch() {
+        
+    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: self.classForCoder)
+    }
 
 }

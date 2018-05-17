@@ -18,20 +18,50 @@ enum LogEvent: String {
     case severe = "[Severe 🔥]"
 }
 
-func enterMemoryLog(type: AnyClass) {
-    let newEntry = NSStringFromClass(type).components(separatedBy: ".")[1]
-    memoryArray.append(newEntry)
-    let sum = reduce(array: memoryArray)
+func enterViewControllerMemoryLog(type: AnyClass) {
+    let newEntry = nameFor(type: type)
+    viewControllerMemoryArray.append(newEntry)
+    let sum = reduce(array: viewControllerMemoryArray)
     logInfo("New entry in Memery \nnew:\(newEntry)\n"+sum+"\n")
 }
 
-func leaveMomeryLog(type:AnyClass) {
-    let deletedEntry = NSStringFromClass(type).components(separatedBy: ".")[1]
-    guard let index = memoryArray.index(of: deletedEntry) else {return}
-    memoryArray.remove(at: index)
-    let sum = reduce(array: memoryArray)
+func leaveViewControllerMomeryLogAndSaveDataToDisk(type:AnyClass) {
+    let deletedEntry = nameFor(type: type)
+    guard let index = viewControllerMemoryArray.index(of: deletedEntry) else {return}
+    viewControllerMemoryArray.remove(at: index)
+    let sum = reduce(array: viewControllerMemoryArray)
     logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")
+    mainContext.performSaveorRollback()
 }
+
+func enterReferenceDictionary(forType type: AnyClass, withUID uid: String?) {
+    let newEntry = nameFor(type: type)
+    let identifier = ObjectIdentifier.init(type).debugDescription
+    var dict: [String:String?]!
+    
+    if referenceMemeoryDictionary.checkIfValueExists(forKey: newEntry) {
+        dict = referenceMemeoryDictionary[newEntry]!
+        dict[identifier] = uid
+    } else {
+        dict = [identifier:uid]
+    }
+    referenceMemeoryDictionary[newEntry] = dict
+}
+
+func leaveReferenceDictionary(forType type: AnyClass) {
+    let deletedEntry = nameFor(type: type)
+    let identifier = ObjectIdentifier.init(type).debugDescription
+    
+    referenceMemeoryDictionary[deletedEntry]!.removeValue(forKey: identifier)
+    if referenceMemeoryDictionary[deletedEntry]!.count == 0 {
+        referenceMemeoryDictionary.removeValue(forKey: deletedEntry)
+    }
+}
+
+private func nameFor(type: AnyClass)-> String {
+    return NSStringFromClass(type).components(separatedBy: ".")[1]
+}
+
 
 private func reduce(array: [String])->String {
     let sum = array.reduce("") {$0+"\n\($1)"}

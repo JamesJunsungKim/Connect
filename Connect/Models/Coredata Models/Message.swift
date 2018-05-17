@@ -28,6 +28,17 @@ final class Message: NSManagedObject {
     @NSManaged fileprivate(set) var fromUser: User
     @NSManaged fileprivate(set) var photo: Photo?
     
+    override func awakeFromInsert() {
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    override func awakeFromFetch() {
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: self.classForCoder)
+    }
     
     public var sectionTitle: String {
         return dateSection()

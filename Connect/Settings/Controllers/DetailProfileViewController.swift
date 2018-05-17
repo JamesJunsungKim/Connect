@@ -8,6 +8,11 @@
 
 import UIKit
 import SnapKit
+import ARSLineProgress
+
+fileprivate enum SectionTitle: Int {
+    case status, accountDetail, privateAccount, signOut
+}
 
 class DetailProfileViewController: UIViewController, UserInvolvedController {
     
@@ -23,29 +28,31 @@ class DetailProfileViewController: UIViewController, UserInvolvedController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupVC()
         addTarget()
 
     }
     
     deinit {
-        leaveMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
     // MARK: - Actions
     
     @objc fileprivate func profileImageTapped() {
-        
+        presentImagePicker(pickerDelegate: self)
     }
     
     @objc fileprivate func nameTapped() {
-        presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user])
+        let targetAttribute = userSettingAttributes.first(where: {$0.contentType == .name})!
+        let userInfo: [String:Any] = [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute]
+        presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: userInfo)
     }
     
     // MARK: - Filepriavte
     
-    fileprivate let userSettingAttributes = SettingAttribute.userSettingAttributes()
+    fileprivate var userSettingAttributes = User.settingAttributes()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -78,12 +85,11 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0: return 1
-        case 1: return 2
-        case 2: return 1
-        case 3: return 1
-        default: fatalError()
+        switch SectionTitle(rawValue: section)! {
+        case .status : return 1
+        case .accountDetail: return 2
+        case .privateAccount: return 1
+        case .signOut: return 1
         }
     }
     
@@ -96,21 +102,31 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return section == 0 ? profileView : nil
     }
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return section == 2 ? "If your account is private, your account only is searchable by your email." : nil
+    }
     
     // MARK: - Tableview Delegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch targetAttribute(forIndexPath: indexPath).type {
-        case .label: break
+        let attribute = targetAttribute(forIndexPath: indexPath)
+        switch attribute.type {
+        case .label:
+            switch attribute.contentType {
+            case .email: break
+            default:
+                presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
+            }
         case .toggle: break
+            
         case .onlyAction:
-        presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed. it can not be undo.", okAction: {[unowned self] in
+        presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
             self.user.signOut(success: {
                 // remove data for user and messages.
                 User.deleteAll(fromMOC: mainContext)
                 Photo.deleteAll(fromMOC: mainContext)
-//                Message.deleteAll(fromMOC: mainContext)
+                Message.deleteAll(fromMOC: mainContext)
                 
-                UserDefaults.removeValue(forKey: .uidForSignedInUser)
+                UserDefaults.userRequestToSignOut()
                 
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.switchToSignUpWindow()
@@ -120,10 +136,50 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
             })
         }, cancelAction: nil)
         }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
-    
-    
-    
+}
+
+extension DetailProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        guard let image = unwrapEditImageOrOriginal(fromInfo: info)?.withRenderingMode(.alwaysOriginal) else {fatalError("Image must exist")}
+        profileButton.setImage(image, for: .normal)
+        
+        picker.dismiss(animated: true) {[unowned self] in
+            ARSLineProgress.ars_showOnView(self.view)
+        }
+        
+        Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
+            self.user.setProfilePhoto(with: photo)
+            self.user.patch(toNode: User.Key.profilePhoto + Photo.Key.url, withValue: photo.url!, success: {
+               ARSLineProgress.showSuccess()
+            }, failure: {[unowned self] (error) in
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            })
+        }) {[unowned self] error in
+            ARSLineProgress.hide()
+            self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+        }
+        
+    }
+}
+
+extension DetailProfileViewController:EditSettingDetailViewControllerDelegate {
+    func didSaveSetting(withAttribute attribute: SettingAttribute) {
+        
+        switch attribute.contentType {
+            
+        case.name:
+            nameLabel.text = user.name
+            
+        default:
+            let indexPath = attribute.targetIndexPath
+            let index = userSettingAttributes.index(of: targetAttribute(forIndexPath: indexPath))!
+            userSettingAttributes[index] = attribute
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
+    }
 }
 
 extension DetailProfileViewController:DefaultViewController {
@@ -147,13 +203,14 @@ extension DetailProfileViewController:DefaultViewController {
         group.forEach(profileView.addSubview(_:))
         
         profileView.snp.makeConstraints { (make) in
-            make.size.equalTo(CGSize(width: view.bounds.width, height: 160))
+            make.size.equalTo(CGSize(width: view.bounds.width, height: 155))
         }
         
         profileButton.snp.makeConstraints { (make) in
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(25)
-            make.size.equalTo(CGSize(width: 80, height: 80))
+            make.top.equalToSuperview().offset(15)
+            make.size.equalTo(CGSize(width: 100, height: 100))
+            profileButton.setCornerRadious(value: 50)
         }
         
         nameLabel.snp.makeConstraints { (make) in
@@ -175,7 +232,7 @@ extension DetailProfileViewController:DefaultViewController {
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) in
-            tableView.contentInset = UIEdgeInsetsMake(getHeightOfNavigationBarAndStatusBar(), 0, 0, 0)
+            tableView.contentInset = UIEdgeInsetsMake(getHeightOfNavigationBarAndStatusBar() - 5, 0, 0, 0)
             
             make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }

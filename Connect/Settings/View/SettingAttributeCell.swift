@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ARSLineProgress
 
 class SettingAttributeCell: UITableViewCell {
     static let reuseIdentifier = "SettingAttributeCell"
@@ -19,10 +20,15 @@ class SettingAttributeCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+        addTarget()
     }
     
+    // MARK: - Public
     public func configure(withAttribute attribute: SettingAttribute, withUser user: User) {
         // UI
+        self.attribute = attribute
+        self.user = user
+        
         switch attribute.type {
         case .label:
             contentLabel.text = attribute.content
@@ -42,6 +48,7 @@ class SettingAttributeCell: UITableViewCell {
         
         // update UI with data
         switch attribute.contentType {
+        case .name: break /*no-op*/
         case .status:
             contentLabel.text = user.unwrapStatusMessageOrDefault()
         case .email:
@@ -51,8 +58,34 @@ class SettingAttributeCell: UITableViewCell {
         case .isAccountPrivate:
             toggle.isOn = UserDefaults.retrieveValue(forKey: .isAccountPrivate, defaultValue: false)
         case .auctionNotRequired: break /*no-op*/
+            
         }
     }
+    
+    // MARK: - Actions
+    fileprivate func addTarget() {
+        toggle.addTarget(self, action: #selector(switchValueChange), for: .valueChanged)
+    }
+    
+    
+    // MARK: - Fileprivate
+    fileprivate var attribute: SettingAttribute!
+    fileprivate weak var user: User!
+    
+    @objc fileprivate func switchValueChange() {
+        guard attribute.type == .toggle else {return}
+        switch attribute.contentType {
+        case .isAccountPrivate:
+            ARSLineProgress.ars_showOnView(self)
+            user.privateSwitchToggled(success: {
+                ARSLineProgress.hide()
+            }) { (error) in
+                self.getParentViewController()?.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            }
+        default: fatalError()
+        }
+    }
+    
     
     
     

@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupFirebase()
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
+        
 //        testMode(targetVC: WalkThroughViewController())
         return true
     }
@@ -61,8 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabbarController.context = persistentContainer.viewContext
         mainWindow?.rootViewController = mainTabbarController
         mainWindow?.makeKeyAndVisible()
-        
-//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
         
         if !UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
             mainWindow = nil

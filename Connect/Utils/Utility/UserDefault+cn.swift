@@ -16,6 +16,17 @@ extension UserDefaults {
         case isAccountPrivate
     }
     
+    static func userRequestToSignOut() {
+        let keys:[UserDefaults.Key] = [.uidForSignedInUser, .isAccountPrivate]
+        keys.forEach({UserDefaults.removeValue(forKey: $0)})
+    }
+    
+    
+    
+    
+    
+    
+    
     static func retrieveValue<T>(forKey key: Key, defaultValue:T) -> T {
         return checkIfValueExist(forKey: key) ? UserDefaults.standard.object(forKey: key.rawValue) as! T : defaultValue
     }

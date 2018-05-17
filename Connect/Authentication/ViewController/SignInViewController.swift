@@ -33,14 +33,14 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
         
     }
     deinit {
-        leaveMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
     override func viewWillAppear(_ animated: Bool) {

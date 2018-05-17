@@ -12,4 +12,7 @@ private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
 let mainContext = appDelegate.persistentContainer.viewContext
 
-var memoryArray: [String] = []
+var viewControllerMemoryArray: [String] = []
+var referenceMemeoryDictionary : [String:[String:String?]] = [:]
+
+

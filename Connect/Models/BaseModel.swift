@@ -10,17 +10,10 @@ import CoreData
 import FirebaseDatabase
 import SwiftyJSON
 
-protocol BaseModel {
-    static func unwrapFrom(userInfo:[String:Any]) -> Self
-}
+protocol BaseModel:Unwrapable {}
 
 
 extension BaseModel {
-    
-    static func unwrapFrom(userInfo: [String:Any]) -> Self {
-        let className = String(describing: Self.self)
-        return (userInfo[className] as! Self)
-    }
     
     static func list(from reference:DatabaseReference, completion:@escaping([Self])->(), onFailed failure: @escaping(Error)->Void) {
         logInfo("List request for \(Self.self)")

@@ -37,14 +37,14 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
         
     }
     deinit {
-        leaveMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -212,9 +212,7 @@ class SignUpViewController: UIViewController {
 }
 
 extension SignUpViewController:DefaultViewController {
-    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        // no-op
-    }
+    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {/*no-op*/}
 }
 
 extension SignUpViewController {

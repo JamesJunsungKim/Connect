@@ -15,13 +15,13 @@ class HomeViewController: UIViewController, UserInvolvedController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupViewController()
         setupNavigationBar()
         
     }
     deinit {
-        leaveMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
     //MARK: - Filepriavte

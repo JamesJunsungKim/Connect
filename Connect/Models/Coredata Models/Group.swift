@@ -18,6 +18,17 @@ final class Group: NSManagedObject {
     
     // MARK: - Fileprivate
     
+//    override func awakeFromInsert() {
+//        enterReferenceDictionary(forType: self.classForCoder)
+//    }
+//
+//    override func awakeFromFetch() {
+//        enterReferenceDictionary(forType: self.classForCoder)
+//    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: self.classForCoder)
+    }
     
 }
 

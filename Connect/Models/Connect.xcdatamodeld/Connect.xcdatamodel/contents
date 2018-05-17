@@ -33,6 +33,7 @@
         <attribute name="emailAddress" attributeType="String" syncable="YES"/>
         <attribute name="isFavorite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="isOwner" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="isPrivate" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="phoneNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="statusMessage" optional="YES" attributeType="String" syncable="YES"/>
@@ -47,6 +48,6 @@
         <element name="Message" positionX="-200" positionY="-189" width="128" height="135"/>
         <element name="Photo" positionX="-416" positionY="-19" width="128" height="135"/>
         <element name="Request" positionX="-308" positionY="180" width="128" height="135"/>
-        <element name="User" positionX="54" positionY="-63" width="128" height="210"/>
+        <element name="User" positionX="54" positionY="-63" width="128" height="225"/>
     </elements>
 </model>

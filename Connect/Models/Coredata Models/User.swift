@@ -14,6 +14,7 @@ import FirebaseDatabase
 
 final class User: NSManagedObject, BaseModel {
     
+    
     @NSManaged fileprivate(set) var uid: String?
     @NSManaged fileprivate(set) var name: String
     @NSManaged fileprivate(set) var emailAddress: String
@@ -21,6 +22,7 @@ final class User: NSManagedObject, BaseModel {
     @NSManaged fileprivate(set) var statusMessage: String?
     @NSManaged fileprivate(set) var isFavorite: Bool
     @NSManaged fileprivate(set) var isOwner: Bool
+    @NSManaged fileprivate(set) var isPrivate: Bool
     
     @NSManaged fileprivate(set) var contacts: Set<User>?
     @NSManaged fileprivate(set) var profilePhoto: Photo?
@@ -33,6 +35,7 @@ final class User: NSManagedObject, BaseModel {
         static let statusMessage = "statusMessage"
         static let email = "emailAddress"
         static let isFavorite = "isFavorite"
+        static let isPrivate = "isPrivate"
         static let isOwner = "isOwner"
         static let contacts = "contacts"
         static let profilePhoto = "profilePhoto"
@@ -40,7 +43,15 @@ final class User: NSManagedObject, BaseModel {
     }
     
     override func awakeFromInsert() {
-        primitiveIsFavorite = false
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    override func awakeFromFetch() {
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: self.classForCoder)
     }
     
     // MARK: - Public
@@ -48,6 +59,18 @@ final class User: NSManagedObject, BaseModel {
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
         let ref = FireDatabase.user(uid: uid!).reference
         ref.setValue(toDictionary()) { (error, _) in
+            guard error == nil else {
+                logError(error!.localizedDescription)
+                failure(error!)
+                return
+            }
+            success()
+        }
+    }
+    
+    public func patch(toNode node: String, withValue value :Any, success:@escaping ()->(), failure: @escaping (Error)->()) {
+        let ref = FireDatabase.user(uid: uid!).reference.child(node)
+        ref.setValue(value) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
@@ -72,6 +95,31 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
+    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping ()->(), failure:@escaping (Error)->()) {
+        var path: String!
+        switch attribute.contentType {
+        case .name:
+            name = attribute.content!
+            path = Key.name
+        case .status:
+            statusMessage = attribute.content!
+            path = Key.statusMessage
+        case .email:
+            emailAddress = attribute.content!
+            path = Key.email
+        case .phoneNumber:
+            phoneNumber = attribute.content!
+            path = Key.phoneNumber
+        default: fatalError()
+        }
+        
+        patch(toNode: path, withValue: attribute.content!, success: {
+            success()
+        }) { (error) in
+            failure(error)
+        }
+    }
+    
     public func setProfilePhoto(with photo: Photo) {
         profilePhoto = photo
     }
@@ -83,6 +131,7 @@ final class User: NSManagedObject, BaseModel {
             Key.email: emailAddress,
             Key.phoneNumber: phoneNumber.unwrapOrNull(),
             Key.statusMessage: statusMessage.unwrapOrNull(),
+            Key.isPrivate : isPrivate,
             Key.isFavorite: isFavorite,
             Key.isOwner: isOwner,
             Key.profilePhoto: profilePhoto!.toDictionary()
@@ -90,14 +139,24 @@ final class User: NSManagedObject, BaseModel {
         return dict
     }
     
+    public func privateSwitchToggled(success:@escaping ()->(), failure:@escaping(Error)->()) {
+        isPrivate = !isPrivate
+        patch(toNode: Key.isPrivate, withValue: isPrivate, success: {
+            success()
+        }) { (error) in
+            failure(error)
+        }
+    }
+    
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext,uid: String?, name: String, email: String, isOnwer: Bool = false, isFavorite:Bool = false)->User {
+    public static func create(into moc: NSManagedObjectContext, uid: String?, name: String, email: String, isOnwer: Bool = false, isFavorite:Bool = false, isPrivate: Bool = false)->User {
         let user: User = moc.insertObject()
         user.uid = uid
         user.name = name
         user.emailAddress = email
         user.isOwner = isOnwer
         user.isFavorite = isFavorite
+        user.isPrivate = isPrivate
         user.phoneNumber = nil
         user.statusMessage = nil
         return user
@@ -152,8 +211,9 @@ final class User: NSManagedObject, BaseModel {
         let email = json[Key.email].stringValue
         let isFavorite = json[Key.isFavorite].boolValue
         let isOwner = json[Key.isOwner].boolValue
+        let isPrivate = json[Key.isPrivate].boolValue
         
-        let user = User.create(into: moc, uid: uid, name: name, email: email, isOnwer: isOwner, isFavorite: isFavorite)
+        let user = User.create(into: moc, uid: uid, name: name, email: email, isOnwer: isOwner, isFavorite: isFavorite, isPrivate: isPrivate)
         
         if let status = json[Key.statusMessage].string {
             user.statusMessage = status
@@ -173,6 +233,17 @@ final class User: NSManagedObject, BaseModel {
                 failure(error)
             }
         }
+    }
+    
+    public static func settingAttributes() -> [SettingAttribute] {
+        return [
+            SettingAttribute(type: .label, title: "Name", content: "Your Name", contentType: .name, description: "Name",toggleSource: nil, maximumLimit: 20, targetIndexPath: IndexPath(row: 100, section: 0)),
+            SettingAttribute(type: .label, title: "Status Message", content: "Your message will be displayed to your contacts.", contentType: .status, description: "Status Message",toggleSource: nil, maximumLimit: 20, targetIndexPath: IndexPath(row: 0, section: 0)),
+            SettingAttribute(type: .label, title: "Phone Number", content: "Your phone number won't be shown to your contacts", contentType: .phoneNumber, description: "Enter your phone number", toggleSource:nil, maximumLimit: 10, targetIndexPath: IndexPath(row: 0, section: 1)),
+            SettingAttribute(type: .label, title: "Email Address", content: "Email address", contentType: .email,  description: "Change your email address",toggleSource:nil, maximumLimit: 10, targetIndexPath: IndexPath(row: 1, section: 1)),
+            SettingAttribute(type: .toggle, title: "Make your account private", content: nil, contentType: .isAccountPrivate, description: "Change your account to private mode", toggleSource:.isAccountPrivate, maximumLimit: nil, targetIndexPath: IndexPath(row: 0, section: 2)),
+            SettingAttribute(type: .onlyAction, title: "SignOut", content: nil,  contentType: .auctionNotRequired, description: nil, toggleSource:nil, maximumLimit: nil, targetIndexPath: IndexPath(row: 0, section: 3))
+        ]
     }
     
     // MARK: - Fileprivate

@@ -10,7 +10,7 @@ import UIKit
 
 extension UIImage {
     
-    enum Key:String {
+    enum ResolutionKey:String {
         case fullResolution
         case profileResolution
         case defaultResolution
@@ -25,7 +25,7 @@ extension UIImage {
         }
     }
     
-    func jpegData(forKey key: Key) -> Data {
+    func jpegData(forKey key: ResolutionKey) -> Data {
         guard let result = UIImageJPEGRepresentation(self, key.resolution) else {fatalError("Cannot convert it into data")}
         return result
     }

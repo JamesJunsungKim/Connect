@@ -32,7 +32,15 @@ final class Photo: NSManagedObject, uploadableModel {
     }
     
     override func awakeFromInsert() {
-        
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    override func awakeFromFetch() {
+        enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
+    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: self.classForCoder)
     }
     
     // MARK: - Public
@@ -50,7 +58,7 @@ final class Photo: NSManagedObject, uploadableModel {
     }
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext, image: UIImage, withType key:UIImage.Key) -> Photo {
+    public static func create(into moc: NSManagedObjectContext, image: UIImage, withType key:UIImage.ResolutionKey) -> Photo {
         let photo: Photo = moc.insertObject()
         photo.uid = UUID().uuidString
         photo.isDownloaded = false
@@ -60,7 +68,7 @@ final class Photo: NSManagedObject, uploadableModel {
         return photo
     }
     
-    public static func createAndUpload(into moc: NSManagedObjectContext, toReference reference: StorageReference, withImage image: UIImage, withType key: UIImage.Key, success:@escaping (Photo)->(), failure:@escaping (Error)->())  {
+    public static func createAndUpload(into moc: NSManagedObjectContext, toReference reference: StorageReference, withImage image: UIImage, withType key: UIImage.ResolutionKey, success:@escaping (Photo)->(), failure:@escaping (Error)->())  {
         let photo = Photo.create(into: moc, image: image, withType: key)
         upload(data: photo.imageData, toStorage: reference, success: { (url) in
             photo.url = url
@@ -70,7 +78,7 @@ final class Photo: NSManagedObject, uploadableModel {
         }
     }
     
-    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, withType key: UIImage.Key, completion: @escaping (Photo)->(), failure: @escaping (Error)->()) {
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, withType key: UIImage.ResolutionKey, completion: @escaping (Photo)->(), failure: @escaping (Error)->()) {
         let uid = json[Key.uid].stringValue
         let urlString = json[Key.url].stringValue
         

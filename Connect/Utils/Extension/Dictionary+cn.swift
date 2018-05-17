@@ -8,6 +8,13 @@
 
 import Foundation
 
+extension Dictionary where Key == String {
+    
+    public func checkIfValueExists(forKey key: String) -> Bool {
+        return self[key] != nil
+    }
+}
+
 extension Dictionary where Value == Any {
     func value<T>(forKey key: Key, defaultValue: @autoclosure ()->T)->T {
         if let value = self[key] as? T {
@@ -17,3 +24,6 @@ extension Dictionary where Value == Any {
         }
     }
 }
+
+
+
