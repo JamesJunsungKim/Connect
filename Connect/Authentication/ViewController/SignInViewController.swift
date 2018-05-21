@@ -60,7 +60,8 @@ class SignInViewController: UIViewController {
         User.loginAndFetchAndCreate(into: mainContext, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
             ARSLineProgress.showSuccess(andThen: {
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.switchToMainWindow(withUser: user)
+                appDelegate.switchToMainWindow()
+                AppStatus.observer.currentUser = user
             })
         }) {[unowned self] (error) in
             ARSLineProgress.hide()

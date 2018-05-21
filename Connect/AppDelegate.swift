@@ -31,14 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     //MARK: - Public
-    public func switchToMainWindow(withUser user: User) {
+    public func switchToMainWindow() {
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         mainWindow?.makeKeyAndVisible()
         mainWindow?.windowLevel = UIWindowLevelAlert
-        
-        let main = MainTabBarController()
         mainWindow?.rootViewController = MainTabBarController()
-        main.currentUser = user
         
         signupWindow = nil
     }
@@ -55,19 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Private
     private func setupScreenAndRootVC() {
-        mainWindow = UIWindow(frame: UIScreen.main.bounds)
-        signupWindow = UIWindow(frame: UIScreen.main.bounds)
-        
-        let mainTabbarController = MainTabBarController()
-        mainTabbarController.context = persistentContainer.viewContext
-        mainWindow?.rootViewController = mainTabbarController
-        mainWindow?.makeKeyAndVisible()
-        
-        if !UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
-            mainWindow = nil
-            signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController())
-            signupWindow?.makeKeyAndVisible()
-        }
+//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
+        UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) ? switchToMainWindow():switchToSignUpWindow()
     }
     
     private func setupCoreStack() {

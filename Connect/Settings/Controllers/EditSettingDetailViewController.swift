@@ -18,8 +18,6 @@ class EditSettingDetailViewController: UIViewController {
     fileprivate var textLimitLabel: UILabel!
     fileprivate var saveButton: UIButton!
     
-//    weak var editSettingDetailViewControllerDelegate:EditSettingDetailViewControllerDelegate?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -51,7 +49,7 @@ class EditSettingDetailViewController: UIViewController {
     
     
     // MARK: - Fileprivate
-    fileprivate var user: User!
+    fileprivate let user = AppStatus.observer.currentUser
     fileprivate var attribute: SettingAttribute!
     fileprivate var maxCount: String!
     
@@ -102,8 +100,7 @@ extension EditSettingDetailViewController: DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)
-        user = User.unwrapFrom(userInfo: userInfo!)
-        configure(withUser: user, withAttribute: attribute)
+        configure(withUser: AppStatus.observer.currentUser, withAttribute: attribute)
     }
     
     fileprivate func setupUI() {

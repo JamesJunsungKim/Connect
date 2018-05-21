@@ -61,7 +61,7 @@ final class Photo: NSManagedObject, uploadableModel {
     public static func create(into moc: NSManagedObjectContext, image: UIImage, withType key:UIImage.ResolutionKey) -> Photo {
         let photo: Photo = moc.insertObject()
         photo.uid = UUID().uuidString
-        photo.isDownloaded = false
+        photo.isDownloaded = true
         photo.imageData = image.jpegData(forKey: key)
         photo.width = Double(image.size.width)
         photo.height = Double(image.size.height)

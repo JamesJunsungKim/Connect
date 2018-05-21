@@ -16,17 +16,12 @@ protocol UserInvolvedController:AnyObject {
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     public var context: NSManagedObjectContext!
-    public var currentUser: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabbar()
         setupViewControllers()
-    }
-    
-    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         checkSignInUserAndFetchAndSaveToAppStatus()
-        return true
     }
     
     // MARK: - Fileprivate
@@ -60,9 +55,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     fileprivate func checkSignInUserAndFetchAndSaveToAppStatus() {
-        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), currentUser != nil else {
-            currentUser = User.fetchSignedInUser()
-            AppStatus.observer.currentUser = currentUser
+        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), AppStatus.observer.currentUser != nil else {
+            AppStatus.observer.currentUser = User.fetchSignedInUser()
             return}
     }
 }

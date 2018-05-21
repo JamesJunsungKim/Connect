@@ -26,6 +26,7 @@ class SettingsViewController: UIViewController {
         enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
+        
     }
     
     deinit {
@@ -88,11 +89,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: - TableView delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0 {
-            return 70
-        } else {
-            return 60
-        }
+        return indexPath.section == 0 ? 70 : 60
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
