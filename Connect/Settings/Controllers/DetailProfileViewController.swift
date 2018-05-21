@@ -59,7 +59,9 @@ class DetailProfileViewController: UIViewController {
         view.backgroundColor = .white
         navigationItem.largeTitleDisplayMode = .never
         
-        AppStatus.observer.userObservable.subscribe(
+        AppStatus.observer.userObservable
+            
+            .subscribe(
             onNext: {[unowned self] (user) in
                 // set profile photo
                 if self.profileButton.currentImage != user.profilePhoto?.image {
@@ -67,16 +69,12 @@ class DetailProfileViewController: UIViewController {
                 }
                 
                 self.nameLabel.text = user.name
-                
-                
-                
         },
             onDisposed: {
                 //TODO: what should I do?
                 logInfo("Disposed..")
         })
         .disposed(by: bag)
-        
     }
     
     fileprivate func addTarget() {
@@ -141,7 +139,6 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
         case .onlyAction:
         presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
             self.user.signOut(success: {
-                // remove data for user and messages.
                 User.deleteAll(fromMOC: mainContext)
                 Photo.deleteAll(fromMOC: mainContext)
                 Message.deleteAll(fromMOC: mainContext)
@@ -183,22 +180,6 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
         
     }
 }
-
-
-//    func didSaveSetting(withAttribute attribute: SettingAttribute) {
-//
-//        switch attribute.contentType {
-//
-//        case.name:
-//            nameLabel.text = user.name
-//
-//        default:
-//            let indexPath = attribute.targetIndexPath
-//            let index = userSettingAttributes.index(of: targetAttribute(forIndexPath: indexPath))!
-//            userSettingAttributes[index] = attribute
-//            tableView.reloadRows(at: [indexPath], with: .none)
-//        }
-//    }
 
 
 extension DetailProfileViewController:DefaultViewController {

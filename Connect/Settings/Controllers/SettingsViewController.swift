@@ -40,6 +40,7 @@ class SettingsViewController: UIViewController {
         view.backgroundColor = .white
         navigationItem.title = "Settings"
         
+        // Observe the app status for UI changes.
         AppStatus.observer.userObservable
             .subscribe(
                 onNext: {[unowned self] (user) in

@@ -22,14 +22,10 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         super.viewDidLoad()
         setupTabbar()
         setupViewControllers()
-        
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        checkSignInUserAndFetch()
-        guard let nav = viewController as? UINavigationController, let destination = nav.viewControllers.first as? UserInvolvedController else {fatalError()}
-        destination.user = currentUser
-        AppStatus.observer.currentUser = currentUser
+        checkSignInUserAndFetchAndSaveToAppStatus()
         return true
     }
     
@@ -63,12 +59,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         return navController
     }
     
-    fileprivate func checkSignInUserAndFetch() {
-        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) else {return}
-        guard currentUser != nil else {
+    fileprivate func checkSignInUserAndFetchAndSaveToAppStatus() {
+        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), currentUser != nil else {
             currentUser = User.fetchSignedInUser()
-            return
-        }
+            AppStatus.observer.currentUser = currentUser
+            return}
     }
 }
 
