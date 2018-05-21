@@ -15,20 +15,58 @@ class AppStatus {
     private init() {}
     
     
-    var currentUser: User! {
-        didSet {
-            currentUserSubject.onNext(currentUser)
-        }    }
+    var currentUser: User!
     
-    fileprivate var currentUserSubject = PublishSubject<User>()
-    
-    public var currentUserObservable : Observable<User> {
+    public var userObservable : Observable<User> {
         return currentUserSubject.asObservable()
     }
     
+    // MARK: - user
+    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping ()->(), failure:@escaping (Error)->()) {
+        currentUser.updateSettingAttributeAndPatch(withAttribute: attribute, success: {[unowned self] in
+            success()
+            self.send(data: self.currentUser, through: self.currentUserSubject)
+        }) { (error) in
+            failure(error)
+        }
+    }
     
+    // MARK: - Fileprivate
+    fileprivate var currentUserSubject = PublishSubject<User>()
     
-    
+    fileprivate func send<A>(data: A,through publishSubject: PublishSubject<A>) {
+        publishSubject.onNext(data)
+    }
     
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

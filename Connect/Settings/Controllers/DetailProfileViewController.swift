@@ -9,22 +9,20 @@
 import UIKit
 import SnapKit
 import ARSLineProgress
+import RxSwift
 
 fileprivate enum SectionTitle: Int {
     case status, accountDetail, privateAccount, signOut
 }
 
-class DetailProfileViewController: UIViewController, UserInvolvedController {
+class DetailProfileViewController: UIViewController {
     
     // UI
     fileprivate var profileView: UIView!
     fileprivate var profileButton: UIButton!
     fileprivate var nameLabel: UILabel!
-    
     fileprivate var tableView: UITableView!
     
-    
-    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,17 +44,39 @@ class DetailProfileViewController: UIViewController, UserInvolvedController {
     
     @objc fileprivate func nameTapped() {
         let targetAttribute = userSettingAttributes.first(where: {$0.contentType == .name})!
-        let userInfo: [String:Any] = [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute]
+        let userInfo: [String:Any] = [SettingAttribute.Key.settingAttribute: targetAttribute]
         presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: userInfo)
     }
     
     // MARK: - Filepriavte
     
     fileprivate var userSettingAttributes = User.settingAttributes()
+    fileprivate var user = AppStatus.observer.currentUser!
+    
+    fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.largeTitleDisplayMode = .never
+        
+        AppStatus.observer.userObservable.subscribe(
+            onNext: {[unowned self] (user) in
+                // set profile photo
+                if self.profileButton.currentImage != user.profilePhoto?.image {
+                    self.profileButton.setImage(user.profilePhoto!.image, for: .normal)
+                }
+                
+                self.nameLabel.text = user.name
+                
+                
+                
+        },
+            onDisposed: {
+                //TODO: what should I do?
+                logInfo("Disposed..")
+        })
+        .disposed(by: bag)
+        
     }
     
     fileprivate func addTarget() {
@@ -127,7 +147,6 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
                 Message.deleteAll(fromMOC: mainContext)
                 
                 UserDefaults.userRequestToSignOut()
-                
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.switchToSignUpWindow()
                 
@@ -165,27 +184,26 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
     }
 }
 
-extension DetailProfileViewController:EditSettingDetailViewControllerDelegate {
-    func didSaveSetting(withAttribute attribute: SettingAttribute) {
-        
-        switch attribute.contentType {
-            
-        case.name:
-            nameLabel.text = user.name
-            
-        default:
-            let indexPath = attribute.targetIndexPath
-            let index = userSettingAttributes.index(of: targetAttribute(forIndexPath: indexPath))!
-            userSettingAttributes[index] = attribute
-            tableView.reloadRows(at: [indexPath], with: .none)
-        }
-    }
-}
+
+//    func didSaveSetting(withAttribute attribute: SettingAttribute) {
+//
+//        switch attribute.contentType {
+//
+//        case.name:
+//            nameLabel.text = user.name
+//
+//        default:
+//            let indexPath = attribute.targetIndexPath
+//            let index = userSettingAttributes.index(of: targetAttribute(forIndexPath: indexPath))!
+//            userSettingAttributes[index] = attribute
+//            tableView.reloadRows(at: [indexPath], with: .none)
+//        }
+//    }
+
 
 extension DetailProfileViewController:DefaultViewController {
     
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        user = User.unwrapFrom(userInfo: userInfo!)
         setupUI()
         configureUI()
     }

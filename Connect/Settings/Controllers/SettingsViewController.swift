@@ -7,20 +7,19 @@
 //
 import UIKit
 import SnapKit
+import RxSwift
 
 fileprivate enum SectionTitle: Int {
     case profile, setting, about
 }
 
-class SettingsViewController: UIViewController, UserInvolvedController {
+class SettingsViewController: UIViewController {
     
     // UI
     fileprivate var tableView: UITableView!
     fileprivate var profileImageView: UIImageView!
     fileprivate var namelabel: UILabel!
     fileprivate var statusLabel: UILabel!
-    
-    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +34,22 @@ class SettingsViewController: UIViewController, UserInvolvedController {
     
     //MARK: - Filepriavte
     fileprivate var settings = Setting.fetchDefaultSettings()
+    fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Settings"
-        tableView.delegate = self
-        tableView.dataSource = self
+        
+        AppStatus.observer.userObservable
+            .subscribe(
+                onNext: {[unowned self] (user) in
+                    self.profileImageView.image = user.profilePhoto!.image
+                    self.namelabel.text = user.name
+                },
+                onDisposed: {
+                    logInfo("user subscription is diposed.")
+            })
+            .disposed(by: bag)
     }
     
     fileprivate func targetSetting(forIndexPath indexPath: IndexPath) -> Setting {
@@ -67,7 +76,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         switch SectionTitle(rawValue: indexPath.section)! {
         case .profile :
             let cell = tableView.dequeueReusableCell(withIdentifier: ProfileCell.reuseIdentifier, for: indexPath) as! ProfileCell
-            cell.configure(withUser: user)
+            cell.configure(withUser: AppStatus.observer.currentUser)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingCell.reuseIdentifier, for: indexPath) as! SettingCell
@@ -88,7 +97,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch SectionTitle(rawValue: indexPath.section)! {
         case .profile:
-            presentDefaultVC(targetVC: DetailProfileViewController(), userInfo: [User.Key.user:user])
+            presentDefaultVC(targetVC: DetailProfileViewController(), userInfo: nil)
         default:
             break
         }
@@ -109,6 +118,9 @@ extension SettingsViewController {
         tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(ProfileCell.self, forCellReuseIdentifier: ProfileCell.reuseIdentifier)
         tableView.register(SettingCell.self, forCellReuseIdentifier: SettingCell.reuseIdentifier)
+        tableView.delegate = self
+        tableView.dataSource = self
+        
         view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)

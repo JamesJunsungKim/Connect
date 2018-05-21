@@ -29,6 +29,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         checkSignInUserAndFetch()
         guard let nav = viewController as? UINavigationController, let destination = nav.viewControllers.first as? UserInvolvedController else {fatalError()}
         destination.user = currentUser
+        AppStatus.observer.currentUser = currentUser
         return true
     }
     

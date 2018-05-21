@@ -87,7 +87,6 @@ final class User: NSManagedObject, BaseModel {
     public func signOut(success:()->(), failure: @escaping (Error)->()) {
         do {
             try Auth.auth().signOut()
-            UserDefaults.removeValue(forKey: .uidForSignedInUser)
             success()
         } catch let error{
             logError(error.localizedDescription)
@@ -104,9 +103,6 @@ final class User: NSManagedObject, BaseModel {
         case .status:
             statusMessage = attribute.content!
             path = Key.statusMessage
-        case .email:
-            emailAddress = attribute.content!
-            path = Key.email
         case .phoneNumber:
             phoneNumber = attribute.content!
             path = Key.phoneNumber

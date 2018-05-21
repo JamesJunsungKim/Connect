@@ -10,10 +10,6 @@ import UIKit
 import SnapKit
 import ARSLineProgress
 
-protocol EditSettingDetailViewControllerDelegate: AnyObject {
-    func didSaveSetting(withAttribute attribute: SettingAttribute)
-}
-
 class EditSettingDetailViewController: UIViewController {
     
     // UI
@@ -22,7 +18,7 @@ class EditSettingDetailViewController: UIViewController {
     fileprivate var textLimitLabel: UILabel!
     fileprivate var saveButton: UIButton!
     
-    weak var editSettingDetailViewControllerDelegate:EditSettingDetailViewControllerDelegate?
+//    weak var editSettingDetailViewControllerDelegate:EditSettingDetailViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,37 +36,14 @@ class EditSettingDetailViewController: UIViewController {
     @objc fileprivate func saveBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         attribute.content = textField.text!
-        user.updateSettingAttributeAndPatch(withAttribute: attribute, success: {
-            ARSLineProgress.showSuccess(andThen: {[unowned self] in
-                self.editSettingDetailViewControllerDelegate?.didSaveSetting(withAttribute: self.attribute)
-//                switch self.attribute.contentType {
-//                case .name: break
-//                    self.user.name = textField.text!
-//                case .status:
-//                    self.user.statusMessage = textField.text!
-//                case .phoneNumber:
-//                    self.user.phoneNumber = textField.text!
-//                default: fatalError()
-//                }
-//                AppStatus.observer.currentUser = self.user
+        AppStatus.observer.updateSettingAttributeAndPatch(withAttribute: self.attribute, success: {[unowned self] in
+            ARSLineProgress.showSuccess(andThen: { [unowned self] in
                 self.navigationController?.popViewController(animated: true)
             })
-        }) {[unowned self] (error) in
-            self.presentDefaultError(message: error.localizedDescription, okAction: nil)
-        }
+            }, failure: {[unowned self] (error) in
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+        })
     }
-    
-//    switch attribute.contentType {
-//
-//    case.name:
-//    nameLabel.text = user.name
-//
-//    default:
-//    let indexPath = attribute.targetIndexPath
-//    let index = userSettingAttributes.index(of: targetAttribute(forIndexPath: indexPath))!
-//    userSettingAttributes[index] = attribute
-//    tableView.reloadRows(at: [indexPath], with: .none)
-//    }
     
     @objc fileprivate func updateLimitLabel() {
         textLimitLabel.text = updatedLetterCount(withContent: textField.text!, limitFromAttribute: attribute)
@@ -131,7 +104,6 @@ extension EditSettingDetailViewController: DefaultViewController {
         attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)
         user = User.unwrapFrom(userInfo: userInfo!)
         configure(withUser: user, withAttribute: attribute)
-        editSettingDetailViewControllerDelegate = fromVC as? EditSettingDetailViewControllerDelegate
     }
     
     fileprivate func setupUI() {
