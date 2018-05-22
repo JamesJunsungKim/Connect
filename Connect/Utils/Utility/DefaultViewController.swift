@@ -11,3 +11,7 @@ import UIKit
 protocol DefaultViewController: AnyObject {
     func setup(fromVC: UIViewController, userInfo: [String:Any]?)
 }
+
+extension DefaultViewController{
+    func setup(fromVC: UIViewController, userInfo: [String:Any]?) {}
+}

@@ -209,9 +209,9 @@ extension SignInViewController {
         
         passwordSeparatorLine = UIView.create()
         
-        emailTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
+        emailTextField = UITextField.create(placeHolder: "", textSize: 17, textColor: .black, keyboardType: .default)
         
-        passwordTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
+        passwordTextField = UITextField.create(placeHolder: "", textSize: 17, textColor: .black, keyboardType: .default)
         passwordTextField.isSecureTextEntry = true
     
         emailPlaceHolderLabel = UILabel.create(text: "Email Address", textAlignment: .left, textColor: .lightGray, fontSize: 19)

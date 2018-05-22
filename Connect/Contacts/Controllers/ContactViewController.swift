@@ -30,11 +30,11 @@ class ContactViewController: UIViewController, UserInvolvedController {
     // MARK: - Actions
     
     @objc fileprivate func searchBtnClicked() {
-        
+        hideOrShowSearchBar(needsToShow: true)
     }
     
     @objc fileprivate func plusBtnClicked() {
-        
+        presentDefaultVC(targetVC: AddContactViewController(), userInfo: nil)
     }
     
     
@@ -42,11 +42,13 @@ class ContactViewController: UIViewController, UserInvolvedController {
     // MARK: - Filepriavte
     
     fileprivate let searchController = UISearchController(searchResultsController: nil)
+    fileprivate var searchbarIsPresent = false
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Contacts"
         
+        searchController.searchBar.delegate = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchResultsUpdater = self
@@ -65,12 +67,28 @@ class ContactViewController: UIViewController, UserInvolvedController {
         }
     }
     
+    fileprivate func hideOrShowSearchBar(needsToShow flag: Bool) {
+        if flag {
+            searchbarIsPresent = true
+            navigationItem.titleView = searchController.searchBar
+            hideOrShowNavigationItems(needsToShow: false)
+        } else {
+            searchbarIsPresent = false
+            navigationItem.titleView = nil
+            hideOrShowNavigationItems(needsToShow: true)
+        }
+    }
+    
     
 }
 
-extension ContactViewController: UISearchResultsUpdating {
+extension ContactViewController: UISearchBarDelegate, UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        hideOrShowSearchBar(needsToShow: false)
     }
 }
 
@@ -91,6 +109,7 @@ extension ContactViewController: UITableViewDelegate, UITableViewDataSource {
         return 60
     }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !searchbarIsPresent else {return}
         tableview.contentOffset.y > 0 ? hideOrShowNavigationItems(needsToShow: true): hideOrShowNavigationItems(needsToShow: false)
     }
 }

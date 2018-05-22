@@ -116,7 +116,7 @@ extension EditSettingDetailViewController: DefaultViewController {
         saveButton.setCornerRadious(value: 5)
         
         let textFieldBackgroundView = UIView.create(withColor: .white)
-        textField = UITextField.create(placeHolder: "Please enter your input", textSize: 15, color: .black, keyboardType: .default)
+        textField = UITextField.create(placeHolder: "Please enter your input", textSize: 15, textColor: .black, keyboardType: .default)
         textField.borderStyle = .none
         
         let group:[UIView] = [backgroundView, textLimitLabel, descriptionLabel,textFieldBackgroundView, saveButton]

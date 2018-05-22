@@ -240,11 +240,11 @@ extension SignUpViewController {
         
         passwordSeparatorLine = UIView.create()
         
-        nameTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
+        nameTextField = UITextField.create(placeHolder: "", textSize: 17, textColor: .black, keyboardType: .default)
         
-        emailTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
+        emailTextField = UITextField.create(placeHolder: "", textSize: 17, textColor: .black, keyboardType: .default)
         
-        passwordTextField = UITextField.create(placeHolder: "", textSize: 17, color: .black, keyboardType: .default)
+        passwordTextField = UITextField.create(placeHolder: "", textSize: 17, textColor: .black, keyboardType: .default)
         passwordTextField.isSecureTextEntry = true
         
         namePlaceHolderLabel = UILabel.create(text: "Name", textAlignment: .left, textColor: .lightGray, fontSize: 19)

@@ -27,6 +27,8 @@ class DetailProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
+        setupUI()
+        configureUI()
         setupVC()
         addTarget()
 
@@ -190,11 +192,6 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
 
 
 extension DetailProfileViewController:DefaultViewController {
-    
-    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        setupUI()
-        configureUI()
-    }
     
     fileprivate func setupUI(){
         profileView = UIView.create(withColor: .white)
