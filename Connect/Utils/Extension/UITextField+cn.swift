@@ -41,8 +41,9 @@ extension UITextField {
     
     // MARK: static funcs
     
-    public static func create(placeHolder: String, textSize: CGFloat = 10, color: UIColor = .black, keyboardType: UIKeyboardType = .default) -> UITextField {
+    public static func create(placeHolder: String, textSize: CGFloat = 10, textColor: UIColor = .black, keyboardType: UIKeyboardType = .default) -> UITextField {
         let tf = UITextField()
+        tf.textColor = textColor
         tf.placeholder = placeHolder
         tf.font = UIFont.mainFont(size: textSize)
         tf.keyboardType = keyboardType
