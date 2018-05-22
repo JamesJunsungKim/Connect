@@ -51,7 +51,10 @@ class DetailProfileViewController: UIViewController {
     // MARK: - Filepriavte
     
     fileprivate var userSettingAttributes = User.settingAttributes()
-    fileprivate var user = AppStatus.observer.currentUser!
+    
+    fileprivate var user: User {
+        return AppStatus.observer.currentUser
+    }
     
     fileprivate let bag = DisposeBag()
     
@@ -69,6 +72,9 @@ class DetailProfileViewController: UIViewController {
                 }
                 
                 self.nameLabel.text = user.name
+                
+                self.tableView.reloadData()
+                
         },
             onDisposed: {
                 //TODO: what should I do?
@@ -168,6 +174,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
         
         Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
+            AppStatus.observer.currentUser.setProfilePhoto(with: photo)
             self.user.patch(toNode: User.Key.profilePhoto + Photo.Key.url, withValue: photo.url!, success: {
                ARSLineProgress.showSuccess()
             }, failure: {[unowned self] (error) in

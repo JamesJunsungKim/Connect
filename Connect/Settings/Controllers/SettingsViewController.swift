@@ -17,9 +17,6 @@ class SettingsViewController: UIViewController {
     
     // UI
     fileprivate var tableView: UITableView!
-    fileprivate var profileImageView: UIImageView!
-    fileprivate var namelabel: UILabel!
-    fileprivate var statusLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +31,11 @@ class SettingsViewController: UIViewController {
     }
     
     //MARK: - Filepriavte
+    
+    fileprivate var user: User {
+        return AppStatus.observer.currentUser
+    }
+    
     fileprivate var settings = Setting.fetchDefaultSettings()
     fileprivate let bag = DisposeBag()
     
@@ -45,9 +47,9 @@ class SettingsViewController: UIViewController {
         AppStatus.observer.userObservable
             .subscribe(
                 onNext: {[unowned self] (user) in
-                    self.profileImageView.image = user.profilePhoto!.image
-                    self.namelabel.text = user.name
+                    self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
                 },
+                
                 onDisposed: {
                     logInfo("user subscription is diposed.")
             })
@@ -78,7 +80,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         switch SectionTitle(rawValue: indexPath.section)! {
         case .profile :
             let cell = tableView.dequeueReusableCell(withIdentifier: ProfileCell.reuseIdentifier, for: indexPath) as! ProfileCell
-            cell.configure(withUser: AppStatus.observer.currentUser)
+            cell.configure(withUser: user)
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingCell.reuseIdentifier, for: indexPath) as! SettingCell

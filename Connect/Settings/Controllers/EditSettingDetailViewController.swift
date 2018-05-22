@@ -49,7 +49,10 @@ class EditSettingDetailViewController: UIViewController {
     
     
     // MARK: - Fileprivate
-    fileprivate let user = AppStatus.observer.currentUser
+    fileprivate var user: User {
+        return AppStatus.observer.currentUser
+    }
+    
     fileprivate var attribute: SettingAttribute!
     fileprivate var maxCount: String!
     

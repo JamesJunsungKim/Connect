@@ -10,6 +10,10 @@ import UIKit
 
 extension UIImageView {
     
+    struct Keys {
+        static let placeholder = "placeholder_person"
+    }
+    
     public func fitTo(size: CGSize) {
         self.frame = CGRect(x: frame.minX, y: frame.minY, width: size.width, height: size.height)
     }

@@ -54,7 +54,7 @@ final class Photo: NSManagedObject, uploadableModel {
     }
     
     public var image: UIImage {
-        return UIImage(data: imageData)!
+        return UIImage(data: imageData)!.withRenderingMode(.alwaysOriginal)
     }
     
     // MARK: - Static
