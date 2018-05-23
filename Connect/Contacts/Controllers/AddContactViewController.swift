@@ -38,6 +38,13 @@ class AddContactViewController: UIViewController {
         textfield.placeholder = typeSegment.selectedSegmentIndex == 0 ? emailPlaceholder:namePlaceholder
     }
     
+    @objc fileprivate func searchBtnClicked() {
+        guard let text = textfield.text, !text.isEmpty else {return}
+        textfield.resignFirstResponder()
+        // Get a list of people that satisfy the predicate..
+        User.getList(with: text, selectedType: "name")
+    }
+    
     // MARK: - Fileprivate
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
@@ -50,6 +57,7 @@ class AddContactViewController: UIViewController {
     
     fileprivate func addTargets() {
         typeSegment.addTarget(self, action: #selector(segmentValueChanged), for: .valueChanged)
+        searchButton.addTarget(self, action: #selector(searchBtnClicked), for: .touchUpInside)
     }
 }
 
@@ -79,11 +87,13 @@ extension AddContactViewController: DefaultViewController {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Email","Name"], tintColor: .mainBlue)
         
-        textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, borderColor: .blue, keyboardType: .default)
+        textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, keyboardType: .default)
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 30))
         textfield.leftView = paddingView
         textfield.leftViewMode = .always
         textfield.autocorrectionType = .no
+        textfield.setBorder(color: .mainBlue, width: 0.5)
+        textfield.setCornerRadious(value: 5)
         
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         

@@ -41,12 +41,11 @@ extension UITextField {
     
     // MARK: static funcs
     
-    public static func create(placeHolder: String, textSize: CGFloat = 10, textColor: UIColor = .black, borderColor: UIColor = .blue, keyboardType: UIKeyboardType = .default) -> UITextField {
+    public static func create(placeHolder: String, textSize: CGFloat = 10, textColor: UIColor = .black, keyboardType: UIKeyboardType = .default) -> UITextField {
         let tf = UITextField()
         tf.textColor = textColor
+        tf.clearButtonMode = .whileEditing
         tf.placeholder = placeHolder
-        tf.makeBorder(color: borderColor == .blue ? .mainBlue: borderColor)
-        tf.setCornerRadious(value: 3)
         tf.font = UIFont.mainFont(size: textSize)
         tf.keyboardType = keyboardType
         return tf

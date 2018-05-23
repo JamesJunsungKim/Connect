@@ -35,6 +35,25 @@ extension NonCDUser {
         self.name = name; self.emailAddress = email
     }
     
+    init(json: JSON) {
+        let name = json[User.Key.name].stringValue
+        let email = json[User.Key.email].stringValue
+        let uid = json[User.Key.uid].stringValue
+        
+        self.name = name
+        self.emailAddress = email
+        self.uid = uid
+        
+        if let phone = json[User.Key.phoneNumber].string {
+            self.phoneNumber = phone
+        }
+        
+        let profileJSON = json[User.Key.profilePhoto]
+        let photo = NonCDPhoto(json: profileJSON)
+        
+        self.profilePhoto = photo
+    }
+    
     // MARK: - Static
     public static func create(name:String, email: String, password: String, completion:@escaping (NonCDUser)->(), failure:@escaping (Error)->()) {
         var user = NonCDUser(name: name, email: email)

@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
         
-        testMode(targetVC: AddContactViewController())
+//        testMode(targetVC: AddContactViewController())
         return true
     }
     
