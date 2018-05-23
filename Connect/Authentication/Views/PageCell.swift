@@ -8,8 +8,7 @@
 
 import UIKit
 
-class PageCell: UICollectionViewCell {
-    public static let reuseIdentifier = "pageCell"
+class PageCell: UICollectionViewCell, Reusable {
     
     // UI
     fileprivate var imageView: UIImageView!

@@ -14,3 +14,7 @@ protocol PopOverable:AnyObject {
     func setup(fromVC: UIViewController, userInfo:[String:Any]?)
 }
 
+extension PopOverable {
+    func setup(fromVC: UIViewController, userInfo:[String:Any]?){}
+}
+

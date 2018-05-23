@@ -7,3 +7,12 @@
 //
 
 import Foundation
+
+protocol Reusable {}
+
+extension Reusable {
+    static var reuseIdentifier: String {
+        let className = NSStringFromClass(self as! (AnyClass)).components(separatedBy: ".")[1]
+        return className
+    }
+}

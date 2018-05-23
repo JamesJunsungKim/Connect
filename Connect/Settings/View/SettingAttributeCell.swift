@@ -9,8 +9,7 @@
 import UIKit
 import ARSLineProgress
 
-class SettingAttributeCell: UITableViewCell {
-    static let reuseIdentifier = "SettingAttributeCell"
+class SettingAttributeCell: UITableViewCell, Reusable {
     
     // UI
     fileprivate var titleLabel: UILabel!

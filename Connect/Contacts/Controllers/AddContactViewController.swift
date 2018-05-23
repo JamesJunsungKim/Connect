@@ -24,6 +24,7 @@ class AddContactViewController: UIViewController {
         enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
+        addTargets()
     }
     
     deinit {
@@ -33,16 +34,23 @@ class AddContactViewController: UIViewController {
     
     
     // MARK: - Actions
+    @objc fileprivate func segmentValueChanged() {
+        textfield.placeholder = typeSegment.selectedSegmentIndex == 0 ? emailPlaceholder:namePlaceholder
+    }
     
     // MARK: - Fileprivate
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
+    fileprivate var path: String!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.largeTitleDisplayMode = .never
     }
     
+    fileprivate func addTargets() {
+        typeSegment.addTarget(self, action: #selector(segmentValueChanged), for: .valueChanged)
+    }
 }
 
 extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
@@ -71,7 +79,11 @@ extension AddContactViewController: DefaultViewController {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Email","Name"], tintColor: .mainBlue)
         
-        textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, keyboardType: .default)
+        textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, borderColor: .blue, keyboardType: .default)
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 30))
+        textfield.leftView = paddingView
+        textfield.leftViewMode = .always
+        textfield.autocorrectionType = .no
         
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         

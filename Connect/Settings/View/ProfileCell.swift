@@ -9,9 +9,7 @@
 import UIKit
 import SnapKit
 
-class ProfileCell: UITableViewCell {
-    
-    static let reuseIdentifier = "ProfileCell"
+class ProfileCell: UITableViewCell, Reusable {
     
     // UI
     fileprivate var profileImageView: UIImageView!

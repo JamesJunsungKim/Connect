@@ -12,3 +12,9 @@ protocol FormSheetable:AnyObject {
     var preferredSize: CGSize {get}
     func setup(fromVC: UIViewController, userInfo: [String:Any]?)
 }
+
+extension FormSheetable {
+    func setup(fromVC: UIViewController, userInfo: [String:Any]?) {}
+}
+
+

@@ -8,13 +8,11 @@
 
 import UIKit
 
-class ContactCell: UITableViewCell {
+class ContactCell: UITableViewCell, Reusable {
     
     // UI
     fileprivate var profileImageView :UIImageView!
     fileprivate var nameLabel: UILabel!
-    
-    static let reuseIdentifier = "ContactCell"
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
