@@ -8,22 +8,50 @@
 import UIKit
 import SnapKit
 
-class MessageViewController: UIViewController, UserInvolvedController {
+class MessageViewController: UIViewController {
     
-    public var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
         setupVC()
         setupNavigationBar()
     }
     
-    //MARK: - Filepriavte
-    fileprivate func setupVC() {
-        view.backgroundColor = .white
+    // MARK: - Actions
+    
+    @objc fileprivate func plusBtnClicked() {
+        
     }
     
-    fileprivate func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = false
+    // MARK: - Filepriavte
+    fileprivate func setupVC() {
+        view.backgroundColor = .white
+        navigationItem.title = "Message"
+    }
+    
+    fileprivate func setupNavigationBar(){
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "plus_icon"), style: .plain, target: self, action: #selector(plusBtnClicked))
+    }
+    
+    
+}
+
+
+extension MessageViewController {
+    fileprivate func setupUI() {
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }

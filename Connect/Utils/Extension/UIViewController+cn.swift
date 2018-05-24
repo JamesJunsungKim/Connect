@@ -14,6 +14,14 @@ extension UIViewController {
     
     // MARK: - Alert & Error
     
+    func presentDefaultAlertWithoutCancel(withTitle title: String, message: String?, okAction: (()->())? = nil) {
+        let pop = PopupDialog(title: title, message: message)
+        let okBtn = PopupDialogButton(title: "Ok", action: {if okAction != nil {okAction!()}})
+        
+        pop.addButton(okBtn)
+        present(pop, animated: true, completion: nil)
+    }
+    
     func presentDefaultAlert(withTitle title: String?, message: String?, okAction: (()->())? = nil, cancelAction: (()->())? = nil) {
         let pop = PopupDialog(title: title, message: message)
         let cancelBtn = PopupDialogButton(title: "Cancel") {
@@ -30,6 +38,25 @@ extension UIViewController {
         pop.addButton(okBtn)
         present(pop, animated: true, completion: nil)
     }
+    
+    // MARK: - Action Sheet
+    
+    func presentActionSheetWithCancel(title: String?, message: String?, firstTitle: String?, firstAction: (()->())?, cancelAction: (()->())? = nil, configuration: ((UIAlertController)->())? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        
+        let firstAction = UIAlertAction(title: firstTitle, style: .default) { (_) in
+            firstAction?()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { (_) in
+            cancelAction?()
+        }
+        alertController.addAction(firstAction)
+        configuration?(alertController)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
    
     // MARK: - Segue
     

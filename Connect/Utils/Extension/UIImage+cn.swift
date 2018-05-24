@@ -10,6 +10,12 @@ import UIKit
 
 extension UIImage {
     
+    enum Name: String {
+        case checked
+        case uncheked
+        case placeholder = "placeholder_person"
+    }
+    
     enum ResolutionKey:String {
         case fullResolution
         case profileResolution
@@ -57,6 +63,9 @@ extension UIImage {
     
     // MARK: - Static
     
+    static func create(forKey key: Name) -> UIImage {
+        return UIImage(named: key.rawValue)!
+    }
     
     
     

@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class ContactViewController: UIViewController, UserInvolvedController {
+class ContactViewController: UIViewController {
     
     // UI
     
@@ -47,6 +47,7 @@ class ContactViewController: UIViewController, UserInvolvedController {
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Contacts"
+        hideOrShowNavigationItems(needsToShow: true)
         
         searchController.searchBar.delegate = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -107,10 +108,6 @@ extension ContactViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
-    }
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !searchbarIsPresent else {return}
-        tableview.contentOffset.y > 0 ? hideOrShowNavigationItems(needsToShow: true): hideOrShowNavigationItems(needsToShow: false)
     }
 }
 

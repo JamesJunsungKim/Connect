@@ -36,19 +36,37 @@ class AddContactViewController: UIViewController {
     // MARK: - Actions
     @objc fileprivate func segmentValueChanged() {
         textfield.placeholder = typeSegment.selectedSegmentIndex == 0 ? emailPlaceholder:namePlaceholder
+        textfield.text = ""
     }
     
     @objc fileprivate func searchBtnClicked() {
-        guard let text = textfield.text, !text.isEmpty else {return}
+        guard let input = textfield.text, !input.isEmpty else {return}
         textfield.resignFirstResponder()
-        // Get a list of people that satisfy the predicate..
-        User.getList(with: text, selectedType: "name")
+        ARSLineProgress.ars_showOnView(view)
+        User.getList(withInput: input, selectedType: typeSegment.selectedTitle()) {[unowned self] (list_) in
+            
+            var list = list_
+            list.removeElement(condition: {$0.uid == AppStatus.observer.currentUser.uid})
+            
+            if self.typeSegment.selectedSegmentIndex == 0 {
+                list.removeElement(condition: {$0.isPrivate})
+            }
+            
+            guard list.count != 0 else {
+                ARSLineProgress.hide()
+                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "Couldn't find anyone that matches your input.\nIf the person is set private, you can't search them by name")
+                return
+            }
+            ARSLineProgress.hide()
+            self.listOfContacts = list
+            self.tableView.reloadData()
+        }
     }
     
     // MARK: - Fileprivate
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
-    fileprivate var path: String!
+    fileprivate var listOfContacts = [NonCDUser]()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -64,10 +82,11 @@ class AddContactViewController: UIViewController {
 extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
     // Data source
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return listOfContacts.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ContactCell.reuseIdentifier, for: indexPath) as! ContactCell
+        cell.configure(withNonCDUser: listOfContacts[indexPath.row])
         return cell
     }
     
@@ -77,7 +96,10 @@ extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+//        let targetUser = listOfContacts[indexPath.row]
+        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {
+            
+        }, cancelAction: nil, configuration: nil)
     }
 }
 
@@ -85,7 +107,7 @@ extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
 extension AddContactViewController: DefaultViewController {
     fileprivate func setupUI() {
         
-        typeSegment = UISegmentedControl.create(withTitles: ["Email","Name"], tintColor: .mainBlue)
+        typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)
         
         textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, keyboardType: .default)
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 30))

@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class HomeViewController: UIViewController, UserInvolvedController {
+class HomeViewController: UIViewController {
     
     var user: User!
     

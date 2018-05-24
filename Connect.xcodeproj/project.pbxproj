@@ -244,8 +244,8 @@
 		6C4E72EB209ED4A500653058 /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
-				6C5FA06520B3B3C40033B88C /* View */,
 				6C90C175209ED692006FF995 /* Controllers */,
+				6C5FA06520B3B3C40033B88C /* View */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";

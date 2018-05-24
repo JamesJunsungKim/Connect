@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class NotificationViewController: UIViewController, UserInvolvedController {
+class NotificationViewController: UIViewController {
     
     public var user: User!
     

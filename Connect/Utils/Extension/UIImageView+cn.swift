@@ -10,10 +10,6 @@ import UIKit
 
 extension UIImageView {
     
-    struct Keys {
-        static let placeholder = "placeholder_person"
-    }
-    
     public func fitTo(size: CGSize) {
         self.frame = CGRect(x: frame.minX, y: frame.minY, width: size.width, height: size.height)
     }
@@ -36,6 +32,14 @@ extension UIImageView {
         let iv = UIImageView()
         iv.image = image
         iv.contentMode = contentMode
+        iv.clipsToBounds = true
+        return iv
+    }
+    
+    static func create(withImageKey key: UIImage.Name) -> UIImageView {
+        let iv = UIImageView()
+        iv.image = UIImage.create(forKey: key)
+        iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         return iv
     }

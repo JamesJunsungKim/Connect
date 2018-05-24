@@ -15,8 +15,10 @@ struct NonCDUser:BaseModel {
     let name: String
     var phoneNumber: String?
     let emailAddress: String
+    var isPrivate: Bool
     var isFavorite = false
     var isOwner = false
+    var isSelected = false
     
     var contacts = [NonCDUser]()
     var profilePhoto: NonCDPhoto?
@@ -24,7 +26,9 @@ struct NonCDUser:BaseModel {
 
 }
 
-extension NonCDUser {
+extension NonCDUser: Equatable {
+    
+    
     
     public struct Key {
         static let user = "NonCDUser"
@@ -33,16 +37,19 @@ extension NonCDUser {
     init(name: String, email:String) {
         self.uid = nil; self.phoneNumber = nil; self.contacts = []; self.profilePhoto = nil; self.groups = []
         self.name = name; self.emailAddress = email
+        self.isPrivate = false
     }
     
     init(json: JSON) {
         let name = json[User.Key.name].stringValue
         let email = json[User.Key.email].stringValue
         let uid = json[User.Key.uid].stringValue
+        let isPrivate = json[User.Key.isPrivate].boolValue
         
         self.name = name
         self.emailAddress = email
         self.uid = uid
+        self.isPrivate = isPrivate
         
         if let phone = json[User.Key.phoneNumber].string {
             self.phoneNumber = phone
@@ -55,19 +62,9 @@ extension NonCDUser {
     }
     
     // MARK: - Static
-    public static func create(name:String, email: String, password: String, completion:@escaping (NonCDUser)->(), failure:@escaping (Error)->()) {
-        var user = NonCDUser(name: name, email: email)
-        Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
-            guard error == nil else {
-                failure(error!)
-                return
-            }
-            
-            user.uid = user_!.uid
-            completion(user)
-        }
+    static func == (lhs: NonCDUser, rhs: NonCDUser) -> Bool {
+        return lhs.uid == rhs.uid
     }
-    
     
     
     // MARK: - Fileprivate

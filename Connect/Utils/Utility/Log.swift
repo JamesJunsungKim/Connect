@@ -51,10 +51,11 @@ func enterReferenceDictionary(forType type: AnyClass, withUID uid: String?) {
 func leaveReferenceDictionary(forType type: AnyClass) {
     let deletedEntry = nameFor(type: type)
     let identifier = ObjectIdentifier.init(type).debugDescription
-    
-    referenceMemeoryDictionary[deletedEntry]!.removeValue(forKey: identifier)
-    if referenceMemeoryDictionary[deletedEntry]!.count == 0 {
-        referenceMemeoryDictionary.removeValue(forKey: deletedEntry)
+    if referenceMemeoryDictionary[deletedEntry] != nil {
+        referenceMemeoryDictionary[deletedEntry]!.removeValue(forKey: identifier)
+        if referenceMemeoryDictionary[deletedEntry]!.count == 0 {
+            referenceMemeoryDictionary.removeValue(forKey: deletedEntry)
+        }
     }
 }
 

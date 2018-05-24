@@ -28,6 +28,8 @@ final class User: NSManagedObject, BaseModel {
     @NSManaged fileprivate(set) var profilePhoto: Photo?
     @NSManaged fileprivate(set) var groups: Set<Group>?
     
+    public var isSelected = false
+    
     struct Key {
         static let user = "User"
         static let uid = "uid"; static let name = "name"
@@ -231,12 +233,16 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public static func getList(with type: String, selectedType: String) -> [NonCDUser] {
-        FireDatabase.root.reference.child("users").queryOrdered(byChild: "name").queryEqual(toValue: type).observeSingleEvent(of: .value) { (snapshot) in
-            let results = snapshot.value as! [String:[String:Any]]
-            print(results.values.map({NonCDUser(json: JSON($0))}))
+    public static func getList(withInput input: String, selectedType: String, completion:@escaping (([NonCDUser])->())) {
+        
+        FireDatabase.root.reference.child("users").queryOrdered(byChild: selectedType == "Name" ? User.Key.name : User.Key.email).queryEqual(toValue: input)
+            .observeSingleEvent(of: .value) { (snapshot) in
+            guard let results = snapshot.value as? [String:[String:Any]] else {
+                completion([NonCDUser]())
+                return
+            }
+            completion(results.values.map({NonCDUser(json: JSON($0))}))
         }
-        return []
     }
     
     public static func settingAttributes() -> [SettingAttribute] {
