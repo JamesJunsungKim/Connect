@@ -200,7 +200,7 @@ final class User: NSManagedObject, BaseModel {
         return User.findOrFetch(in: mainContext, matching: predicate)!
     }
     
-    public static func convertAndCreate(fromJSON json: JSON,into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->()) {
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->()) {
         
         let uid = json[Key.uid].stringValue
         let name = json[Key.name].stringValue
@@ -229,6 +229,14 @@ final class User: NSManagedObject, BaseModel {
                 failure(error)
             }
         }
+    }
+    
+    public static func getList(with type: String, selectedType: String) -> [NonCDUser] {
+        FireDatabase.root.reference.child("users").queryOrdered(byChild: "name").queryEqual(toValue: type).observeSingleEvent(of: .value) { (snapshot) in
+            let results = snapshot.value as! [String:[String:Any]]
+            print(results.values.map({NonCDUser(json: JSON($0))}))
+        }
+        return []
     }
     
     public static func settingAttributes() -> [SettingAttribute] {

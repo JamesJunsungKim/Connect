@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 import Firebase
 
 struct NonCDPhoto: uploadableModel {
@@ -16,9 +17,20 @@ struct NonCDPhoto: uploadableModel {
     }
     
     let uid: String
+    let url: String
     
-    let width: Double
-    let height: Double
-    let url: URL
+    var width: Double?
+    var height: Double?
     var isDownloaded = false
+}
+
+extension NonCDPhoto {
+    
+    init(json: JSON) {
+        let uid = json[Photo.Key.uid].stringValue
+        let url = json[Photo.Key.url].stringValue
+        
+        self.uid = uid
+        self.url = url
+    }
 }

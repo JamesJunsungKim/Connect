@@ -87,6 +87,7 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 extension SetupDetailAccountViewController {
     fileprivate func setupUI(){
         profileImageButton = UIButton.create(withImageName: "profile_image")
+        profileImageButton.setCornerRadious(value: 60)
         
         let profileTitleLabel = UILabel.create(text: "Set a profile photo", textAlignment: .center, textColor: .black, fontSize: 21, numberofLine: 1)
         
