@@ -9,7 +9,7 @@
 import Foundation
 
 extension Sequence {
-    func asyncForEach(completion:@escaping ()->(), block:(Iterator.Element, @escaping()->())->()) {
+    public func asyncForEach(completion:@escaping ()->(), block:(Iterator.Element, @escaping()->())->()) {
         let group = DispatchGroup()
         let innerCompletion = {group.leave()}
         for x in self {
@@ -19,14 +19,14 @@ extension Sequence {
         group.notify(queue: DispatchQueue.main, execute: completion)
     }
     
-    func all(_ condition: (Iterator.Element)->Bool) -> Bool {
+    public func all(_ condition: (Iterator.Element)->Bool) -> Bool {
         for x in self where !condition(x) {
             return false
         }
         return true
     }
     
-    func some(_ condition:(Iterator.Element)->Bool) ->Bool {
+    public func some(_ condition:(Iterator.Element)->Bool) ->Bool {
         for x in self where condition(x) {
             return true
         }

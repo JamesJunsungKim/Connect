@@ -9,11 +9,11 @@
 import Foundation
 
 extension URL {
-    static var temporary: URL {
+    public static var temporary: URL {
         return URL(fileURLWithPath:NSTemporaryDirectory(), isDirectory: true).appendingPathComponent(UUID().uuidString)
     }
     
-    static var documents: URL {
+    public static var documents: URL {
         return try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
     }
 }

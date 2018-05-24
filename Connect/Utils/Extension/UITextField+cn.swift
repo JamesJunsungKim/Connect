@@ -10,17 +10,7 @@ import UIKit
 
 extension UITextField {
     
-    func validateForEmail() -> Bool {
-        let arg = "[A-Z0-9a-z._%+-]+@[A-Z0-9a-z.-]+\\.[A-Za-z]{2,64}"
-        let predicate = NSPredicate(format: "SELF MATCHES %@", arg)
-        return predicate.evaluate(with: text!)
-    }
     
-    func validateForNumber() -> Bool {
-        let arg = "^[0-9]+(\\.[0-9]+)?$"
-        let predicate = NSPredicate(format: "SELF MATCHES %@", arg)
-        return predicate.evaluate(with: text!)
-    }
     
     func validateIfHasTextAndMakeBorderColored(with color: UIColor)-> Bool {
         if hasText {
@@ -45,8 +35,8 @@ extension UITextField {
         let tf = UITextField()
         tf.textColor = textColor
         tf.placeholder = placeHolder
-        tf.makeBorder(color: borderColor == .blue ? .mainBlue: borderColor)
-        tf.setCornerRadious(value: 3)
+//        tf.makeBorder(color: borderColor == .blue ? .mainBlue: borderColor)
+//        tf.setCornerRadious(value: 3)
         tf.font = UIFont.mainFont(size: textSize)
         tf.keyboardType = keyboardType
         return tf

@@ -82,7 +82,7 @@ final class Photo: NSManagedObject, uploadableModel {
         let uid = json[Key.uid].stringValue
         let urlString = json[Key.url].stringValue
         
-        SDWebImageManager.shared().imageDownloader?.downloadImage(with: urlString.convertedToURL(), options: SDWebImageDownloaderOptions.highPriority, progress: nil, completed: { (image, _, error, _) in
+        SDWebImageManager.shared().imageDownloader?.downloadImage(with: urlString.convertToURL(), options: SDWebImageDownloaderOptions.highPriority, progress: nil, completed: { (image, _, error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)

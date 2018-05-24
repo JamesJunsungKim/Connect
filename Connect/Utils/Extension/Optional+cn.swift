@@ -9,26 +9,26 @@
 import Foundation
 
 extension Optional {
-    func unwrapOr<T>(defaultValue:T)->T {
+    public func unwrapOr<T>(defaultValue:T)->T {
         if let r = self as? T{
             return r
         } else {
             return defaultValue
         }
     }
-    func unwrapOrNull()->Any {
+    public func unwrapOrNull()->Any {
         return unwrapOr(defaultValue: NSNull())
     }
 }
 
 extension Optional where Wrapped == String {
-    func unwrapOrBlank()->String {
+    public func unwrapOrBlank()->String {
         return unwrapOr(defaultValue: "")
     }
 }
 
 extension Optional where Wrapped == Bool {
-    func unwrapOrFalse() -> Bool {
+    public func unwrapOrFalse() -> Bool {
         return unwrapOr(defaultValue: false)
     }
 }

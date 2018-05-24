@@ -10,9 +10,7 @@ import DateToolsSwift
 
 extension Date {
     
-    fileprivate var cal: Calendar {
-        return Calendar.current
-    }
+    
     
     public var dayUTC: Int {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
@@ -44,6 +42,7 @@ extension Date {
         return calendar.component(.second, from: self)
     }
     
+    // MARK: - Static
     public static func initWith(_ hour: Int, minute: Int) -> Date {
         return Date(year: 0, month: 0, day: 0, hour: hour, minute: minute, second: 0)
     }
@@ -99,31 +98,36 @@ extension Date {
     }
     
     // MARK:- Format Date to UTC
-    func toShortDateStringUTC() -> String {
+    public func toShortDateStringUTC() -> String {
         return self.format(with: "yyyy-MM-dd", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
-    func toDateTimeStringUTC() -> String {
+    public func toDateTimeStringUTC() -> String {
         return self.format(with: "yyyy-MM-dd'T'HH:mm:ss", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
-    func toDateTimeMilliStringUTC() -> String {
+    public func toDateTimeMilliStringUTC() -> String {
         return self.format(with: "yyyy-MM-dd'T'HH:mm:ss.SSS", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
-    func toTimeStringUTC() -> String {
+    public func toTimeStringUTC() -> String {
         return self.format(with: "HH:mm", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
     
-    func addYear(value: Int)->Date{
+    public func addYear(value: Int)->Date{
         return cal.date(byAdding: .year, value: value, to: self)!
     }
-    func addMonth(value: Int)->Date{
+    public func addMonth(value: Int)->Date{
         return cal.date(byAdding: .month, value: value, to: self)!
     }
-    func addDay(value: Int)->Date{
+    public func addDay(value: Int)->Date{
         return cal.date(byAdding: .day, value: value, to: self)!
+    }
+    
+    // MARK: -Filepriavte
+    fileprivate var cal: Calendar {
+        return Calendar.current
     }
 }
 

@@ -13,6 +13,8 @@ pod 'Firebase/Storage'
 pod 'FBSDKCoreKit'
 pod 'FBSDKShareKit'
 pod 'FBSDKLoginKit'
+pod 'Fabric'
+pod 'Crashlytics'
 
 pod 'RxSwift'
 pod 'RxCocoa'

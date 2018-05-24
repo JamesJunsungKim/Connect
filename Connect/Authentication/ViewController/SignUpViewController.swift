@@ -182,7 +182,7 @@ class SignUpViewController: UIViewController {
     }
 
     fileprivate func validateEmail()->Bool {
-        return emailTextField.validateForEmail()
+        return emailTextField.text!.validateForEmail()
     }
     
     fileprivate func showOrHideEmailWarningLabel(emailIsValid isValid: Bool) {
