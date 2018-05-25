@@ -34,7 +34,6 @@ class SettingAttributeCell: UITableViewCell, Reusable {
             toggle.isHidden = true
         case .toggle:
             contentLabel.isHidden = true
-            toggle.isOn = UserDefaults.retrieveValue(forKey: .isAccountPrivate, defaultValue: false)
         case .onlyAction:
             toggle.isHidden = true
             contentLabel.isHidden = true
@@ -55,7 +54,7 @@ class SettingAttributeCell: UITableViewCell, Reusable {
         case .phoneNumber:
             contentLabel.text = user.phoneNumber.unwrapOr(defaultValue: "Enter your phone number")
         case .isAccountPrivate:
-            toggle.isOn = UserDefaults.retrieveValue(forKey: .isAccountPrivate, defaultValue: false)
+            toggle.isOn = user.isPrivate
         case .auctionNotRequired: break /*no-op*/
             
         }

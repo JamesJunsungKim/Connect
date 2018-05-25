@@ -59,7 +59,7 @@ final class User: NSManagedObject, BaseModel {
     // MARK: - Public
     
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
-        let ref = FireDatabase.user(uid: uid!).reference
+        let ref = FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference
         ref.setValue(toDictionary()) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -71,7 +71,8 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func patch(toNode node: String, withValue value :Any, success:@escaping ()->(), failure: @escaping (Error)->()) {
-        let ref = FireDatabase.user(uid: uid!).reference.child(node)
+        // since it's changing the private property, it
+        let ref = FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference.child(node)
         ref.setValue(value) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -80,6 +81,10 @@ final class User: NSManagedObject, BaseModel {
             }
             success()
         }
+    }
+    
+    public func removeFromCurrentNode() {
+        FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference.removeValue()
     }
     
     public func unwrapStatusMessageOrDefault() -> String {
@@ -138,9 +143,17 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func privateSwitchToggled(success:@escaping ()->(), failure:@escaping(Error)->()) {
-        isPrivate = !isPrivate
-        patch(toNode: Key.isPrivate, withValue: isPrivate, success: {
-            success()
+        patch(toNode: Key.isPrivate, withValue: !isPrivate, success: {[unowned self]in
+            // remove it from the current node
+            self.removeFromCurrentNode()
+            
+            // andThen create the new one under the other node
+            self.isPrivate = !self.isPrivate
+            self.uploadToServer(success: {
+                success()
+            }, failure: { (error) in
+                failure(error)
+            })
         }) { (error) in
             failure(error)
         }
@@ -175,7 +188,7 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public static func loginAndFetchAndCreate(into moc: NSManagedObjectContext,withEmail email: String, password: String, success:@escaping (User)->(), failure:@escaping (Error)->()) {
+    public static func loginAndFetchAndCreate(into moc: NSManagedObjectContext,withEmail email: String, password: String, success:@escaping (User)->(), failure:@escaping (Error?)->()) {
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -183,15 +196,31 @@ final class User: NSManagedObject, BaseModel {
                 return
             }
             let uid = user!.uid
-            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: { (snapshot) in
-                guard let dict = snapshot.value else {fatalError()}
-                let json = JSON(dict)
-                User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
-                    UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
-                    success(user)
-                }, failure: { (error) in
-                    failure(error)
-                })
+            // go for Non-private first, and then go for private node..
+            FireDatabase.user(uid: uid, isPrivate: false).reference.observeSingleEvent(of: .value, with: { (snapshot) in
+                if let dict = snapshot.value {
+                    let json = JSON(dict)
+                    User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
+                        UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
+                        success(user)
+                    }, failure: { (error) in
+                        failure(error)
+                    })
+                } else {
+                    FireDatabase.user(uid: uid, isPrivate: true).reference.observeSingleEvent(of: .value, with: { (snapshot) in
+                        guard let dict = snapshot.value else {
+                            failure(nil)
+                            return
+                        }
+                        let json = JSON(dict)
+                        User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
+                            UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
+                            success(user)
+                        }, failure: { (error) in
+                            failure(error)
+                        })
+                    })
+                }
             })
         }
     }
@@ -234,9 +263,15 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public static func getList(withInput input: String, selectedType: String, completion:@escaping (([NonCDUser])->())) {
+        let condition = selectedType == "Name"
+        var query: DatabaseQuery!
         
-        FireDatabase.root.reference.child("users").queryOrdered(byChild: selectedType == "Name" ? User.Key.name : User.Key.email).queryEqual(toValue: input)
-            .observeSingleEvent(of: .value) { (snapshot) in
+        if condition {
+            query = FireDatabase.root.reference.child(User.Key.user).child(FireDatabase.PathKeys.isPublic).queryOrdered(byChild: User.Key.name).queryEqual(toValue: input)
+        } else {
+            query = FireDatabase.root.reference.child(User.Key.user).queryOrdered(byChild: User.Key.email).queryEqual(toValue: input)
+        }
+        query.observeSingleEvent(of: .value) { (snapshot) in
             guard let results = snapshot.value as? [String:[String:Any]] else {
                 completion([NonCDUser]())
                 return
@@ -251,7 +286,7 @@ final class User: NSManagedObject, BaseModel {
             SettingAttribute(type: .label, title: "Status Message", content: "Your message will be displayed to your contacts.", contentType: .status, description: "Status Message",toggleSource: nil, maximumLimit: 20, targetIndexPath: IndexPath(row: 0, section: 0)),
             SettingAttribute(type: .label, title: "Phone Number", content: "Your phone number won't be shown to your contacts", contentType: .phoneNumber, description: "Enter your phone number", toggleSource:nil, maximumLimit: 10, targetIndexPath: IndexPath(row: 0, section: 1)),
             SettingAttribute(type: .label, title: "Email Address", content: "Email address", contentType: .email,  description: "Change your email address",toggleSource:nil, maximumLimit: 10, targetIndexPath: IndexPath(row: 1, section: 1)),
-            SettingAttribute(type: .toggle, title: "Make your account private", content: nil, contentType: .isAccountPrivate, description: "Change your account to private mode", toggleSource:.isAccountPrivate, maximumLimit: nil, targetIndexPath: IndexPath(row: 0, section: 2)),
+            SettingAttribute(type: .toggle, title: "Make your account private", content: nil, contentType: .isAccountPrivate, description: "Change your account to private mode", toggleSource: nil, maximumLimit: nil, targetIndexPath: IndexPath(row: 0, section: 2)),
             SettingAttribute(type: .onlyAction, title: "SignOut", content: nil,  contentType: .auctionNotRequired, description: nil, toggleSource:nil, maximumLimit: nil, targetIndexPath: IndexPath(row: 0, section: 3))
         ]
     }

@@ -11,9 +11,14 @@ import Firebase
 import FirebaseStorage
 
 enum FireDatabase {
-    case root
     
-    case user(uid:String)
+    struct PathKeys {
+        static let isPrivate = "private"
+        static let isPublic = "public"
+    }
+    
+    case root
+    case user(uid:String, isPrivate: Bool)
     case contacts
     case photos
     case message(userUid: String)
@@ -31,8 +36,9 @@ enum FireDatabase {
     
     fileprivate var path: String {
         switch self {
-        case .user(let uid): return "users/\(uid)/"
-        case .message(let uid): return "messages/\(uid)"
+        case .user(let uid, let bool):
+            return bool ? "\(User.Key.user)/\(PathKeys.isPrivate)/\(uid)/" : "\(User.Key.user)/\(PathKeys.isPublic)/\(uid)/"
+        case .message(let uid): return "\(Message.Keys.message)/\(uid)"
         default: return ""
         }
     }

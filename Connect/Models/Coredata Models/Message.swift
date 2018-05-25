@@ -28,6 +28,10 @@ final class Message: NSManagedObject {
     @NSManaged fileprivate(set) var fromUser: User
     @NSManaged fileprivate(set) var photo: Photo?
     
+    struct Keys {
+        static let message = "Message"
+    }
+    
     override func awakeFromInsert() {
         enterReferenceDictionary(forType: self.classForCoder, withUID: uid)
     }

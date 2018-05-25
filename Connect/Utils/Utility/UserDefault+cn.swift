@@ -13,13 +13,12 @@ extension UserDefaults {
     enum Key : String {
         case defaultResolution
         case uidForSignedInUser
-        case isAccountPrivate
     }
     
     
     // MARK: - Static
     static func userRequestToSignOut() {
-        let keys:[UserDefaults.Key] = [.uidForSignedInUser, .isAccountPrivate]
+        let keys:[UserDefaults.Key] = [.uidForSignedInUser]
         keys.forEach({UserDefaults.removeValue(forKey: $0)})
     }
     

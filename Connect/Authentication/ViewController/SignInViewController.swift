@@ -65,7 +65,7 @@ class SignInViewController: UIViewController {
             })
         }) {[unowned self] (error) in
             ARSLineProgress.hide()
-            self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            error != nil ? self.presentDefaultError(message: error!.localizedDescription, okAction: nil) : self.presentDefaultError(message: "Error occurred. \nPlease try it again.", okAction: nil)
         }
     }
     
