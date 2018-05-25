@@ -10,21 +10,43 @@ import SnapKit
 
 class NotificationViewController: UIViewController {
     
-    public var user: User!
+    // UI
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
         setupVC()
-        setupNavigationBar()
         
     }
     
     //MARK: - Filepriavte
     fileprivate func setupVC() {
         view.backgroundColor = .white
-    }
-    
-    fileprivate func setupNavigationBar() {
         navigationItem.title = "Notification"
     }
+    
 }
+
+extension NotificationViewController {
+    
+    fileprivate func setupUI() {
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+

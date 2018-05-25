@@ -9,7 +9,9 @@ import UIKit
 import SnapKit
 
 class MessageViewController: UIViewController {
+    // UI
     
+    fileprivate var tableview: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,22 +38,29 @@ class MessageViewController: UIViewController {
     
     
 }
-
+extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return MessageCell.cell(fromTableView: tableView, atIndexPath: indexPath, configuration: { (messageCell) in
+            messageCell.configure()
+            messageCell.backgroundColor = .red
+        })
+    }
+}
 
 extension MessageViewController {
     fileprivate func setupUI() {
+        tableview = UITableView(frame: .zero, style: .plain)
+        MessageCell.defaultSetup(withTableView: tableview, forViewController: self)
         
+        view.addSubview(tableview)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        tableview.snp.makeConstraints { (make) in
+            make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
     }
 }

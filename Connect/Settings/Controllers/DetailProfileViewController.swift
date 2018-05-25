@@ -228,7 +228,7 @@ extension DetailProfileViewController:DefaultViewController {
         }
         
         tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.register(SettingAttributeCell.self, forCellReuseIdentifier: SettingAttributeCell.reuseIdentifier)
+        SettingAttributeCell.register(withTableview: tableView)
         tableView.delegate = self
         tableView.dataSource = self
         

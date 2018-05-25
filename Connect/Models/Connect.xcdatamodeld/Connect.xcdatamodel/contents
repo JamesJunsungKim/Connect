@@ -13,6 +13,7 @@
         <relationship name="photo" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" syncable="YES"/>
         <relationship name="toUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" syncable="YES"/>
     </entity>
+    <entity name="Notification" representedClassName=".Notification" syncable="YES"/>
     <entity name="Photo" representedClassName=".Photo" syncable="YES">
         <attribute name="height" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="imageData" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
@@ -49,5 +50,6 @@
         <element name="Photo" positionX="-416" positionY="-19" width="128" height="135"/>
         <element name="Request" positionX="-308" positionY="180" width="128" height="135"/>
         <element name="User" positionX="54" positionY="-63" width="128" height="225"/>
+        <element name="Notification" positionX="-207" positionY="-36" width="128" height="45"/>
     </elements>
 </model>

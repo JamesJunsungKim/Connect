@@ -117,7 +117,7 @@ extension ContactViewController {
         tableview = UITableView(frame: .zero, style: .plain)
         tableview.delegate = self
         tableview.dataSource = self
-        tableview.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
+        ContactCell.register(withTableview: tableview)
         
         view.addSubview(tableview)
         

@@ -23,14 +23,16 @@ class ContactCell: UITableViewCell, Reusable {
     }
     
     
-    public func configure(withUser user: User) {
+    public func configure(withUser user: User, isSelectMode: Bool = false) {
         profileImageView.image = user.profilePhoto?.image
         nameLabel.text = user.name
+        checkImageView.isHidden = !isSelectMode
     }
     
-    public func configure(withNonCDUser user: NonCDUser) {
+    public func configure(withNonCDUser user: NonCDUser, isSelectMode: Bool = false) {
         nameLabel.text = user.name
         profileImageView.sd_setImage(with: user.profilePhoto!.url.convertToURL(), completed: nil)
+        checkImageView.isHidden = !isSelectMode
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -43,10 +45,12 @@ extension ContactCell {
         
         profileImageView = UIImageView.create(withImageKey: .placeholder)
         nameLabel = UILabel.create(text: "Name", textAlignment: .left, textColor: .black, fontSize: 15, numberofLine: 1)
-        statusLabel = UILabel.create(text: "Status", textAlignment: .left, textColor: .lightGray, fontSize: 10, numberofLine: 1)
-        checkImageView = UIImageView.create(withImageKey: .uncheked)
+        statusLabel = UILabel.create(text: "Status", textAlignment: .left, textColor: .lightGray, fontSize: 13, numberofLine: 1)
         
-        let stackview = UIStackView.create(views: [nameLabel, statusLabel], axis: .vertical, alignment: .fill, distribution: .equalSpacing, spacing: 5)
+        checkImageView = UIImageView.create(withImageKey: .uncheked)
+        checkImageView.isHidden = true
+        
+        let stackview = UIStackView.create(views: [nameLabel, statusLabel], axis: .vertical, alignment: .leading, distribution: .equalSpacing, spacing: 0)
         
         let group :[UIView] = [profileImageView, stackview, checkImageView]
         
@@ -68,8 +72,8 @@ extension ContactCell {
         stackview.snp.makeConstraints { (make) in
             make.left.equalTo(profileImageView.snp.right).offset(5)
             make.right.equalTo(checkImageView.snp.left).offset(-5)
-            make.top.equalToSuperview().offset(5)
-            make.bottom.equalToSuperview().offset(-5)
+            make.top.equalToSuperview().offset(13)
+            make.bottom.equalToSuperview().offset(-10)
         }
         
     }

@@ -23,9 +23,8 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Search"/>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="88A-uU-keP">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="88A-uU-keP">
                                 <rect key="frame" x="0.0" y="247" width="375" height="420"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="ZFk-Ux-N2T">
@@ -38,24 +37,47 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="rLu-2h-P8A">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="rLu-2h-P8A">
                                 <rect key="frame" x="16" y="44" width="335" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="Email"/>
                                     <segment title="Name"/>
                                 </segments>
                                 <color key="tintColor" red="1" green="0.2527923882" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </segmentedControl>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="James kim" borderStyle="bezel" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="J5g-wp-8Kp">
-                                <rect key="frame" x="20" y="87" width="335" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="kZV-cJ-olK">
+                                <rect key="frame" x="133" y="115" width="55" height="60"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y6L-N2-kCI">
+                                        <rect key="frame" x="0.0" y="0.0" width="55" height="30"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0nG-Dv-AgY">
+                                        <rect key="frame" x="0.0" y="30" width="55" height="30"/>
+                                        <state key="normal" title="Button"/>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Y6L-N2-kCI" firstAttribute="top" secondItem="kZV-cJ-olK" secondAttribute="top" id="2sN-vJ-qq2"/>
+                                    <constraint firstItem="0nG-Dv-AgY" firstAttribute="top" secondItem="Y6L-N2-kCI" secondAttribute="bottom" id="DNo-zD-sBx"/>
+                                    <constraint firstItem="0nG-Dv-AgY" firstAttribute="leading" secondItem="kZV-cJ-olK" secondAttribute="leading" id="E2u-Pb-djG"/>
+                                    <constraint firstAttribute="trailing" secondItem="Y6L-N2-kCI" secondAttribute="trailing" id="Iel-jU-qfS"/>
+                                    <constraint firstAttribute="trailing" secondItem="0nG-Dv-AgY" secondAttribute="trailing" id="cXt-aL-B3g"/>
+                                    <constraint firstItem="0nG-Dv-AgY" firstAttribute="top" secondItem="Y6L-N2-kCI" secondAttribute="bottom" id="h6B-wd-kq9"/>
+                                    <constraint firstAttribute="bottom" secondItem="0nG-Dv-AgY" secondAttribute="bottom" id="l9T-9A-bEf"/>
+                                    <constraint firstItem="Y6L-N2-kCI" firstAttribute="leading" secondItem="kZV-cJ-olK" secondAttribute="leading" id="sNs-8s-mM5"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="kZV-cJ-olK" firstAttribute="leading" secondItem="EHn-sa-qfO" secondAttribute="leading" constant="133" id="3VS-Y1-ycz"/>
+                            <constraint firstItem="88A-uU-keP" firstAttribute="top" secondItem="kZV-cJ-olK" secondAttribute="bottom" constant="72" id="NXu-cl-zj5"/>
+                            <constraint firstItem="EHn-sa-qfO" firstAttribute="trailing" secondItem="kZV-cJ-olK" secondAttribute="trailing" constant="187" id="POI-NT-7AE"/>
+                            <constraint firstItem="kZV-cJ-olK" firstAttribute="top" secondItem="rLu-2h-P8A" secondAttribute="bottom" constant="43" id="Qsw-Dv-gaM"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="EHn-sa-qfO"/>
                     </view>
                 </viewController>

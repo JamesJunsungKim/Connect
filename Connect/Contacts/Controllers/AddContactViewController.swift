@@ -96,10 +96,23 @@ extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let targetUser = listOfContacts[indexPath.row]
-        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {
+        let targetUser = listOfContacts[indexPath.row]
+        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self]in
+            //check this user is not saved to disk..
+            let predicate = NSPredicate(format: "%K == %@", #keyPath(User.uid), targetUser.uid!)
+            guard User.findOrFetch(in: mainContext, matching: predicate) == nil else {
+                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "This user is already in your contact.")
+                return
+            }
+            
             
         }, cancelAction: nil, configuration: nil)
+    }
+}
+extension AddContactViewController:UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchBtnClicked()
+        return true
     }
 }
 
@@ -110,6 +123,7 @@ extension AddContactViewController: DefaultViewController {
         typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)
         
         textfield = UITextField.create(placeHolder: emailPlaceholder, textSize: 15, textColor: .black, keyboardType: .default)
+        textfield.delegate = self
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 30))
         textfield.leftView = paddingView
         textfield.leftViewMode = .always
@@ -117,10 +131,11 @@ extension AddContactViewController: DefaultViewController {
         textfield.setBorder(color: .mainBlue, width: 0.5)
         textfield.setCornerRadious(value: 5)
         
+        
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         
         tableView = UITableView(frame: .zero, style: .plain)
-        tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
+        ContactCell.register(withTableview: tableView)
         tableView.dataSource = self
         tableView.delegate = self
 

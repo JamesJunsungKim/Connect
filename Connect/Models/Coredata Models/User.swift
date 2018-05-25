@@ -42,6 +42,8 @@ final class User: NSManagedObject, BaseModel {
         static let contacts = "contacts"
         static let profilePhoto = "profilePhoto"
         static let groups = "groups"
+        
+        static let isPrivateAndName = "isPrivateAndName"
     }
     
     override func awakeFromInsert() {
@@ -59,7 +61,7 @@ final class User: NSManagedObject, BaseModel {
     // MARK: - Public
     
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
-        let ref = FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference
+        let ref = FireDatabase.user(uid: uid!).reference
         ref.setValue(toDictionary()) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -71,8 +73,7 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func patch(toNode node: String, withValue value :Any, success:@escaping ()->(), failure: @escaping (Error)->()) {
-        // since it's changing the private property, it
-        let ref = FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference.child(node)
+        let ref = FireDatabase.user(uid: uid!).reference.child(node)
         ref.setValue(value) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -84,7 +85,7 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func removeFromCurrentNode() {
-        FireDatabase.user(uid: uid!, isPrivate: isPrivate).reference.removeValue()
+        FireDatabase.user(uid: uid!).reference.removeValue()
     }
     
     public func unwrapStatusMessageOrDefault() -> String {
@@ -137,25 +138,21 @@ final class User: NSManagedObject, BaseModel {
             Key.isPrivate : isPrivate,
             Key.isFavorite: isFavorite,
             Key.isOwner: isOwner,
-            Key.profilePhoto: profilePhoto!.toDictionary()
+            Key.profilePhoto: profilePhoto!.toDictionary(),
+            Key.isPrivateAndName: getValueForPrivateAndName()
         ]
         return dict
     }
     
     public func privateSwitchToggled(success:@escaping ()->(), failure:@escaping(Error)->()) {
-        patch(toNode: Key.isPrivate, withValue: !isPrivate, success: {[unowned self]in
-            // remove it from the current node
-            self.removeFromCurrentNode()
-            
-            // andThen create the new one under the other node
-            self.isPrivate = !self.isPrivate
-            self.uploadToServer(success: {
-                success()
-            }, failure: { (error) in
+        isPrivate = !isPrivate
+        let groupForPrivate:[String:Any] = [Key.isPrivate: isPrivate, Key.isPrivateAndName: getValueForPrivateAndName()]
+        
+        groupForPrivate.asyncForEach(completion: success) {[unowned self] (arg0, innerCompletion) in
+            let (key, value) = arg0
+            self.patch(toNode: key, withValue: value, success: innerCompletion, failure: { (error) in
                 failure(error)
             })
-        }) { (error) in
-            failure(error)
         }
     }
     
@@ -196,31 +193,20 @@ final class User: NSManagedObject, BaseModel {
                 return
             }
             let uid = user!.uid
-            // go for Non-private first, and then go for private node..
-            FireDatabase.user(uid: uid, isPrivate: false).reference.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let dict = snapshot.value {
-                    let json = JSON(dict)
-                    User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
-                        UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
-                        success(user)
-                    }, failure: { (error) in
-                        failure(error)
-                    })
-                } else {
-                    FireDatabase.user(uid: uid, isPrivate: true).reference.observeSingleEvent(of: .value, with: { (snapshot) in
-                        guard let dict = snapshot.value else {
-                            failure(nil)
-                            return
-                        }
-                        let json = JSON(dict)
-                        User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
-                            UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
-                            success(user)
-                        }, failure: { (error) in
-                            failure(error)
-                        })
-                    })
+            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: { (snapshot) in
+                guard let dict = snapshot.value else{
+                    assertionFailure()
+                    return
                 }
+                
+                let json = JSON(dict)
+                User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
+                    UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
+                    success(user)
+                }, failure: { (error) in
+                    failure(error)
+                })
+                
             })
         }
     }
@@ -264,19 +250,13 @@ final class User: NSManagedObject, BaseModel {
     
     public static func getList(withInput input: String, selectedType: String, completion:@escaping (([NonCDUser])->())) {
         let condition = selectedType == "Name"
-        var query: DatabaseQuery!
-        
-        if condition {
-            query = FireDatabase.root.reference.child(User.Key.user).child(FireDatabase.PathKeys.isPublic).queryOrdered(byChild: User.Key.name).queryEqual(toValue: input)
-        } else {
-            query = FireDatabase.root.reference.child(User.Key.user).queryOrdered(byChild: User.Key.email).queryEqual(toValue: input)
-        }
-        query.observeSingleEvent(of: .value) { (snapshot) in
-            guard let results = snapshot.value as? [String:[String:Any]] else {
-                completion([NonCDUser]())
-                return
-            }
-            completion(results.values.map({NonCDUser(json: JSON($0))}))
+        FireDatabase.root.reference.child(User.Key.user).queryOrdered(byChild: condition ? User.Key.isPrivateAndName : User.Key.email).queryEqual(toValue: condition ? "false\(input)" : input)
+            .observeSingleEvent(of: .value) { (snapshot) in
+                guard let results = snapshot.value as? [String:[String:Any]] else {
+                    completion([NonCDUser]())
+                    return
+                }
+                completion(results.values.map({NonCDUser(json: JSON($0))}))
         }
     }
     
@@ -295,6 +275,9 @@ final class User: NSManagedObject, BaseModel {
     
     @NSManaged fileprivate var primitiveIsFavorite: Bool
     
+    fileprivate func getValueForPrivateAndName()->String {
+        return "\(isPrivate)\(name)"
+    }
     
     
 }

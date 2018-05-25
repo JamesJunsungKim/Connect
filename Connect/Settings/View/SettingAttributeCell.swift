@@ -61,14 +61,6 @@ class SettingAttributeCell: UITableViewCell, Reusable {
     }
     
     // MARK: - Actions
-    fileprivate func addTarget() {
-        toggle.addTarget(self, action: #selector(switchValueChange), for: .valueChanged)
-    }
-    
-    
-    // MARK: - Fileprivate
-    fileprivate var attribute: SettingAttribute!
-    fileprivate weak var user: User!
     
     @objc fileprivate func switchValueChange() {
         guard attribute.type == .toggle else {return}
@@ -80,9 +72,19 @@ class SettingAttributeCell: UITableViewCell, Reusable {
             }) { (error) in
                 self.getParentViewController()?.presentDefaultError(message: error.localizedDescription, okAction: nil)
             }
-        default: fatalError()
+        default: assertionFailure()
         }
     }
+    
+    
+    // MARK: - Fileprivate
+    fileprivate var attribute: SettingAttribute!
+    fileprivate weak var user: User!
+    
+    fileprivate func addTarget() {
+        toggle.addTarget(self, action: #selector(switchValueChange), for: .valueChanged)
+    }
+    
     
     
     

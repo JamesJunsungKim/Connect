@@ -47,9 +47,11 @@ extension UIViewController {
         let firstAction = UIAlertAction(title: firstTitle, style: .default) { (_) in
             firstAction?()
         }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { (_) in
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in
             cancelAction?()
         }
+        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+        
         alertController.addAction(firstAction)
         configuration?(alertController)
         alertController.addAction(cancelAction)

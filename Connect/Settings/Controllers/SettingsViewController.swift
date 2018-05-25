@@ -116,8 +116,8 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 extension SettingsViewController {
     fileprivate func setupUI() {
         tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.register(ProfileCell.self, forCellReuseIdentifier: ProfileCell.reuseIdentifier)
-        tableView.register(SettingCell.self, forCellReuseIdentifier: SettingCell.reuseIdentifier)
+        ProfileCell.register(withTableview: tableView)
+        SettingCell.register(withTableview: tableView)
         tableView.delegate = self
         tableView.dataSource = self
         
