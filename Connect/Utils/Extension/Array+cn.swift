@@ -26,17 +26,11 @@ extension Array {
         return result
     }
     
-}
-
-extension Array where Iterator.Element: Equatable {
-    public mutating func removeElement(condition: (Iterator.Element)->Bool){
-//        var result = [Element]()
-//        for x in self where !condition(x) {
-//            result.append(x)
-//        }
-//        return result
-        
-        self.filter(condition).map({self.index(of: $0)!}).forEach({self.remove(at: $0)})
-        
+    public func removeElement(condition: (Iterator.Element)->Bool) -> [Element]{
+        var result = [Element]()
+        for x in self where !condition(x) {
+            result.append(x)
+        }
+        return result
     }
 }

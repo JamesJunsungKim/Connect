@@ -343,6 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				6C8130BE209EB13B00CEDA18 /* Array+cn.swift */,
+				1AF9310520B9015500664ECE /* UICollectionView+cn.swift */,
 				6C8130C9209EBB0000CEDA18 /* Optional+cn.swift */,
 				6C8130C0209EB1E500CEDA18 /* Sequence+cn.swift */,
 				6C8130C2209EB2FA00CEDA18 /* String+cn.swift */,
@@ -434,7 +435,6 @@
 			isa = PBXGroup;
 			children = (
 				6C90C17F209ED6E9006FF995 /* MessageViewController.swift */,
-				1AF9310520B9015500664ECE /* UICollectionView+cn.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -479,12 +479,12 @@
 			children = (
 				6CD46B0120A135DF0085740B /* FireDatabaseReference.swift */,
 				6CD46B0220A135DF0085740B /* FireStorageReference.swift */,
+				6C51315720A682C000C87EA1 /* GlobalProperty.swift */,
 				6CD46B0320A135DF0085740B /* Log.swift */,
 				6C90C19F209F06FF006FF995 /* FormSheetable.swift */,
 				6C90C1A1209F0816006FF995 /* PopOverable.swift */,
 				1A51707B20A09891004383EB /* UserDefault+cn.swift */,
 				6CBE603020A28C37004C16F0 /* DefaultSegue.swift */,
-				6C51315720A682C000C87EA1 /* GlobalProperty.swift */,
 				6C10A29720AAD8E300D3471B /* Unwrapable.swift */,
 				6C1846B620B5095100D64432 /* Reusable.swift */,
 				1AF9310720B9020C00664ECE /* TableViewDataSourceDelegate.swift */,

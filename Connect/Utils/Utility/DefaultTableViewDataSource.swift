@@ -13,21 +13,32 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     typealias Object = Delegate.Object
     typealias Cell = Delegate.Cell
     
-    init(tableView: UITableView, delegate: Delegate, objects: [Object]) {
-        self.tableView = tableView; self.delegate = delegate
-        self.arrayOfObjects = objects
+    init(tableView: UITableView, sourceDelegate: Delegate, tableViewDelegate: UITableViewDelegate) {
+        self.tableView = tableView; self.sourceDelegate = sourceDelegate
         super.init()
         tableView.dataSource = self
+        tableView.delegate = tableViewDelegate
+        tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
         tableView.reloadData()
     }
     
+    public func update(data: [Object]) {
+        arrayOfObjects = data
+        tableView.reloadData()
+    }
+    
+    public func selectedObject(atIndexPath indexPath: IndexPath) -> Object {
+        return arrayOfObjects[indexPath.row]
+    }
+    
+    // DataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return arrayOfObjects.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        delegate.configure(cell, for: arrayOfObjects[indexPath.row])
+        sourceDelegate.configure(cell, for: arrayOfObjects[indexPath.row])
         return cell
     }
     
@@ -35,6 +46,11 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     // MARK: - Fileprivate
     
     fileprivate let tableView: UITableView
-    fileprivate var arrayOfObjects : [Object]
-    fileprivate weak var delegate: Delegate!
+    fileprivate var arrayOfObjects = [Object]()
+    fileprivate weak var sourceDelegate: Delegate!
 }
+
+
+
+
+

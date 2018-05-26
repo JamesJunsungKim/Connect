@@ -90,10 +90,9 @@ final class Photo: NSManagedObject, uploadableModel {
             }
             let photo = Photo.create(into: moc, image: image!, withType: key)
             photo.uid = uid
+            photo.url = urlString
             completion(photo)
         })
-        
-        
     }
     
     

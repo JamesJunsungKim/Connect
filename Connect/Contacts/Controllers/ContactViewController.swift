@@ -21,6 +21,9 @@ class ContactViewController: UIViewController {
         enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
+        
+        // Need to delete it.
+        dataSource.update(data: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
     }
     
     deinit {
@@ -94,8 +97,6 @@ extension ContactViewController: UISearchBarDelegate, UISearchResultsUpdating {
 }
 
 extension ContactViewController: UITableViewDelegate {
-    // Tableview Delegate
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
@@ -104,10 +105,10 @@ extension ContactViewController: UITableViewDelegate {
 struct Dummy {}
 extension ContactViewController: TableViewDataSourceDelegate {
     typealias Object = Dummy
-    
     typealias Cell = ContactCell
     
     func configure(_ cell: ContactCell, for object: Dummy) {
+        
     }
 }
 
@@ -115,8 +116,7 @@ extension ContactViewController: TableViewDataSourceDelegate {
 extension ContactViewController {
     fileprivate func setupUI() {
         tableview = UITableView(frame: .zero, style: .plain)
-        dataSource = DefaultTableViewDataSource.init(tableView: tableview, delegate: self, objects: [Dummy(),Dummy(),Dummy(),Dummy()])
-        tableview.setup(withCell: ContactCell(), delegate: self, dataSource: dataSource)
+        dataSource = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self, tableViewDelegate: self)
         
         view.addSubview(tableview)
         

@@ -13,7 +13,6 @@ import SnapKit
 class AddContactViewController: UIViewController {
     
     // UI
-    
     fileprivate var typeSegment: UISegmentedControl!
     fileprivate var textfield: UITextField!
     fileprivate var searchButton: UIButton!
@@ -31,8 +30,6 @@ class AddContactViewController: UIViewController {
         leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
-    
-    
     // MARK: - Actions
     @objc fileprivate func segmentValueChanged() {
         textfield.placeholder = typeSegment.selectedSegmentIndex == 0 ? emailPlaceholder:namePlaceholder
@@ -45,12 +42,7 @@ class AddContactViewController: UIViewController {
         ARSLineProgress.ars_showOnView(view)
         User.getList(withInput: input, selectedType: typeSegment.selectedTitle()) {[unowned self] (list_) in
             
-            var list = list_
-            list.removeElement(condition: {$0.uid == AppStatus.observer.currentUser.uid})
-            
-            if self.typeSegment.selectedSegmentIndex == 0 {
-                list.removeElement(condition: {$0.isPrivate})
-            }
+            let list = list_.removeElement(condition: {$0.uid == AppStatus.observer.currentUser.uid})
             
             guard list.count != 0 else {
                 ARSLineProgress.hide()
@@ -58,15 +50,14 @@ class AddContactViewController: UIViewController {
                 return
             }
             ARSLineProgress.hide()
-            self.listOfContacts = list
-            self.tableView.reloadData()
+            self.dataSource.update(data: list)
         }
     }
     
     // MARK: - Fileprivate
+    fileprivate var dataSource : DefaultTableViewDataSource<AddContactViewController>!
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
-    fileprivate var listOfContacts = [NonCDUser]()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -79,32 +70,26 @@ class AddContactViewController: UIViewController {
     }
 }
 
-extension AddContactViewController: UITableViewDelegate, UITableViewDataSource {
-    // Data source
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listOfContacts.count
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ContactCell.reuseIdentifier, for: indexPath) as! ContactCell
-        cell.configure(withNonCDUser: listOfContacts[indexPath.row])
-        return cell
-    }
-    
-    // Delegate
+extension AddContactViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let targetUser = listOfContacts[indexPath.row]
-        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self]in
+        let currentUserUid = AppStatus.observer.currentUser.uid!
+        let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
+        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
             //check this user is not saved to disk..
-            let predicate = NSPredicate(format: "%K == %@", #keyPath(User.uid), targetUser.uid!)
-            guard User.findOrFetch(in: mainContext, matching: predicate) == nil else {
+            guard User.findOrFetch(forUID: targetUser.uid!) == nil else {
                 self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "This user is already in your contact.")
                 return
             }
             
+            User.sendRequest(fromUID: currentUserUid, toUID: targetUser.uid!, fromParam: AppStatus.observer.currentUser.toDictionary(), toParam: targetUser.toDictionary(), success: {[unowned self] in
+                self.presentDefaultError(message: "Scuccess", okAction: nil)
+            }, failure: {[unowned self] (error) in
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            })
             
         }, cancelAction: nil, configuration: nil)
     }
@@ -116,6 +101,14 @@ extension AddContactViewController:UITextFieldDelegate {
     }
 }
 
+extension AddContactViewController: TableViewDataSourceDelegate {
+    typealias Object = NonCDUser
+    typealias Cell = ContactCell
+    
+    func configure(_ cell: ContactCell, for object: NonCDUser) {
+        cell.configure(withNonCDUser: object)
+    }
+}
 
 extension AddContactViewController: DefaultSegue {
     fileprivate func setupUI() {
@@ -135,7 +128,7 @@ extension AddContactViewController: DefaultSegue {
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         
         tableView = UITableView(frame: .zero, style: .plain)
-        tableView.setup(withCell: ContactCell(), delegate: self, dataSource: self)
+        dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, tableViewDelegate: self)
 
         let group: [UIView] = [typeSegment, textfield, searchButton, tableView]
         

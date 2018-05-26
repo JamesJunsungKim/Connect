@@ -18,6 +18,7 @@ struct NonCDUser:BaseModel {
     var isPrivate: Bool
     var isFavorite = false
     var isOwner = false
+    
     var isSelected = false
     
     var contacts = [NonCDUser]()
@@ -59,6 +60,19 @@ extension NonCDUser: Equatable {
         let photo = NonCDPhoto(json: profileJSON)
         
         self.profilePhoto = photo
+    }
+    
+    // MARK: - Public
+    
+    public func toDictionary()->[String:Any] {
+        return [
+            User.Key.uid: uid!,
+            User.Key.name: name,
+            User.Key.email: emailAddress,
+            User.Key.phoneNumber: phoneNumber.unwrapOrNull(),
+            User.Key.isPrivate: isPrivate,
+            User.Key.isPrivateAndName: "\(isPrivate)\(name)"
+        ]
     }
     
     // MARK: - Static

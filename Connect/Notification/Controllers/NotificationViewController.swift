@@ -14,9 +14,14 @@ class NotificationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         
+    }
+    
+    deinit {
+        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
     //MARK: - Filepriavte
