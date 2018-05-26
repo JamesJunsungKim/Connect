@@ -8,8 +8,7 @@
 
 import UIKit
 
-class MessageCell: UITableViewCell, Reusable {
-    
+class MessageCell: ReusableTableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()

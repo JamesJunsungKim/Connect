@@ -8,7 +8,12 @@
 
 import UIKit
 
-protocol Reusable {}
+protocol Reusable:AnyObject {
+    associatedtype Object = Self
+}
+
+typealias ReusableTableViewCell = Reusable & UITableViewCell
+typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell
 
 extension Reusable {
     static var reuseIdentifier: String {
@@ -18,15 +23,6 @@ extension Reusable {
 }
 
 extension Reusable where Self: UITableViewCell {
-    static func defaultSetup(withTableView tableView: UITableView, forViewController target: UIViewController) {
-        register(withTableview: tableView)
-        tableView.setupdelegateAndDataSource(target: target)
-    }
-    
-    
-    static func register(withTableview tableView: UITableView) {
-        tableView.register(self, forCellReuseIdentifier: reuseIdentifier)
-    }
     
     static func cell(fromTableView tableView: UITableView, atIndexPath indexPath: IndexPath, configuration:(Self)->()) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! Self

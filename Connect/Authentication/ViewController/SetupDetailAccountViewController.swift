@@ -67,7 +67,7 @@ class SetupDetailAccountViewController: UIViewController {
     }
 }
 
-extension SetupDetailAccountViewController: DefaultViewController {
+extension SetupDetailAccountViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         let user = User.unwrapFrom(userInfo: userInfo!)
         self.user = user

@@ -117,7 +117,7 @@ extension AddContactViewController:UITextFieldDelegate {
 }
 
 
-extension AddContactViewController: DefaultViewController {
+extension AddContactViewController: DefaultSegue {
     fileprivate func setupUI() {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)
@@ -135,9 +135,7 @@ extension AddContactViewController: DefaultViewController {
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         
         tableView = UITableView(frame: .zero, style: .plain)
-        ContactCell.register(withTableview: tableView)
-        tableView.dataSource = self
-        tableView.delegate = self
+        tableView.setup(withCell: ContactCell(), delegate: self, dataSource: self)
 
         let group: [UIView] = [typeSegment, textfield, searchButton, tableView]
         

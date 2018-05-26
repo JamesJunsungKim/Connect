@@ -191,7 +191,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
 }
 
 
-extension DetailProfileViewController:DefaultViewController {
+extension DetailProfileViewController:DefaultSegue {
     
     fileprivate func setupUI(){
         profileView = UIView.create(withColor: .white)
@@ -228,9 +228,7 @@ extension DetailProfileViewController:DefaultViewController {
         }
         
         tableView = UITableView(frame: .zero, style: .grouped)
-        SettingAttributeCell.register(withTableview: tableView)
-        tableView.delegate = self
-        tableView.dataSource = self
+        tableView.setup(withCell: SettingAttributeCell(), delegate: self, dataSource: self)
         
         view.addSubview(tableView)
         

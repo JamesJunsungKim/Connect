@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PageCell: UICollectionViewCell, Reusable {
+class PageCell: ReusableCollectionViewCell {
     
     // UI
     fileprivate var imageView: UIImageView!

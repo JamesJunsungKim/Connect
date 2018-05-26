@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class SettingCell: UITableViewCell, Reusable {
+class SettingCell: ReusableTableViewCell {
     
     // UI
     fileprivate var settingImageView: UIImageView!

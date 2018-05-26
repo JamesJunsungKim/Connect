@@ -9,8 +9,20 @@
 import UIKit
 
 extension UITableView {
-    internal func setupdelegateAndDataSource(target: UIViewController) {
-        dataSource = target as? UITableViewDataSource
-        delegate = target as? UITableViewDelegate
+    
+    internal func setup<A:ReusableTableViewCell>(withCell cell: A, delegate: UITableViewDelegate, dataSource: UITableViewDataSource) {
+        register(cell.classForCoder, forCellReuseIdentifier: A.reuseIdentifier)
+        set(delegate: delegate, datasource: dataSource)
+    }
+    
+    internal func setup<A:ReusableTableViewCell>(additionalCell cell:A) {
+        register(cell.classForCoder, forCellReuseIdentifier: A.reuseIdentifier)
+    }
+    
+    
+    // MARK: - Fileprivate
+    fileprivate func set(delegate: UITableViewDelegate, datasource: UITableViewDataSource) {
+        self.dataSource = datasource
+        self.delegate = delegate
     }
 }

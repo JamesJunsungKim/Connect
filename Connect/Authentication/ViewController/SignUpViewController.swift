@@ -211,7 +211,7 @@ class SignUpViewController: UIViewController {
     
 }
 
-extension SignUpViewController:DefaultViewController {
+extension SignUpViewController:DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {/*no-op*/}
 }
 

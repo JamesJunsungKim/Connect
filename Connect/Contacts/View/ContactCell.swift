@@ -9,7 +9,7 @@
 import UIKit
 import SDWebImage
 
-class ContactCell: UITableViewCell, Reusable {
+class ContactCell: ReusableTableViewCell {
     
     // UI
     fileprivate var profileImageView :UIImageView!

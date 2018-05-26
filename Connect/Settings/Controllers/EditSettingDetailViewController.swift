@@ -99,7 +99,7 @@ class EditSettingDetailViewController: UIViewController {
     }
 }
 
-extension EditSettingDetailViewController: DefaultViewController {
+extension EditSettingDetailViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)

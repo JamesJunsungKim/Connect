@@ -55,7 +55,7 @@ extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
 extension MessageViewController {
     fileprivate func setupUI() {
         tableview = UITableView(frame: .zero, style: .plain)
-        MessageCell.defaultSetup(withTableView: tableview, forViewController: self)
+        tableview.setup(withCell: MessageCell(), delegate: self, dataSource: self)
         
         view.addSubview(tableview)
         

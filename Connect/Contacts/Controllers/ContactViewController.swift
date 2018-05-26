@@ -40,7 +40,7 @@ class ContactViewController: UIViewController {
     
     
     // MARK: - Filepriavte
-    
+    fileprivate var dataSource: DefaultTableViewDataSource<ContactViewController>!
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     fileprivate var searchbarIsPresent = false
     
@@ -93,17 +93,7 @@ extension ContactViewController: UISearchBarDelegate, UISearchResultsUpdating {
     }
 }
 
-extension ContactViewController: UITableViewDelegate, UITableViewDataSource {
-    // Tableview Data source
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableview.dequeueReusableCell(withIdentifier: ContactCell.reuseIdentifier, for: indexPath) as! ContactCell
-        return cell
-    }
-    
+extension ContactViewController: UITableViewDelegate {
     // Tableview Delegate
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -111,13 +101,22 @@ extension ContactViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+struct Dummy {}
+extension ContactViewController: TableViewDataSourceDelegate {
+    typealias Object = Dummy
+    
+    typealias Cell = ContactCell
+    
+    func configure(_ cell: ContactCell, for object: Dummy) {
+    }
+}
+
 
 extension ContactViewController {
     fileprivate func setupUI() {
         tableview = UITableView(frame: .zero, style: .plain)
-        tableview.delegate = self
-        tableview.dataSource = self
-        ContactCell.register(withTableview: tableview)
+        dataSource = DefaultTableViewDataSource.init(tableView: tableview, delegate: self, objects: [Dummy(),Dummy(),Dummy(),Dummy()])
+        tableview.setup(withCell: ContactCell(), delegate: self, dataSource: dataSource)
         
         view.addSubview(tableview)
         

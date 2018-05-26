@@ -116,10 +116,8 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 extension SettingsViewController {
     fileprivate func setupUI() {
         tableView = UITableView(frame: .zero, style: .grouped)
-        ProfileCell.register(withTableview: tableView)
-        SettingCell.register(withTableview: tableView)
-        tableView.delegate = self
-        tableView.dataSource = self
+        tableView.setup(withCell: ProfileCell(), delegate: self, dataSource: self)
+        tableView.setup(additionalCell: SettingCell())
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) in
