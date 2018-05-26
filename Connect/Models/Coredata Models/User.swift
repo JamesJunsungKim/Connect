@@ -166,6 +166,9 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
+    public func addToReceivedContact(withUser user: User) {
+        receivedContacts?.insert(user)
+    }
     
     
     // MARK: - Static
@@ -216,8 +219,7 @@ final class User: NSManagedObject, BaseModel {
                     success(user)
                 }, failure: { (error) in
                     failure(error)
-                })
-                
+                }, needContactAndGroup: true)
             })
         }
     }
@@ -227,7 +229,9 @@ final class User: NSManagedObject, BaseModel {
         return findOrFetch(forUID: uid)!
     }
     
-    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->()) {
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->(), needContactAndGroup: Bool = false) {
+        
+        let group = DispatchGroup()
         
         let uid = json[Key.uid].stringValue
         let name = json[Key.name].stringValue
@@ -247,13 +251,32 @@ final class User: NSManagedObject, BaseModel {
         
         // need to add contacts, profile photo, and group.
         if json[Key.profilePhoto].null == nil{
+            group.enter()
             let profileJSON = json[Key.profilePhoto]
             Photo.convertAndCreate(fromJSON: profileJSON, into: moc, withType: .fullResolution, completion: { (photo) in
                 user.profilePhoto = photo
-                completion(user)
+                group.leave()
             }) { (error) in
                 failure(error)
             }
+        }
+        
+        if needContactAndGroup {
+            if json[Key.contacts].null == nil {
+                let dictionary = json[Key.contacts].dictionaryValue
+                dictionary.values.forEach({
+                    group.enter()
+                    User.convertAndCreate(fromJSON: $0, into: mainContext, completion: { (contact) in
+                        user.addToReceivedContact(withUser: contact)
+                    group.leave()
+                }, failure: { (error) in
+                    failure(error)
+                })})
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            completion(user)
         }
     }
     

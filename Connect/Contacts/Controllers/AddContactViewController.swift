@@ -42,7 +42,7 @@ class AddContactViewController: UIViewController {
         ARSLineProgress.ars_showOnView(view)
         User.getList(withInput: input, selectedType: typeSegment.selectedTitle()) {[unowned self] (list_) in
             
-            let list = list_.removeElement(condition: {$0.uid == AppStatus.observer.currentUser.uid})
+            let list = list_.removeElement(condition: {$0.uid == AppStatus.current.user.uid})
             
             guard list.count != 0 else {
                 ARSLineProgress.hide()
@@ -76,7 +76,7 @@ extension AddContactViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currentUserUid = AppStatus.observer.currentUser.uid!
+        let currentUserUid = AppStatus.current.user.uid!
         let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
         presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
             //check this user is not saved to disk..
@@ -85,7 +85,7 @@ extension AddContactViewController: UITableViewDelegate {
                 return
             }
             
-            User.sendRequest(fromUID: currentUserUid, toUID: targetUser.uid!, fromParam: AppStatus.observer.currentUser.toDictionary(), toParam: targetUser.toDictionary(), success: {[unowned self] in
+            User.sendRequest(fromUID: currentUserUid, toUID: targetUser.uid!, fromParam: AppStatus.current.user.toDictionary(), toParam: targetUser.toDictionary(), success: {[unowned self] in
                 self.presentDefaultError(message: "Scuccess", okAction: nil)
             }, failure: {[unowned self] (error) in
                 self.presentDefaultError(message: error.localizedDescription, okAction: nil)

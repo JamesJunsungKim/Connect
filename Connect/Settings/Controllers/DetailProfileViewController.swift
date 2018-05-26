@@ -55,7 +55,7 @@ class DetailProfileViewController: UIViewController {
     fileprivate var userSettingAttributes = User.settingAttributes()
     
     fileprivate var user: User {
-        return AppStatus.observer.currentUser
+        return AppStatus.current.user
     }
     
     fileprivate let bag = DisposeBag()
@@ -64,7 +64,7 @@ class DetailProfileViewController: UIViewController {
         view.backgroundColor = .white
         navigationItem.largeTitleDisplayMode = .never
         
-        AppStatus.observer.userObservable
+        AppStatus.current.userObservable
             
             .subscribe(
             onNext: {[unowned self] (user) in
@@ -176,7 +176,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
         
         Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
-            AppStatus.observer.currentUser.setProfilePhoto(with: photo)
+            AppStatus.current.user.setProfilePhoto(with: photo)
             self.user.patch(toNode: User.Key.profilePhoto + Photo.Key.url, withValue: photo.url!, success: {
                ARSLineProgress.showSuccess()
             }, failure: {[unowned self] (error) in

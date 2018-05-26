@@ -70,6 +70,7 @@ extension NonCDUser: Equatable {
             User.Key.name: name,
             User.Key.email: emailAddress,
             User.Key.phoneNumber: phoneNumber.unwrapOrNull(),
+            User.Key.isFavorite: isFavorite,
             User.Key.isPrivate: isPrivate,
             User.Key.isPrivateAndName: "\(isPrivate)\(name)"
         ]

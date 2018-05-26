@@ -34,7 +34,7 @@ class EditSettingDetailViewController: UIViewController {
     @objc fileprivate func saveBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         attribute.content = textField.text!
-        AppStatus.observer.updateSettingAttributeAndPatch(withAttribute: self.attribute, success: {[unowned self] in
+        AppStatus.current.updateSettingAttributeAndPatch(withAttribute: self.attribute, success: {[unowned self] in
             ARSLineProgress.showSuccess(andThen: { [unowned self] in
                 self.navigationController?.popViewController(animated: true)
             })
@@ -50,7 +50,7 @@ class EditSettingDetailViewController: UIViewController {
     
     // MARK: - Fileprivate
     fileprivate var user: User {
-        return AppStatus.observer.currentUser
+        return AppStatus.current.user
     }
     
     fileprivate var attribute: SettingAttribute!
@@ -103,7 +103,7 @@ extension EditSettingDetailViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)
-        configure(withUser: AppStatus.observer.currentUser, withAttribute: attribute)
+        configure(withUser: AppStatus.current.user, withAttribute: attribute)
     }
     
     fileprivate func setupUI() {

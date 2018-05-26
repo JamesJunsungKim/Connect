@@ -41,7 +41,7 @@ class SetupDetailAccountViewController: UIViewController {
                     UserDefaults.store(object: self.user.uid!, forKey: .uidForSignedInUser)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.switchToMainWindow()
-                    AppStatus.observer.currentUser = self.user
+                    AppStatus.current.user = self.user
                 })
             }, failure: {[unowned self] (error) in
                 ARSLineProgress.hide()

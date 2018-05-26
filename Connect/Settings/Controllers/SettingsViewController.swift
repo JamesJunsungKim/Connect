@@ -33,7 +33,7 @@ class SettingsViewController: UIViewController {
     //MARK: - Filepriavte
     
     fileprivate var user: User {
-        return AppStatus.observer.currentUser
+        return AppStatus.current.user
     }
     
     fileprivate var settings = Setting.fetchDefaultSettings()
@@ -44,7 +44,7 @@ class SettingsViewController: UIViewController {
         navigationItem.title = "Settings"
         
         // Observe the app status for UI changes.
-        AppStatus.observer.userObservable
+        AppStatus.current.userObservable
             .subscribe(
                 onNext: {[unowned self] (user) in
                     self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)

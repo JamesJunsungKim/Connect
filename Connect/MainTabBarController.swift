@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import FirebaseDatabase
+import SwiftyJSON
 
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
@@ -35,10 +36,17 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         // observe a node deleted from setnRequest (cuz it will be deleted when the user accepts or disapprove it)
         
         // observe a node added to receivedReques to notify user of the request.
-        FireDatabase.receivedRequests(uid: AppStatus.observer.currentUser.uid!).reference.observe(.childAdded) { (snapshot) in
+        FireDatabase.receivedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
             let result = snapshot.value as! [String:[String:Any]]
-//            User.convertAndCreate(fromJSON: <#T##JSON#>, into: <#T##NSManagedObjectContext#>, completion: <#T##(User) -> ()#>, failure: <#T##(Error) -> ()#>)
+            result.values.forEach({
+                User.convertAndCreate(fromJSON: JSON($0), into: mainContext, completion: { (user) in
+                    AppStatus.current.user.addToReceivedContact(withUser: user)
+                    AppStatus.current.gotRequestFrom(user: user)
+            }, failure: {[unowned self] (error) in
+                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            })})
         }
+        
         // observe all uids from contacts for status & name change.
         
         
@@ -66,8 +74,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     fileprivate func checkSignInUserAndFetchAndSaveToAppStatus() {
-        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), AppStatus.observer.currentUser != nil else {
-            AppStatus.observer.currentUser = User.fetchSignedInUser()
+        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), AppStatus.current.user != nil else {
+            AppStatus.current.user = User.fetchSignedInUser()
             return}
     }
 }

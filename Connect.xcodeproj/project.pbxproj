@@ -19,6 +19,9 @@
 		1A7347B520B905B80053FF52 /* DefaultTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7347B420B905B80053FF52 /* DefaultTableViewDataSource.swift */; };
 		1AA0124320A72A7000F25E43 /* UINavigationBar+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA0124220A72A7000F25E43 /* UINavigationBar+cn.swift */; };
 		1AA8482620A7D70F00851AF3 /* DispathTime+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA8482520A7D70F00851AF3 /* DispathTime+cn.swift */; };
+		1ACD08CB20B99BEB00B125E7 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACD08CA20B99BEB00B125E7 /* NotificationCell.swift */; };
+		1ACD08CD20B99DD800B125E7 /* TimeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACD08CC20B99DD800B125E7 /* TimeHeaderView.swift */; };
+		1ACD08CF20B9A18600B125E7 /* MustBeDeleted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACD08CE20B9A18600B125E7 /* MustBeDeleted.swift */; };
 		1AF9310620B9015500664ECE /* UICollectionView+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF9310520B9015500664ECE /* UICollectionView+cn.swift */; };
 		1AF9310820B9020C00664ECE /* TableViewDataSourceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF9310720B9020C00664ECE /* TableViewDataSourceDelegate.swift */; };
 		628CF3DCA030EEFED17B47AB /* Pods_Connect.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF13A611DBA4B614A70D026B /* Pods_Connect.framework */; };
@@ -123,6 +126,9 @@
 		1A7347B420B905B80053FF52 /* DefaultTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTableViewDataSource.swift; sourceTree = "<group>"; };
 		1AA0124220A72A7000F25E43 /* UINavigationBar+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+cn.swift"; sourceTree = "<group>"; };
 		1AA8482520A7D70F00851AF3 /* DispathTime+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispathTime+cn.swift"; sourceTree = "<group>"; };
+		1ACD08CA20B99BEB00B125E7 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
+		1ACD08CC20B99DD800B125E7 /* TimeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHeaderView.swift; sourceTree = "<group>"; };
+		1ACD08CE20B9A18600B125E7 /* MustBeDeleted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustBeDeleted.swift; sourceTree = "<group>"; };
 		1AF9310520B9015500664ECE /* UICollectionView+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+cn.swift"; sourceTree = "<group>"; };
 		1AF9310720B9020C00664ECE /* TableViewDataSourceDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewDataSourceDelegate.swift; sourceTree = "<group>"; };
 		2E8336EDCE9E14C1CE3133DF /* Pods-ConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ConnectTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ConnectTests/Pods-ConnectTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -240,6 +246,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		1ACD08C920B99BE200B125E7 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				1ACD08CA20B99BEB00B125E7 /* NotificationCell.swift */,
+				1ACD08CC20B99DD800B125E7 /* TimeHeaderView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		4A6ECC4B6F18E3CD5613BB86 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -280,7 +295,7 @@
 		6C4E72ED209ED4AB00653058 /* Notification */ = {
 			isa = PBXGroup;
 			children = (
-				6C90C179209ED6AF006FF995 /* Views */,
+				1ACD08C920B99BE200B125E7 /* View */,
 				6C90C17A209ED6B3006FF995 /* Controllers */,
 			);
 			path = Notification;
@@ -439,13 +454,6 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
-		6C90C179209ED6AF006FF995 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
 		6C90C17A209ED6B3006FF995 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -518,6 +526,7 @@
 			children = (
 				6CC24923209EA16600D4F1C4 /* AppDelegate.swift */,
 				6CC24925209EA16600D4F1C4 /* MainTabBarController.swift */,
+				1ACD08CE20B9A18600B125E7 /* MustBeDeleted.swift */,
 				6CD46B1520A139DE0085740B /* Authentication */,
 				6C755B3A209EAA6B0077CCF7 /* Home */,
 				6C4E72EB209ED4A500653058 /* Contacts */,
@@ -846,6 +855,7 @@
 				6C90C19D209F055D006FF995 /* UIViewController+cn.swift in Sources */,
 				6CD46B0520A135DF0085740B /* FireStorageReference.swift in Sources */,
 				1A7347B520B905B80053FF52 /* DefaultTableViewDataSource.swift in Sources */,
+				1ACD08CB20B99BEB00B125E7 /* NotificationCell.swift in Sources */,
 				6C4E72E0209ECDD300653058 /* ConnectStack.swift in Sources */,
 				6C4E72D8209ECCD600653058 /* Collection+cn.swift in Sources */,
 				6C5FA06720B3B3CA0033B88C /* ContactCell.swift in Sources */,
@@ -856,6 +866,7 @@
 				6C6AE4D720A28DAA005B016B /* SignInViewController.swift in Sources */,
 				6C6AE4DB20A295BB005B016B /* UILabel+cn.swift in Sources */,
 				6C90C17E209ED6D4006FF995 /* ContactViewController.swift in Sources */,
+				1ACD08CD20B99DD800B125E7 /* TimeHeaderView.swift in Sources */,
 				6C90C19B209F0392006FF995 /* Request.swift in Sources */,
 				6C90C199209F011D006FF995 /* Photo.swift in Sources */,
 				6CD46B0620A135DF0085740B /* Log.swift in Sources */,
@@ -880,6 +891,7 @@
 				6C6AE4DF20A29A2A005B016B /* UIButton+cn.swift in Sources */,
 				6C4E72E2209ECE4C00653058 /* ConnectModelVersion.swift in Sources */,
 				6C10A29820AAD8E300D3471B /* Unwrapable.swift in Sources */,
+				1ACD08CF20B9A18600B125E7 /* MustBeDeleted.swift in Sources */,
 				6CD0345C20A9FFBD00BDD61B /* UINavigationController+cn.swift in Sources */,
 				6CD46B0C20A1369F0085740B /* NonCDUser.swift in Sources */,
 				6CE4DE7C20AA852400E16ED6 /* EditSettingDetailViewController.swift in Sources */,

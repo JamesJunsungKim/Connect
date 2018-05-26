@@ -9,6 +9,7 @@
 import Foundation
 
 extension Sequence {
+    
     public func asyncForEach(completion:@escaping ()->(), block:(Iterator.Element, @escaping()->())->()) {
         let group = DispatchGroup()
         let innerCompletion = {group.leave()}

@@ -61,7 +61,7 @@ class SignInViewController: UIViewController {
             ARSLineProgress.showSuccess(andThen: {
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.switchToMainWindow()
-                AppStatus.observer.currentUser = user
+                AppStatus.current.user = user
             })
         }) {[unowned self] (error) in
             ARSLineProgress.hide()

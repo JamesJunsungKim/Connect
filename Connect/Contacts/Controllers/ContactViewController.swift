@@ -102,7 +102,6 @@ extension ContactViewController: UITableViewDelegate {
     }
 }
 
-struct Dummy {}
 extension ContactViewController: TableViewDataSourceDelegate {
     typealias Object = Dummy
     typealias Cell = ContactCell

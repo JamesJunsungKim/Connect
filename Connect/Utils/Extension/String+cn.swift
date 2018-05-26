@@ -6,7 +6,7 @@
 //  Copyright © 2018 James Kim. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 extension String {
@@ -30,6 +30,13 @@ extension String {
             }
         }
         return String(chars)
+    }
+    
+    public func getWidth() -> CGFloat {
+        let txt = UITextField(frame: .zero)
+        txt.text = self
+        txt.sizeToFit()
+        return txt.frame.size.width
     }
     
     public func convertToURL()-> URL {

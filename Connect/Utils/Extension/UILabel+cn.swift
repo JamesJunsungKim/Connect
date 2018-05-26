@@ -10,6 +10,7 @@ import UIKit
 
 extension UILabel {
     
+    
     static public func create(text: String, textAlignment:NSTextAlignment = .left, textColor: UIColor = .black ,fontSize: CGFloat = 10, numberofLine: Int = 0) -> UILabel {
         let lb = UILabel()
         lb.textAlignment = textAlignment
