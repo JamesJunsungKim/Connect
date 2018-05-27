@@ -9,9 +9,6 @@ import Foundation
 import DateToolsSwift
 
 extension Date {
-    
-    
-    
     public var dayUTC: Int {
         let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
         return calendar.component(.day, from: self)
@@ -56,7 +53,7 @@ extension Date {
         return date as! Template
     }
     
-    static func dateWithISODateString(_ isoDateString: String) -> Date {
+    static func withISODateString(_ isoDateString: String) -> Date {
         return dateWithISODateStringHelper(isoDateString)
     }
     

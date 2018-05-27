@@ -27,6 +27,11 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
         tableView.reloadData()
     }
     
+    public func append(data:[Object]) {
+        arrayOfObjects.append(contentsOf: data)
+        tableView.reloadData()
+    }
+    
     public func selectedObject(atIndexPath indexPath: IndexPath) -> Object {
         return arrayOfObjects[indexPath.row]
     }

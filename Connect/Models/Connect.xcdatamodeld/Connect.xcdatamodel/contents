@@ -27,9 +27,10 @@
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fromUID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isCompleted" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="severityNumberValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="requestTypeNumberValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="toUID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="urgencyNumberValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="fromUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" syncable="YES"/>
         <relationship name="toUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="receivedRequests" inverseEntity="User" syncable="YES"/>
     </entity>
@@ -44,15 +45,15 @@
         <relationship name="contacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" syncable="YES"/>
         <relationship name="groups" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Group" inverseName="members" inverseEntity="Group" syncable="YES"/>
         <relationship name="profilePhoto" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" syncable="YES"/>
-        <relationship name="receivedContacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" syncable="YES"/>
         <relationship name="receivedRequests" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Request" inverseName="toUser" inverseEntity="Request" syncable="YES"/>
+        <relationship name="sentRequests" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Request" syncable="YES"/>
     </entity>
     <elements>
         <element name="Group" positionX="-29" positionY="218" width="128" height="88"/>
         <element name="Message" positionX="-200" positionY="-189" width="128" height="135"/>
         <element name="Notification" positionX="-207" positionY="-36" width="128" height="45"/>
         <element name="Photo" positionX="-416" positionY="-19" width="128" height="135"/>
-        <element name="Request" positionX="-308" positionY="180" width="128" height="180"/>
+        <element name="Request" positionX="-308" positionY="180" width="128" height="195"/>
         <element name="User" positionX="54" positionY="-63" width="128" height="225"/>
     </elements>
 </model>

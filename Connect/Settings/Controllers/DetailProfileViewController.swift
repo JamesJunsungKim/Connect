@@ -65,7 +65,6 @@ class DetailProfileViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         
         AppStatus.current.userObservable
-            
             .subscribe(
             onNext: {[unowned self] (user) in
                 // set profile photo
@@ -74,7 +73,6 @@ class DetailProfileViewController: UIViewController {
                 }
                 
                 self.nameLabel.text = user.name
-                
                 self.tableView.reloadData()
                 
         },

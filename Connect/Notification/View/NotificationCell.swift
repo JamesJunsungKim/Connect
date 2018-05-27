@@ -26,7 +26,7 @@ class NotificationCell: ReusableTableViewCell {
     
     // MARK: - Public
     
-    public func configure() {
+    public func configure(withRequest request: Request) {
         
     }
     
@@ -76,14 +76,5 @@ extension NotificationCell {
             make.right.equalToSuperview().offset(-10)
             make.size.equalTo(CGSize(width: 90, height: 30))
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
 }

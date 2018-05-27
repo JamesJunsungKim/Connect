@@ -21,8 +21,8 @@ class AppStatus {
         return currentUserSubject.asObservable()
     }
     
-    public var requestUserObservable: Observable<User> {
-        return requestUserSubject.asObservable()
+    public var requestObservable: Observable<Request> {
+        return receivedRequestSubject.asObservable()
     }
     
     // MARK: - user
@@ -35,13 +35,13 @@ class AppStatus {
         }
     }
     
-    public func gotRequestFrom(user: User) {
-        requestUserSubject.onNext(user)
+    public func received(request: Request) {
+        send(data: request, through: receivedRequestSubject)
     }
     
     // MARK: - Fileprivate
     fileprivate var currentUserSubject = PublishSubject<User>()
-    fileprivate var requestUserSubject = PublishSubject<User>()
+    fileprivate var receivedRequestSubject = PublishSubject<Request>()
     
     fileprivate func send<A>(data: A,through publishSubject: PublishSubject<A>) {
         publishSubject.onNext(data)

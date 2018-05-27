@@ -14,10 +14,6 @@ import FirebaseDatabase
 
 final class User: NSManagedObject, BaseModel {
     
-    typealias success = (User)->()
-    typealias successWithoutUser = ()->()
-    typealias failure = (Error)->()
-    
     
     @NSManaged fileprivate(set) var uid: String?
     @NSManaged fileprivate(set) var name: String
@@ -30,7 +26,9 @@ final class User: NSManagedObject, BaseModel {
     @NSManaged fileprivate(set) var contacts: Set<User>?
     @NSManaged fileprivate(set) var profilePhoto: Photo?
     @NSManaged fileprivate(set) var groups: Set<Group>?
-    @NSManaged fileprivate(set) var receivedContacts: Set<User>?
+    
+    @NSManaged fileprivate(set) var sentRequests: Set<Request>?
+    @NSManaged fileprivate(set) var receivedRequests: Set<Request>?
     
     public var isSelected = false
     
@@ -47,7 +45,9 @@ final class User: NSManagedObject, BaseModel {
         static let groups = "groups"
         
         static let isPrivateAndName = "isPrivateAndName"
-        static let receivedContacts = "receivedContacts"
+        
+        static let sentRequests = "sentRequests"
+        static let receivedRequests = "receivedRequests"
     }
     
     override func awakeFromInsert() {
@@ -66,7 +66,7 @@ final class User: NSManagedObject, BaseModel {
     
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
         let ref = FireDatabase.user(uid: uid!).reference
-        ref.setValue(toDictionary()) { (error, _) in
+        ref.setValue(toDictionary(needToIncludeContactAndRequest: true)) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
@@ -96,7 +96,7 @@ final class User: NSManagedObject, BaseModel {
         return statusMessage.unwrapOr(defaultValue: "Your message will be displayed to your contacts.")
     }
     
-    public func signOut(success:successWithoutUser, failure: @escaping failure) {
+    public func signOut(success:successWithoutModel, failure: @escaping failure) {
         do {
             try Auth.auth().signOut()
             success()
@@ -106,7 +106,7 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping successWithoutUser, failure:@escaping failure) {
+    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping successWithoutModel, failure:@escaping failure) {
         var path: String!
         switch attribute.contentType {
         case .name:
@@ -132,7 +132,7 @@ final class User: NSManagedObject, BaseModel {
         profilePhoto = photo
     }
     
-    public func toDictionary() -> [String:Any] {
+    public func toDictionary(needToIncludeContactAndRequest flag: Bool = false) -> [String:Any] {
          let dict:[String:Any] = [
             Key.uid : uid!,
             Key.name: name,
@@ -144,18 +144,28 @@ final class User: NSManagedObject, BaseModel {
             Key.profilePhoto: profilePhoto!.toDictionary(),
             Key.isPrivateAndName: getValueForPrivateAndName(),
         ]
-            .addValueIfNotEmpty(forKey: Key.contacts, value: contacts){ (users) -> [String:[String:Any]] in
-                var dict_ = [String:[String:Any]]()
-                users.forEach({dict_[$0.uid!] = $0.toDictionary()})
-                return dict_
-        }
-            .addValueIfNotEmpty(forKey: Key.receivedContacts, value: receivedContacts) { (users) -> [String:[String:Any]] in
-                var dict_ = [String:[String:Any]]()
-                users.forEach({dict_[$0.uid!] = $0.toDictionary()})
-                return dict_
-        }
         
-        return dict
+        if flag {
+            return dict
+                .addValueIfNotEmpty(forKey: Key.contacts, value: contacts){ (users) -> [String:[String:Any]] in
+                    var dict_ = [String:[String:Any]]()
+                    users.forEach({dict_[$0.uid!] = $0.toDictionary()})
+                    return dict_
+                }
+                .addValueIfNotEmpty(forKey: Key.sentRequests, value: sentRequests) { (requests) -> [String:[String:Any]] in
+                    var dict_ = [String:[String:Any]]()
+                    requests.forEach({dict_[$0.uid] = $0.toDictionary()})
+                    return dict_
+                }
+                .addValueIfNotEmpty(forKey: Key.receivedRequests, value: receivedRequests) { (requests) -> [String:[String:Any]] in
+                    var dict_ = [String:[String:Any]]()
+                    requests.forEach({dict_[$0.uid] = $0.toDictionary()})
+                    return dict_
+            }
+            
+        } else {
+            return dict
+        }
     }
     
     public func privateSwitchToggled(success:@escaping ()->(), failure:@escaping(Error)->()) {
@@ -170,13 +180,23 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public func addToReceivedContact(withUser user: User) {
-        receivedContacts?.insert(user)
+    public func insert(request:Request, intoSentNode flag: Bool) {
+        if flag {
+            let result = sentRequests?.insert(request)
+            guard result!.inserted else{assertionFailure(); return}
+        } else {
+            let result = receivedRequests?.insert(request)
+            guard result!.inserted else {assertionFailure(); return}
+        }
     }
-    
     
     // MARK: - Static
     public static func create(into moc: NSManagedObjectContext, uid: String?, name: String, email: String, isFavorite:Bool = false, isPrivate: Bool = false)->User {
+        if uid != nil {
+            let result = findOrFetch(forUID: uid!)
+            guard result == nil else {return result!}
+        }
+        
         let user: User = moc.insertObject()
         user.uid = uid
         user.name = name
@@ -277,7 +297,7 @@ final class User: NSManagedObject, BaseModel {
                 dictionary.values.forEach({
                     group.enter()
                     User.convertAndCreate(fromJSON: $0, into: mainContext, completion: { (contact) in
-                        user.addToReceivedContact(withUser: contact)
+                        user.contacts?.insert(contact)
                     group.leave()
                 }, failure: { (error) in
                     failure(error)

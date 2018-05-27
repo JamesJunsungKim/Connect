@@ -7,6 +7,7 @@
 //
 import UIKit
 import SnapKit
+import RxSwift
 
 class NotificationViewController: UIViewController {
 
@@ -19,8 +20,7 @@ class NotificationViewController: UIViewController {
         enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
-        
-        dataSource.update(data: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
+        setupObserver()
     }
     
     deinit {
@@ -33,10 +33,20 @@ class NotificationViewController: UIViewController {
     
     // MARK: - Fileprivate
     fileprivate var dataSource: DefaultTableViewDataSource<NotificationViewController>!
+    fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Notification"
+    }
+    
+    fileprivate func setupObserver() {
+        AppStatus.current.requestObservable
+            .subscribe(onNext: {[unowned self] (request) in
+                self.dataSource.append(data: [request])
+            }) {
+                logInfo("observer detached")
+        }.disposed(by: bag)
     }
 }
 
@@ -59,10 +69,10 @@ extension NotificationViewController: UITableViewDelegate {
 }
 
 extension NotificationViewController: TableViewDataSourceDelegate {
-    typealias Object = Dummy
+    typealias Object = Request
     typealias Cell = NotificationCell
-    func configure(_ cell: NotificationCell, for object: Dummy) {
-        
+    func configure(_ cell: NotificationCell, for object: Request) {
+        cell.configure(withRequest: object)
     }
 }
 

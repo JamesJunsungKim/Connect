@@ -11,7 +11,7 @@ import SwiftyJSON
 import Firebase
 
 struct NonCDUser:BaseModel {
-    var uid: String?
+    var uid: String
     let name: String
     var phoneNumber: String?
     let emailAddress: String
@@ -29,16 +29,8 @@ struct NonCDUser:BaseModel {
 
 extension NonCDUser: Equatable {
     
-    
-    
     public struct Key {
         static let user = "NonCDUser"
-    }
-    
-    init(name: String, email:String) {
-        self.uid = nil; self.phoneNumber = nil; self.contacts = []; self.profilePhoto = nil; self.groups = []
-        self.name = name; self.emailAddress = email
-        self.isPrivate = false
     }
     
     init(json: JSON) {
@@ -64,9 +56,13 @@ extension NonCDUser: Equatable {
     
     // MARK: - Public
     
+    public func convertAndCreateUser(in moc: NSManagedObjectContext = mainContext) -> User {
+        return User.create(into: moc, uid: uid, name: name, email: emailAddress, isFavorite: isFavorite, isPrivate: isPrivate)
+    }
+    
     public func toDictionary()->[String:Any] {
         return [
-            User.Key.uid: uid!,
+            User.Key.uid: uid,
             User.Key.name: name,
             User.Key.email: emailAddress,
             User.Key.phoneNumber: phoneNumber.unwrapOrNull(),

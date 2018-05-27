@@ -54,6 +54,27 @@ class AddContactViewController: UIViewController {
         }
     }
     
+    fileprivate func tableViewCellselected(atIndexPath indexPath: IndexPath) {
+        let currentUser = AppStatus.current.user!
+        
+        let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
+        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
+            //check this user is not saved to disk..
+            guard User.findOrFetch(forUID: targetUser.uid) == nil else {
+                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "This user is already in your contact.")
+                return
+            }
+            let toUser = targetUser.convertAndCreateUser()
+            let request = Request.create(fromUser: AppStatus.current.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
+            currentUser.insert(request: request, intoSentNode: true)
+            request.uploadToServer(success: {[unowned self] in
+                self.presentDefaultAlertWithoutCancel(withTitle: "Succeed", message: nil)
+                }, failure: {[unowned self] (error) in
+                    self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            })
+        }
+    )}
+    
     // MARK: - Fileprivate
     fileprivate var dataSource : DefaultTableViewDataSource<AddContactViewController>!
     fileprivate let emailPlaceholder = "Search your contacts by email"
@@ -76,22 +97,7 @@ extension AddContactViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currentUserUid = AppStatus.current.user.uid!
-        let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
-        presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
-            //check this user is not saved to disk..
-            guard User.findOrFetch(forUID: targetUser.uid!) == nil else {
-                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "This user is already in your contact.")
-                return
-            }
-            
-            User.sendRequest(fromUID: currentUserUid, toUID: targetUser.uid!, fromParam: AppStatus.current.user.toDictionary(), toParam: targetUser.toDictionary(), success: {[unowned self] in
-                self.presentDefaultError(message: "Scuccess", okAction: nil)
-            }, failure: {[unowned self] (error) in
-                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
-            })
-            
-        }, cancelAction: nil, configuration: nil)
+        tableViewCellselected(atIndexPath: indexPath)
     }
 }
 extension AddContactViewController:UITextFieldDelegate {

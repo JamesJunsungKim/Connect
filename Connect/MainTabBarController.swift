@@ -34,23 +34,21 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     fileprivate func setupObservers() {
         // observe a node deleted from setnRequest (cuz it will be deleted when the user accepts or disapprove it)
-        
+
         // observe a node added to receivedReques to notify user of the request.
         FireDatabase.receivedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
             let result = snapshot.value as! [String:[String:Any]]
             result.values.forEach({
-                User.convertAndCreate(fromJSON: JSON($0), into: mainContext, completion: { (user) in
-                    AppStatus.current.user.addToReceivedContact(withUser: user)
-                    AppStatus.current.gotRequestFrom(user: user)
-            }, failure: {[unowned self] (error) in
-                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
-            })})
+                let request = Request.convertAndCreate(fromJSON: JSON($0), into: mainContext)
+                AppStatus.current.user.insert(request: request, intoSentNode: false)
+                AppStatus.current.received(request: request)
+            })
         }
-        
+
         // observe all uids from contacts for status & name change.
-        
-        
-    }
+
+        }
+    
     
     fileprivate func setupViewControllers() {
         let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController(), withLargetitle: false)
