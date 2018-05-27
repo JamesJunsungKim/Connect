@@ -61,6 +61,7 @@ extension NotificationCell {
             make.centerY.equalToSuperview()
             make.size.equalTo(CGSize(width: height*5/6, height: height*5/6))
             make.left.equalToSuperview().offset(10)
+            profileImageView.setCornerRadious(value: height*5/6*0.5)
         }
         
         descriptionLabel.snp.makeConstraints { (make) in

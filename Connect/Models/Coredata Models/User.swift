@@ -14,6 +14,10 @@ import FirebaseDatabase
 
 final class User: NSManagedObject, BaseModel {
     
+    typealias success = (User)->()
+    typealias successWithoutUser = ()->()
+    typealias failure = (Error)->()
+    
     
     @NSManaged fileprivate(set) var uid: String?
     @NSManaged fileprivate(set) var name: String
@@ -92,7 +96,7 @@ final class User: NSManagedObject, BaseModel {
         return statusMessage.unwrapOr(defaultValue: "Your message will be displayed to your contacts.")
     }
     
-    public func signOut(success:()->(), failure: @escaping (Error)->()) {
+    public func signOut(success:successWithoutUser, failure: @escaping failure) {
         do {
             try Auth.auth().signOut()
             success()
@@ -102,7 +106,7 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping ()->(), failure:@escaping (Error)->()) {
+    public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping successWithoutUser, failure:@escaping failure) {
         var path: String!
         switch attribute.contentType {
         case .name:
@@ -207,20 +211,26 @@ final class User: NSManagedObject, BaseModel {
                 return
             }
             let uid = user!.uid
-            FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value, with: { (snapshot) in
-                guard let dict = snapshot.value else{
-                    assertionFailure()
-                    return
-                }
-                
-                let json = JSON(dict)
-                User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
-                    UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
-                    success(user)
-                }, failure: { (error) in
-                    failure(error)
-                }, needContactAndGroup: true)
-            })
+            fetchUserFromServerAndCreate(withUID: uid, needContactAndGroupNode: true, success: success, failure: failure)
+        }
+        
+    }
+    
+    public static func fetchUserFromServerAndCreate(withUID uid: String, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
+        FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value) { (snapshot) in
+            guard let dict = snapshot.value else{
+                assertionFailure()
+                return
+            }
+            
+            let json = JSON(dict)
+            User.convertAndCreate(fromJSON: json, into: mainContext, completion: { (user) in
+                UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
+                success(user)
+            }, failure: { (error) in
+                failure(error)
+            }, needContactAndGroup: flag)
+            
         }
     }
     
@@ -240,7 +250,7 @@ final class User: NSManagedObject, BaseModel {
         let isPrivate = json[Key.isPrivate].boolValue
         
         let user = User.create(into: moc, uid: uid, name: name, email: email, isFavorite: isFavorite, isPrivate: isPrivate)
-        
+
         if let status = json[Key.statusMessage].string {
             user.statusMessage = status
         }
@@ -350,6 +360,7 @@ extension User {
 
 
 extension User: Managed {
+    
     
 }
 

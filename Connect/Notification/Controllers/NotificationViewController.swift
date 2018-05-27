@@ -33,6 +33,7 @@ class NotificationViewController: UIViewController {
     
     // MARK: - Fileprivate
     fileprivate var dataSource: DefaultTableViewDataSource<NotificationViewController>!
+    
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Notification"
@@ -40,6 +41,10 @@ class NotificationViewController: UIViewController {
 }
 
 extension NotificationViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
@@ -52,6 +57,7 @@ extension NotificationViewController: UITableViewDelegate {
         return 30
     }
 }
+
 extension NotificationViewController: TableViewDataSourceDelegate {
     typealias Object = Dummy
     typealias Cell = NotificationCell
@@ -64,7 +70,8 @@ extension NotificationViewController: TableViewDataSourceDelegate {
 extension NotificationViewController {
     fileprivate func setupUI() {
         
-        tableView = UITableView(frame: .zero, style: .plain)
+        tableView = UITableView(frame: .zero, style: .grouped)
+        
         dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, tableViewDelegate: self)
         
         view.addSubview(tableView)

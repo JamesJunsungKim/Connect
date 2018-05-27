@@ -31,27 +31,16 @@ class TimeHeaderView: UIView {
 
 extension TimeHeaderView {
     fileprivate func setupUI(){
-        titleLabel = UILabel.create(text: "Title", textAlignment: .center, textColor: .black, fontSize: 20, numberofLine: 1)
-        titleLabel.backgroundColor = .white
+        titleLabel = UILabel.create(text: "2018-08-11", textAlignment: .center, textColor: .black, fontSize: 14, numberofLine: 1)
         
-        let separatorLine = UIView.create(withColor: .gray)
-        let group: [UIView] = [separatorLine, titleLabel]
-        let titleFrame = titleLabel.frame
+        let group: [UIView] = [titleLabel]
         
         group.forEach(self.addSubview(_:))
         
-        separatorLine.snp.makeConstraints { (make) in
-            make.centerY.equalToSuperview()
-            make.left.equalToSuperview().offset(50)
-            make.right.equalToSuperview().offset(-50)
-            make.height.equalTo(0.5)
-        }
-        
         titleLabel.snp.makeConstraints { (make) in
-            make.centerX.centerY.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.left.equalToSuperview().offset(20)
         }
-        
-        
         
         
     }
