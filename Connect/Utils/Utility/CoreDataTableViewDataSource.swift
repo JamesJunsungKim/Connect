@@ -24,6 +24,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
         tableView.dataSource = self
         tableView.reloadData()
     }
+    
     public var selectedObject: Object? {
         guard let indexPath = tableView.indexPathForSelectedRow else {return nil}
         return objectAtIndexPath(indexPath)
@@ -67,9 +68,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
         return cell
     }
     
-    
     // MARK: - NSFetchedResultsControllerDelegate
-    
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
@@ -97,10 +96,4 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
     }
-    
-    
-    
-    
-    
-    
 }

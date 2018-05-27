@@ -44,7 +44,6 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                 AppStatus.current.received(request: request)
             })
         }
-
         // observe all uids from contacts for status & name change.
 
         }

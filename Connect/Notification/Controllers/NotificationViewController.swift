@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import RxSwift
+import CoreData
 
 class NotificationViewController: UIViewController {
 
@@ -21,6 +22,7 @@ class NotificationViewController: UIViewController {
         setupUI()
         setupVC()
         setupObserver()
+        setupTableView()
     }
     
     deinit {
@@ -32,7 +34,9 @@ class NotificationViewController: UIViewController {
     // MARK: - Actions
     
     // MARK: - Fileprivate
-    fileprivate var dataSource: DefaultTableViewDataSource<NotificationViewController>!
+    fileprivate var dataSource_: DefaultTableViewDataSource<NotificationViewController>!
+    
+    fileprivate var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
@@ -43,10 +47,21 @@ class NotificationViewController: UIViewController {
     fileprivate func setupObserver() {
         AppStatus.current.requestObservable
             .subscribe(onNext: {[unowned self] (request) in
-                self.dataSource.append(data: [request])
+                self.dataSource_.append(data: [request])
             }) {
                 logInfo("observer detached")
         }.disposed(by: bag)
+    }
+    
+    fileprivate func setupTableView() {
+        // TODO: update predicate and sectionNameKeyPath
+        let request = Request.sortedFetchRequest(with: NSPredicate(value: true))
+        request.returnsObjectsAsFaults = false
+        request.fetchBatchSize = 20
+        
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
+        
+        dataSource = CoreDataTableViewDataSource(tableView: tableView, fetchedResultsController: frc, dataSource: self)
     }
 }
 
@@ -79,11 +94,7 @@ extension NotificationViewController: TableViewDataSourceDelegate {
 
 extension NotificationViewController {
     fileprivate func setupUI() {
-        
         tableView = UITableView(frame: .zero, style: .grouped)
-        
-        dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, tableViewDelegate: self)
-        
         view.addSubview(tableView)
         
         tableView.snp.makeConstraints { (make) in

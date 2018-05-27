@@ -133,6 +133,7 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func toDictionary(needToIncludeContactAndRequest flag: Bool = false) -> [String:Any] {
+        
          let dict:[String:Any] = [
             Key.uid : uid!,
             Key.name: name,

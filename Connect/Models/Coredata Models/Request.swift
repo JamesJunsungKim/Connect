@@ -85,15 +85,10 @@ final class Request: NSManagedObject, BaseModel{
             group.enter()
             $0.setValue(toDictionary(), withCompletionBlock: { (error, _) in
             group.leave()
-                guard error == nil else {
-                    failure(error!)
-                    return
-                }
+                guard error == nil else {failure(error!); return}
         })})
         group.notify(queue: DispatchQueue.main, execute: success)
     }
-    
-    
     
     
     public func toDictionary() -> [String:Any] {
@@ -101,7 +96,7 @@ final class Request: NSManagedObject, BaseModel{
             Key.uid : uid,
             Key.toUID: toUID,
             Key.fromUID: fromUID,
-            Key.createdAt: createdAt,
+            Key.createdAt: "\(createdAt)",
             Key.isCompleted: isCompleted,
             Key.urgencyNumberValue: urgencyNumberValue,
             Key.requestTypeNumberValue: requestTypeNumberValue
