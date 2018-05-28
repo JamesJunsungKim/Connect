@@ -22,6 +22,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
         fetchedResultsController.delegate = self
         try! fetchedResultsController.performFetch()
         tableView.dataSource = self
+        tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
         tableView.reloadData()
     }
     
@@ -95,5 +96,16 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        let targetIndex = IndexSet(integer:sectionIndex)
+        switch type {
+        case .insert:
+            tableView.insertSections(targetIndex, with: .automatic)
+        case .delete:
+            tableView.deleteSections(targetIndex, with: .automatic)
+        default: break;
+        }
     }
 }

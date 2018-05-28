@@ -7,6 +7,17 @@
 //
 import Foundation
 
+extension DispatchQueue{
+    static func performOnMain(block:@escaping ()->()) {
+        DispatchQueue.main.async(execute: block)
+    }
+    
+    static func performOnBackground(block:@escaping()->()) {
+        DispatchQueue.global(qos: .background).async(execute: block)
+    }
+    
+}
+
 extension DispatchTime {
     static func waitFor(milliseconds: Int, completion: @escaping () -> ()) {
         let deadlineTime = DispatchTime.now() + .milliseconds(milliseconds)

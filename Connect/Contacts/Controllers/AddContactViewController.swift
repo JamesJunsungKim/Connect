@@ -20,7 +20,7 @@ class AddContactViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
@@ -60,10 +60,12 @@ class AddContactViewController: UIViewController {
         let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
         presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
             //check this user is not saved to disk..
+            
             guard User.findOrFetch(forUID: targetUser.uid) == nil else {
-                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "This user is already in your contact.")
+                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "You already sent a request!")
                 return
             }
+            
             let toUser = targetUser.convertAndCreateUser()
             let request = Request.create(fromUser: AppStatus.current.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
             currentUser.insert(request: request, intoSentNode: true)

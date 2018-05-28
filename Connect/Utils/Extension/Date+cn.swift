@@ -95,19 +95,15 @@ extension Date {
     }
     
     // MARK:- Format Date to UTC
-    public func toShortDateStringUTC() -> String {
+    public func toYearToDateStringUTC() -> String {
         return self.format(with: "yyyy-MM-dd", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
-    public func toDateTimeStringUTC() -> String {
+    public func toYearToMillisecondStringUTC() -> String {
         return self.format(with: "yyyy-MM-dd'T'HH:mm:ss", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
-    public func toDateTimeMilliStringUTC() -> String {
-        return self.format(with: "yyyy-MM-dd'T'HH:mm:ss.SSS", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
-    }
-    
-    public func toTimeStringUTC() -> String {
+    public func toHourToMinStringUTC() -> String {
         return self.format(with: "HH:mm", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     

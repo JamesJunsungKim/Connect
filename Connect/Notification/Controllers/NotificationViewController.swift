@@ -18,7 +18,7 @@ class NotificationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
         setupUI()
         setupVC()
         setupObserver()
@@ -34,8 +34,6 @@ class NotificationViewController: UIViewController {
     // MARK: - Actions
     
     // MARK: - Fileprivate
-    fileprivate var dataSource_: DefaultTableViewDataSource<NotificationViewController>!
-    
     fileprivate var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
     fileprivate let bag = DisposeBag()
     
@@ -45,21 +43,22 @@ class NotificationViewController: UIViewController {
     }
     
     fileprivate func setupObserver() {
-        AppStatus.current.requestObservable
-            .subscribe(onNext: {[unowned self] (request) in
-                self.dataSource_.append(data: [request])
-            }) {
-                logInfo("observer detached")
-        }.disposed(by: bag)
+//        AppStatus.current.requestObservable
+//            .subscribe(onNext: {[unowned self] (request) in
+//
+//            }) {
+//                logInfo("observer detached")
+//        }.disposed(by: bag)
     }
     
     fileprivate func setupTableView() {
-        // TODO: update predicate and sectionNameKeyPath
-        let request = Request.sortedFetchRequest(with: NSPredicate(value: true))
+        tableView.delegate = self
+        
+        let request = Request.sortedFetchRequest
         request.returnsObjectsAsFaults = false
         request.fetchBatchSize = 20
         
-        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: #keyPath(Request.sectionTitle), cacheName: nil)
         
         dataSource = CoreDataTableViewDataSource(tableView: tableView, fetchedResultsController: frc, dataSource: self)
     }

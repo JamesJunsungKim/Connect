@@ -27,7 +27,12 @@ class NotificationCell: ReusableTableViewCell {
     // MARK: - Public
     
     public func configure(withRequest request: Request) {
+        profileImageView.image = request.fromUser.profilePhoto!.image
         
+        switch request.requestType {
+        case .friendRequest:
+            actionButton.setTitle("Aceept", for: .normal)
+        }
     }
     
     // MARK: - Actions

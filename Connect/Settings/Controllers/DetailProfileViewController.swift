@@ -26,7 +26,7 @@ class DetailProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLog(type: self.classForCoder)
+        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
         setupUI()
         configureUI()
         setupVC()

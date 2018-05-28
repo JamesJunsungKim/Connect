@@ -15,8 +15,8 @@ enum FireDatabase {
     struct PathKeys {
         static let isPrivate = "private"
         static let isPublic = "public"
-        static let sentRequest = "sentRequest"
-        static let receivedRequest = "receivedRequest"
+        static let sentRequests = "sentRequests"
+        static let receivedRequests = "receivedRequests"
     }
     
     case root
@@ -47,9 +47,9 @@ enum FireDatabase {
         switch self {
         case .user(let uid): return userPath(uid: uid)
         case .message(let uid): return "\(Message.Keys.message)/\(uid)"
-        case .sentRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.sentRequest)/\(toUID)"
-        case .receivedRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.receivedRequest)/\(toUID)"
-        case .receivedRequests(let uid): return userPath(uid: uid) + "\(PathKeys.receivedRequest)"
+        case .sentRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.sentRequests)/\(toUID)"
+        case .receivedRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.receivedRequests)/\(toUID)"
+        case .receivedRequests(let uid): return userPath(uid: uid) + "\(PathKeys.receivedRequests)"
         default: return ""
         }
     }

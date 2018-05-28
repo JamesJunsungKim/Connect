@@ -29,8 +29,8 @@ final class Request: NSManagedObject, BaseModel{
     @NSManaged fileprivate(set) var isCompleted: Bool
     @NSManaged fileprivate(set) var completedAt: Date?
     
-    @NSManaged fileprivate(set) var toUser: User?
-    @NSManaged fileprivate(set) var fromUser: User?
+    @NSManaged fileprivate(set) var toUser: User
+    @NSManaged fileprivate(set) var fromUser: User
     
     public var urgency: Urgency {
         guard let r = Urgency(rawValue: Int(urgencyNumberValue)) else {
@@ -42,6 +42,14 @@ final class Request: NSManagedObject, BaseModel{
     public var requestType: RequestType {
         guard let t = RequestType(rawValue: Int(requestTypeNumberValue)) else {fatalError()}
         return t
+    }
+    
+    @objc public var sectionTitle: String {
+        return createdAt.toYearToDateStringUTC()
+    }
+    
+    static var defaultSortDescriptors: [NSSortDescriptor] {
+        return [NSSortDescriptor(key: Key.createdAt, ascending: false)]
     }
     
     
@@ -56,8 +64,6 @@ final class Request: NSManagedObject, BaseModel{
         static let isCompleted = "isCompleted"
         static let toUser = "toUser"
         static let fromUser = "fromUser"
-        
-        
     }
     
     override func awakeFromInsert() {
@@ -77,8 +83,8 @@ final class Request: NSManagedObject, BaseModel{
         let group = DispatchGroup()
         
         let references : [DatabaseReference] = [
-        FireDatabase.user(uid: fromUID).reference.child(User.Key.sentRequests).child(toUID),
-        FireDatabase.user(uid: toUID).reference.child(User.Key.receivedRequests).child(fromUID)
+        FireDatabase.user(uid: fromUID).reference.child(FireDatabase.PathKeys.sentRequests).child(toUID),
+        FireDatabase.user(uid: toUID).reference.child(FireDatabase.PathKeys.receivedRequests).child(fromUID)
         ]
         
         references.forEach({
@@ -96,7 +102,7 @@ final class Request: NSManagedObject, BaseModel{
             Key.uid : uid,
             Key.toUID: toUID,
             Key.fromUID: fromUID,
-            Key.createdAt: "\(createdAt)",
+            Key.createdAt: createdAt.toYearToMillisecondStringUTC(),
             Key.isCompleted: isCompleted,
             Key.urgencyNumberValue: urgencyNumberValue,
             Key.requestTypeNumberValue: requestTypeNumberValue
@@ -104,7 +110,7 @@ final class Request: NSManagedObject, BaseModel{
     }
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext = mainContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User?, toUser: User?, urgency: Urgency, requestType: RequestType) -> Request {
+    public static func create(into moc: NSManagedObjectContext = mainContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User, toUser: User, urgency: Urgency, requestType: RequestType) -> Request {
         let predicate = NSPredicate(format: "%K == %@", #keyPath(Request.uid), uid)
         return Request.findOrCreate(in: moc, matching: predicate, configure: { (request) in
             request.uid = uid
@@ -112,14 +118,15 @@ final class Request: NSManagedObject, BaseModel{
             request.fromUser = fromUser
             request.toUser = toUser
             request.isCompleted = isCompleted
-            request.fromUID = fromUser!.uid!
-            request.toUID = toUser!.uid!
+            request.fromUID = fromUser.uid!
+            request.toUID = toUser.uid!
             request.urgencyNumberValue = Int16(urgency.rawValue)
             request.requestTypeNumberValue = Int16(requestType.rawValue)
         })
     }
     
-    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext) -> Request {
+    public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, success:@escaping success, failure: @escaping failure) {
+        let currentUser = AppStatus.current.user!
         let uid = json[Key.uid].stringValue
         let createdAt = Date.withISODateString(json[Key.createdAt].stringValue)
         let fromUID = json[Key.fromUID].stringValue
@@ -129,10 +136,25 @@ final class Request: NSManagedObject, BaseModel{
         let requestNumber = json[Key.requestTypeNumberValue].intValue
         let requestType = RequestType.init(rawValue: requestNumber)!
         
-        assert(toUID == AppStatus.current.user.uid!, "It must be a request toward the current user")
+        assert(toUID == currentUser.uid!, "It must be a request toward the current user")
         
-        let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: requestType != .friendRequest ? User.findOrFetch(forUID: fromUID)! : nil, toUser: AppStatus.current.user, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType)
-        return request
+        switch requestType {
+        case .friendRequest:
+            // we need to create an user who sent this request and save it.
+            // and then make a connection btw the current user and the recently-created user.
+//            assert(User.findOrFetch(forUID: fromUID) == nil)
+            DispatchQueue.performOnBackground {
+                User.fetchUserFromServerAndCreate(withUID: fromUID, needContactAndGroupNode: false, success: { (fromUser) in
+                    DispatchQueue.performOnMain {
+                        let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType)
+                        currentUser.insert(request: request, intoSentNode: false)
+                    }
+                }, failure: { (error) in
+                    logError(error.localizedDescription)
+                    failure(error)
+                })
+            }
+        }
     }
     
     public static func findOrFetch(forUID uid: String, fromMOC moc: NSManagedObjectContext = mainContext) -> Request? {

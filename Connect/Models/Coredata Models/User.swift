@@ -45,9 +45,6 @@ final class User: NSManagedObject, BaseModel {
         static let groups = "groups"
         
         static let isPrivateAndName = "isPrivateAndName"
-        
-        static let sentRequests = "sentRequests"
-        static let receivedRequests = "receivedRequests"
     }
     
     override func awakeFromInsert() {
@@ -153,12 +150,12 @@ final class User: NSManagedObject, BaseModel {
                     users.forEach({dict_[$0.uid!] = $0.toDictionary()})
                     return dict_
                 }
-                .addValueIfNotEmpty(forKey: Key.sentRequests, value: sentRequests) { (requests) -> [String:[String:Any]] in
+                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.sentRequests, value: sentRequests) { (requests) -> [String:[String:Any]] in
                     var dict_ = [String:[String:Any]]()
                     requests.forEach({dict_[$0.uid] = $0.toDictionary()})
                     return dict_
                 }
-                .addValueIfNotEmpty(forKey: Key.receivedRequests, value: receivedRequests) { (requests) -> [String:[String:Any]] in
+                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.receivedRequests, value: receivedRequests) { (requests) -> [String:[String:Any]] in
                     var dict_ = [String:[String:Any]]()
                     requests.forEach({dict_[$0.uid] = $0.toDictionary()})
                     return dict_
@@ -335,8 +332,12 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public static func findOrFetch(forUID uid: String, fromMOC moc: NSManagedObjectContext = mainContext) -> User? {
-        let predicate = NSPredicate(format: "%K == %@", #keyPath(User.uid), uid)
+        let predicate = predicateFor(uid: uid)
         return User.findOrFetch(in: moc, matching: predicate)
+    }
+    
+    public static func predicateFor(uid: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(User.uid), uid)
     }
     
     public static func sendRequest(fromUID: String, toUID: String, fromParam: [String:Any], toParam: [String:Any], success:@escaping ()->(), failure:@escaping (Error)->()) {
