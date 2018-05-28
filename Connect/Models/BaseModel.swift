@@ -10,7 +10,7 @@ import CoreData
 import FirebaseDatabase
 import SwiftyJSON
 
-protocol BaseModel:Unwrapable {
+protocol BaseModel:Unwrappable {
     typealias success = (Self)->()
     typealias successWithoutModel = ()->()
     typealias failure = (Error)->()

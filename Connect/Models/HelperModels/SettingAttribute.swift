@@ -23,7 +23,7 @@ enum SettingContentType {
     case auctionNotRequired
 }
 
-struct SettingAttribute:Unwrapable, Equatable {
+struct SettingAttribute:Unwrappable, Equatable {
     let type: SettingAttributeType
     let title: String
     var content: String?

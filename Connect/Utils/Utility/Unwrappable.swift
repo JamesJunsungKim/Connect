@@ -8,11 +8,14 @@
 
 import Foundation
 
-protocol Unwrapable {}
+protocol Unwrappable {}
 
-extension Unwrapable {
+extension Unwrappable {
+    static var className: String {
+        return String(describing: Self.self)
+    }
+    
     static func unwrapFrom(userInfo: [String:Any]) -> Self {
-        let className = String(describing: Self.self)
         return (userInfo[className] as! Self)
     }
 }
