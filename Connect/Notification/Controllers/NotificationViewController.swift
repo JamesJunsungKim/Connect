@@ -34,7 +34,7 @@ class NotificationViewController: UIViewController {
     // MARK: - Actions
     
     // MARK: - Fileprivate
-    fileprivate var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
+    fileprivate weak var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {

@@ -136,7 +136,8 @@ extension AddContactViewController: DefaultSegue {
         searchButton = UIButton.create(title: "Search", titleColor: .white, fontSize: 17, backgroundColor: .mainBlue)
         
         tableView = UITableView(frame: .zero, style: .plain)
-        dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, tableViewDelegate: self)
+        tableView.delegate = self
+        dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self)
 
         let group: [UIView] = [typeSegment, textfield, searchButton, tableView]
         

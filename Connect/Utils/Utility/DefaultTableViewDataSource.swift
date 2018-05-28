@@ -13,12 +13,12 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     typealias Object = Delegate.Object
     typealias Cell = Delegate.Cell
     
-    init(tableView: UITableView, sourceDelegate: Delegate, tableViewDelegate: UITableViewDelegate) {
+    init(tableView: UITableView, sourceDelegate: Delegate, initialData: [Object]? = nil) {
         self.tableView = tableView; self.sourceDelegate = sourceDelegate
         super.init()
         tableView.dataSource = self
-        tableView.delegate = tableViewDelegate
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
+        arrayOfObjects = initialData.unwrapOr(defaultValue: [Object]())
         tableView.reloadData()
     }
     

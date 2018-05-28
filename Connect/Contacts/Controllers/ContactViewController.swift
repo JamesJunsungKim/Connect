@@ -115,8 +115,8 @@ extension ContactViewController: TableViewDataSourceDelegate {
 extension ContactViewController {
     fileprivate func setupUI() {
         tableview = UITableView(frame: .zero, style: .plain)
-        
-        dataSource = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self, tableViewDelegate: self)
+        dataSource = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self)
+        tableview.delegate = self
         
         view.addSubview(tableview)
         

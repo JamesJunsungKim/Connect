@@ -18,7 +18,6 @@ typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell
 extension Reusable {
     static var reuseIdentifier: String {
         let className = String(describing: Self.self)
-//        let className = NSStringFromClass(self).components(separatedBy: ".")[1]
         return className
     }
 }
