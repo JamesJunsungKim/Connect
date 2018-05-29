@@ -42,7 +42,7 @@ class MessageListViewController: UIViewController {
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Message"
-       
+        navigationController?.setupVerticalInset()
         navigationItem.rightBarButtonItem = UIBarButtonItem(image:  UIImage.create(forKey: .plusIcon), style: .plain, target: self, action: #selector(plusBtnClicked))
     }
     

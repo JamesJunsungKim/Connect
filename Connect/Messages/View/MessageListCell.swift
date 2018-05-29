@@ -40,7 +40,7 @@ class MessageListCell: ReusableTableViewCell {
 
 extension MessageListCell {
     fileprivate func setupUI() {
-        profileImageView = UIImageView.create(withImageKey: .placeholder)
+        profileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
         nameLabel = UILabel.create(text: "James", textAlignment: .left, textColor: .black, fontSize: 17, boldFont: true, numberofLine: 1)
         
@@ -63,7 +63,7 @@ extension MessageListCell {
         }
         
         nameLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(profileImageView)
+            make.top.equalTo(profileImageView).offset(-5)
             make.left.equalTo(profileImageView.snp.right).offset(10)
             make.right.equalTo(sentDateLabel.snp.left).offset(-5)
         }
@@ -81,7 +81,7 @@ extension MessageListCell {
         }
         
         separatorLine.snp.makeConstraints { (make) in
-            make.top.equalTo(messageLabel.snp.bottom)
+            make.top.equalTo(messageLabel.snp.bottom).offset(5)
             make.leading.equalTo(nameLabel)
             make.right.equalToSuperview().offset(-15)
             make.height.equalTo(0.5)

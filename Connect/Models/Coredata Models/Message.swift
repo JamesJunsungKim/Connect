@@ -10,14 +10,7 @@ import UIKit
 import CoreData
 import SwiftyJSON
 
-fileprivate struct Key {
-    static let uid = "uid"
-    static let text = "text"
-    static let timeStamp = "timeStamp"
-    static let toUser = "toUser"
-    static let fromUser = "fromUser"
-    static let photo = "photo"
-}
+
 
 final class Message: NSManagedObject {
     @NSManaged fileprivate(set) var uid: String
@@ -30,6 +23,12 @@ final class Message: NSManagedObject {
     
     struct Keys {
         static let message = "Message"
+        static let uid = "uid"
+        static let text = "text"
+        static let timeStamp = "timeStamp"
+        static let toUser = "toUser"
+        static let fromUser = "fromUser"
+        static let photo = "photo"
     }
     
     override func awakeFromInsert() {
@@ -46,6 +45,10 @@ final class Message: NSManagedObject {
     
     public var sectionTitle: String {
         return dateSection()
+    }
+    
+    public var isSentByCurrentUser: Bool {
+        return fromUser == AppStatus.current.user
     }
     
     //1) send message without photo
@@ -81,7 +84,7 @@ final class Message: NSManagedObject {
 
 extension Message:Managed {
     static var defaultSortDescriptors: [NSSortDescriptor]  {
-        return [NSSortDescriptor(key: Key.timeStamp, ascending: true)]
+        return [NSSortDescriptor(key: Keys.timeStamp, ascending: true)]
     }
 }
 

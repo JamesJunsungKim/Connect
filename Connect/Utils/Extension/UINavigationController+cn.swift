@@ -11,10 +11,15 @@ import UIKit
 
 extension UINavigationController {
     
-    static func createDefaultNavigationController(rootViewController: UIViewController, withLargeTitle flag: Bool = false)->UINavigationController {
+    // MARK: - Public
+    public func setupVerticalInset(size: CGFloat = -5) {
+        navigationBar.setTitleVerticalPositionAdjustment(size, for: .default)
+    }
+    
+    // MARK: - Static
+   internal static func createDefaultNavigationController(rootViewController: UIViewController, withLargeTitle flag: Bool = false)->UINavigationController {
         let nav = UINavigationController(rootViewController: rootViewController)
         nav.navigationBar.setupToMainBlueTheme(withLargeTitle: flag)
-        
         return nav
     }
 }

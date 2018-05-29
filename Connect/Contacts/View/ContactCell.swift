@@ -43,7 +43,7 @@ class ContactCell: ReusableTableViewCell {
 extension ContactCell {
     fileprivate func setupUI() {
         
-        profileImageView = UIImageView.create(withImageKey: .placeholder)
+        profileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         nameLabel = UILabel.create(text: "Name", textAlignment: .left, textColor: .black, fontSize: 15, numberofLine: 1)
         statusLabel = UILabel.create(text: "Status", textAlignment: .left, textColor: .lightGray, fontSize: 13, numberofLine: 1)
         

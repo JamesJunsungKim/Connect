@@ -191,11 +191,12 @@ final class User: NSManagedObject, BaseModel {
     
     public func insert(request:Request, intoSentNode flag: Bool) {
         if flag {
+            // TODO: make sure that it is inserted only one time.
             let result = sentRequests?.insert(request)
-            guard result!.inserted else{assertionFailure(); return}
+//            guard result!.inserted else{assertionFailure(); return}
         } else {
             let result = receivedRequests?.insert(request)
-            guard result!.inserted else {assertionFailure(); return}
+//            guard result!.inserted else {assertionFailure(); return}
         }
     }
     

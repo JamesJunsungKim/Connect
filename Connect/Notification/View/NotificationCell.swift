@@ -67,7 +67,7 @@ class NotificationCell: ReusableTableViewCell {
 
 extension NotificationCell {
     fileprivate func setupUI() {
-        profileImageView = UIImageView.create(withImageKey: .placeholder)
+        profileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
         descriptionLabel = UILabel.create(text: "Someone sent you a friend request", textAlignment: .left, textColor: .black, fontSize: 12, numberofLine: 0)
         

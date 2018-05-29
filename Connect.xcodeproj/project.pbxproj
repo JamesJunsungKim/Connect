@@ -17,6 +17,7 @@
 		1A63D9B920B459AB00F3C506 /* AddContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A63D9B820B459AB00F3C506 /* AddContactViewController.swift */; };
 		1A63D9BB20B462ED00F3C506 /* UISegmentControl+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A63D9BA20B462ED00F3C506 /* UISegmentControl+cn.swift */; };
 		1A7347B520B905B80053FF52 /* DefaultTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7347B420B905B80053FF52 /* DefaultTableViewDataSource.swift */; };
+		1A80C45720BD8E43009CE4D2 /* UITextView+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A80C45620BD8E43009CE4D2 /* UITextView+cn.swift */; };
 		1AA0124320A72A7000F25E43 /* UINavigationBar+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA0124220A72A7000F25E43 /* UINavigationBar+cn.swift */; };
 		1AA8482620A7D70F00851AF3 /* DispathQueue+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA8482520A7D70F00851AF3 /* DispathQueue+cn.swift */; };
 		1ACD08CB20B99BEB00B125E7 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ACD08CA20B99BEB00B125E7 /* NotificationCell.swift */; };
@@ -130,6 +131,7 @@
 		1A63D9B820B459AB00F3C506 /* AddContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactViewController.swift; sourceTree = "<group>"; };
 		1A63D9BA20B462ED00F3C506 /* UISegmentControl+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UISegmentControl+cn.swift"; sourceTree = "<group>"; };
 		1A7347B420B905B80053FF52 /* DefaultTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTableViewDataSource.swift; sourceTree = "<group>"; };
+		1A80C45620BD8E43009CE4D2 /* UITextView+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+cn.swift"; sourceTree = "<group>"; };
 		1AA0124220A72A7000F25E43 /* UINavigationBar+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+cn.swift"; sourceTree = "<group>"; };
 		1AA8482520A7D70F00851AF3 /* DispathQueue+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispathQueue+cn.swift"; sourceTree = "<group>"; };
 		1ACD08CA20B99BEB00B125E7 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				1A63D9BA20B462ED00F3C506 /* UISegmentControl+cn.swift */,
 				1A0B728720B85E1800128BDF /* UITableView+cn.swift */,
 				6CA3ACC020BD38310047D8E8 /* ConstraintMaker+cn.swift */,
+				1A80C45620BD8E43009CE4D2 /* UITextView+cn.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -890,6 +893,7 @@
 				6C6AE4DB20A295BB005B016B /* UILabel+cn.swift in Sources */,
 				6C90C17E209ED6D4006FF995 /* ContactViewController.swift in Sources */,
 				1ACD08CD20B99DD800B125E7 /* TimeHeaderView.swift in Sources */,
+				1A80C45720BD8E43009CE4D2 /* UITextView+cn.swift in Sources */,
 				6C90C19B209F0392006FF995 /* Request.swift in Sources */,
 				6C90C199209F011D006FF995 /* Photo.swift in Sources */,
 				1AF5BDD020BC3EC800BFC9C8 /* DefaultCollectionViewDataSource.swift in Sources */,

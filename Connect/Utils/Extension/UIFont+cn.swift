@@ -31,7 +31,7 @@ extension UIFont {
         return flag ? font.bold() : font
     }
     
-    internal static func font(forKey key: Key, size: CGFloat) -> UIFont {
+    internal static func create(forKey key: Key, size: CGFloat) -> UIFont {
         return UIFont(name: key.rawValue, size: size)!
     }
     

@@ -13,8 +13,9 @@ extension UIImage {
     enum Name: String {
         case checked
         case uncheked
-        case placeholder = "placeholder_person"
+        case personPlaceHolder = "placeholder_person"
         case plusIcon = "plus_icon"
+        case noImage = "no_image_found"
     }
     
     enum ResolutionKey:String {

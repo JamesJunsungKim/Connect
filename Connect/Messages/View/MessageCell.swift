@@ -11,6 +11,14 @@ import UIKit
 class MessageCell: ReusableTableViewCell {
     // UI
     
+    fileprivate var partnerProfileImageView: UIImageView!
+    fileprivate var bubbleView: UIView!
+    fileprivate var textView: UITextView!
+    fileprivate var sentImageView: UIImageView!
+    
+    fileprivate var timeStampLabel: UILabel!
+    fileprivate var checkboxImageView: UIImageView!
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -19,8 +27,8 @@ class MessageCell: ReusableTableViewCell {
     
     
     // MARK: - Public
-    
-    public func configure() {
+    public func configure(withMessage message: Message) {
+        
         
     }
     
@@ -37,7 +45,13 @@ class MessageCell: ReusableTableViewCell {
 extension MessageCell {
     fileprivate func setupUI() {
         
+        partnerProfileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
+        bubbleView = UIView.create(withColor: .gray)
+        
+        textView = UITextView.create(text: "Your text will be shown in here. it might go more than 1 line", mainFontSize: 15)
+        
+        sentImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
         
         
