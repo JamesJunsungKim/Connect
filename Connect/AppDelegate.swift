@@ -21,12 +21,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
+        //testMode(targetVC: ContactViewController())
+        
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
         
-//        testMode(targetVC: ContactViewController())
         return true
     }
     
@@ -52,7 +54,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Private
     private func setupScreenAndRootVC() {
-//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
         UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) ? switchToMainWindow():switchToSignUpWindow()
     }
     

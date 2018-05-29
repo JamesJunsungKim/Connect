@@ -18,7 +18,7 @@ class SetupDetailAccountViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addtarget()
@@ -67,7 +67,7 @@ class SetupDetailAccountViewController: UIViewController {
     }
 }
 
-extension SetupDetailAccountViewController: DefaultSegue {
+extension SetupDetailAccountViewController: DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         let user = User.unwrapFrom(userInfo: userInfo!)
         self.user = user

@@ -26,7 +26,7 @@ class DetailProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         configureUI()
         setupVC()
@@ -48,6 +48,38 @@ class DetailProfileViewController: UIViewController {
         let targetAttribute = userSettingAttributes.first(where: {$0.contentType == .name})!
         let userInfo: [String:Any] = [SettingAttribute.Key.settingAttribute: targetAttribute]
         presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: userInfo)
+    }
+    
+    fileprivate func didSelectTableViewCell(atIndexPath indexPath:IndexPath) {
+        let attribute = targetAttribute(forIndexPath: indexPath)
+        switch attribute.type {
+        case .label:
+            switch attribute.contentType {
+            case .email: break
+            default:
+                presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
+            }
+        case .toggle: break
+            
+        case .onlyAction:
+            presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
+                self.user.signOut(success: {
+                    User.deleteAll(fromMOC: mainContext)
+                    Photo.deleteAll(fromMOC: mainContext)
+                    Message.deleteAll(fromMOC: mainContext)
+                    Request.deleteAll(fromMOC: mainContext)
+                    UserDefaults.userRequestToSignOut()
+                    
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.switchToSignUpWindow()
+                    
+                }, failure: { (error) in
+                    self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+                })
+                }, cancelAction: nil)
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     // MARK: - Filepriavte
@@ -132,34 +164,7 @@ extension DetailProfileViewController: UITableViewDelegate, UITableViewDataSourc
     
     // MARK: - Tableview Delegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let attribute = targetAttribute(forIndexPath: indexPath)
-        switch attribute.type {
-        case .label:
-            switch attribute.contentType {
-            case .email: break
-            default:
-                presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
-            }
-        case .toggle: break
-            
-        case .onlyAction:
-        presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
-            self.user.signOut(success: {
-                User.deleteAll(fromMOC: mainContext)
-                Photo.deleteAll(fromMOC: mainContext)
-                Message.deleteAll(fromMOC: mainContext)
-                
-                UserDefaults.userRequestToSignOut()
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.switchToSignUpWindow()
-                
-            }, failure: { (error) in
-                self.presentDefaultError(message: error.localizedDescription, okAction: nil)
-            })
-        }, cancelAction: nil)
-        }
-        
-        tableView.deselectRow(at: indexPath, animated: true)
+        didSelectTableViewCell(atIndexPath: indexPath)
     }
 }
 
@@ -189,7 +194,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
 }
 
 
-extension DetailProfileViewController:DefaultSegue {
+extension DetailProfileViewController:DefaultViewController {
     
     fileprivate func setupUI(){
         profileView = UIView.create(withColor: .white)

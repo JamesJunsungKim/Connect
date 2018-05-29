@@ -39,6 +39,10 @@ class AppStatus {
         send(data: request, through: receivedRequestSubject)
     }
     
+    public func addUserToContact(user: User) {
+        user.addUserToContact(user: user)
+    }
+    
     // MARK: - Fileprivate
     fileprivate var currentUserSubject = PublishSubject<User>()
     fileprivate var receivedRequestSubject = PublishSubject<Request>()

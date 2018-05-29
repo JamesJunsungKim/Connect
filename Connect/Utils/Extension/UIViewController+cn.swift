@@ -9,9 +9,10 @@
 import UIKit
 import SnapKit
 import PopupDialog
+import ARSLineProgress
 
 extension UIViewController {
-    
+    typealias block = ()->()
     // MARK: - Alert & Error
     
     func presentDefaultAlertWithoutCancel(withTitle title: String, message: String?, okAction: (()->())? = nil) {
@@ -37,6 +38,15 @@ extension UIViewController {
         let okBtn = PopupDialogButton(title: "Ok") {if okAction != nil {okAction!()}}
         pop.addButton(okBtn)
         present(pop, animated: true, completion: nil)
+    }
+    
+    // MARK: - ARSLine
+    func presentARSLineProgress() {
+        ARSLineProgress.ars_showOnView(view)
+    }
+    
+    func presentARSLineSuccess(block:@escaping block) {
+        ARSLineProgress.showSuccess(andThen: block)
     }
     
     // MARK: - Action Sheet
@@ -85,7 +95,7 @@ extension UIViewController {
         if completion != nil {completion!(targetVC)}
     }
     
-    func presentDefaultVC<T:DefaultSegue>(targetVC: T, userInfo:[String:Any]?, completion:((T)->())? = nil) {
+    func presentDefaultVC<T:DefaultViewController>(targetVC: T, userInfo:[String:Any]?, completion:((T)->())? = nil) {
         guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
         self.navigationController != nil ? navigationController?.pushViewController(target, animated: true) : self.present(target, animated: true, completion: nil)
         targetVC.setup(fromVC: self, userInfo: userInfo)

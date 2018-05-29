@@ -18,7 +18,7 @@ class NotificationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         setupObserver()
@@ -32,23 +32,27 @@ class NotificationViewController: UIViewController {
     // MARK: - Public
     
     // MARK: - Actions
+    @objc fileprivate func brBtnCLicked() {
+        setupTableView()
+    }
+    
+    @objc fileprivate func deleteBtnClicked() {
+        Request.deleteAll(fromMOC: mainContext)
+    }
     
     // MARK: - Fileprivate
-    fileprivate weak var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
+    fileprivate var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
         navigationItem.title = "Notification"
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Delete", style: .plain, target: self, action: #selector(deleteBtnClicked))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cc", style: .plain, target: self, action: #selector(brBtnCLicked))
     }
     
     fileprivate func setupObserver() {
-//        AppStatus.current.requestObservable
-//            .subscribe(onNext: {[unowned self] (request) in
-//
-//            }) {
-//                logInfo("observer detached")
-//        }.disposed(by: bag)
     }
     
     fileprivate func setupTableView() {
@@ -65,8 +69,8 @@ class NotificationViewController: UIViewController {
 }
 
 extension NotificationViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return false
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

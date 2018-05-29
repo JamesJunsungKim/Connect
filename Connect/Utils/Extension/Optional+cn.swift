@@ -17,7 +17,7 @@ extension Optional {
         }
     }
     public func unwrapOrNull()->Any {
-        return unwrapOr(defaultValue: NSNull())
+        return unwrapOr(defaultValue: (NSNull() as Any))
     }
 }
 

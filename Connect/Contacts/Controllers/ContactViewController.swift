@@ -7,6 +7,7 @@
 //
 import UIKit
 import SnapKit
+import CoreData
 
 class ContactViewController: UIViewController {
     
@@ -18,12 +19,13 @@ class ContactViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
+        setupTableView()
         
         // Need to delete it.
-        dataSource.update(data: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
+        dataSource___.update(data: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
     }
     
     deinit {
@@ -40,10 +42,9 @@ class ContactViewController: UIViewController {
         presentDefaultVC(targetVC: AddContactViewController(), userInfo: nil)
     }
     
-    
-    
     // MARK: - Filepriavte
-    fileprivate var dataSource: DefaultTableViewDataSource<ContactViewController>!
+    fileprivate var dataSource___: DefaultTableViewDataSource<ContactViewController>!
+    fileprivate var datasource : CoreDataTableViewDataSource<User,ContactViewController>!
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     fileprivate var searchbarIsPresent = false
     
@@ -56,7 +57,19 @@ class ContactViewController: UIViewController {
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchResultsUpdater = self
+    }
+    
+    fileprivate func setupTableView() {
+        tableview.delegate = self
+        dataSource___ = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self)
         
+//        let request = User.sortedFetchRequest
+//        request.returnsObjectsAsFaults = false
+//        request.fetchBatchSize = 20
+//
+//        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
+//
+//        datasource = CoreDataTableViewDataSource(tableView: tableview, fetchedResultsController: frc, dataSource: self)
     }
     
     fileprivate func hideOrShowNavigationItems(needsToShow flag: Bool) {
@@ -115,9 +128,6 @@ extension ContactViewController: TableViewDataSourceDelegate {
 extension ContactViewController {
     fileprivate func setupUI() {
         tableview = UITableView(frame: .zero, style: .plain)
-        dataSource = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self)
-        tableview.delegate = self
-        
         view.addSubview(tableview)
         
         tableview.snp.makeConstraints { (make) in

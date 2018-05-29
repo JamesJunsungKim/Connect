@@ -14,7 +14,8 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     typealias Cell = Delegate.Cell
     
     init(tableView: UITableView, sourceDelegate: Delegate, initialData: [Object]? = nil) {
-        self.tableView = tableView; self.sourceDelegate = sourceDelegate
+        self.tableView = tableView
+        self.sourceDelegate = sourceDelegate
         super.init()
         tableView.dataSource = self
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)

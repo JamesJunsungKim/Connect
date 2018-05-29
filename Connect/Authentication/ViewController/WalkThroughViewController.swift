@@ -20,7 +20,7 @@ class WalkThroughViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()

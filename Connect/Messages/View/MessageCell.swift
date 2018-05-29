@@ -9,6 +9,9 @@
 import UIKit
 
 class MessageCell: ReusableTableViewCell {
+    // UI
+    
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -33,6 +36,9 @@ class MessageCell: ReusableTableViewCell {
 
 extension MessageCell {
     fileprivate func setupUI() {
+        
+        
+        
         
         
         

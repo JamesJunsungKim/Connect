@@ -32,10 +32,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     }
     
     public func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
-        guard let fetchedIndexPath = dataSource.fetchedIndexPath(for: indexPath) else {
-            return dataSource.supplementaryObject(at: indexPath)!
-        }
-        return (fetchedResultsController.object(at: fetchedIndexPath) as! Object)
+        return (fetchedResultsController.object(at: indexPath) as! Object)
     }
     
     public func reconfigureFetchRequest(_ configure: (NSFetchRequest<Result>) -> ()) {
@@ -59,7 +56,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = fetchedResultsController.sections?[section] else {return 0}
-        return section.numberOfObjects
+        return section.numberOfObjects + dataSource.numberOfAdditionalRows
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

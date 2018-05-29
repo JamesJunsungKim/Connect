@@ -28,6 +28,7 @@ final class Request: NSManagedObject, BaseModel{
     @NSManaged fileprivate(set) var createdAt: Date
     @NSManaged fileprivate(set) var isCompleted: Bool
     @NSManaged fileprivate(set) var completedAt: Date?
+    @NSManaged fileprivate(set) var needsToDisplay: Bool
     
     @NSManaged fileprivate(set) var toUser: User
     @NSManaged fileprivate(set) var fromUser: User
@@ -48,9 +49,14 @@ final class Request: NSManagedObject, BaseModel{
         return createdAt.toYearToDateStringUTC()
     }
     
+    public static var defaultPredicate: NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(Request.needsToDisplay), NSNumber(value: true))
+    }
+    
     static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(key: Key.createdAt, ascending: false)]
     }
+    
     
     
     struct Key {
@@ -64,6 +70,8 @@ final class Request: NSManagedObject, BaseModel{
         static let isCompleted = "isCompleted"
         static let toUser = "toUser"
         static let fromUser = "fromUser"
+        static let completedAt = "completedAt"
+        static let needsToDisplay = "needsToDisplay"
     }
     
     override func awakeFromInsert() {
@@ -79,23 +87,35 @@ final class Request: NSManagedObject, BaseModel{
     }
     
     // MARK: - Public
-    public func uploadToServer(success:@escaping successWithoutModel, failure: @escaping failure) {
+    public func uploadToNodeOfSentRequestsAndReceivedRequests(success:@escaping successWithoutModel, failure: @escaping failure) {
         let group = DispatchGroup()
         
         let references : [DatabaseReference] = [
-        FireDatabase.user(uid: fromUID).reference.child(FireDatabase.PathKeys.sentRequests).child(toUID),
-        FireDatabase.user(uid: toUID).reference.child(FireDatabase.PathKeys.receivedRequests).child(fromUID)
+            FireDatabase.user(uid: fromUID).reference.child(FireDatabase.PathKeys.sentRequests.rawValue).child(toUID),
+            FireDatabase.user(uid: toUID).reference.child(FireDatabase.PathKeys.receivedRequests.rawValue).child(fromUID)
         ]
-        
         references.forEach({
             group.enter()
-            $0.setValue(toDictionary(), withCompletionBlock: { (error, _) in
-            group.leave()
+            $0.setValue(self.toDictionary(), withCompletionBlock: { (error, _) in
+                group.leave()
                 guard error == nil else {failure(error!); return}
-        })})
+            })})
         group.notify(queue: DispatchQueue.main, execute: success)
     }
     
+    public func completedByToUser(success:@escaping successWithoutModel, failure:@escaping failure) {
+        isCompleted = true
+        completedAt = Date()
+        uploadToNodeOfApprovedRequests(success: success, failure: failure)
+    }
+    
+    public func completedByFromUser() {
+        switch requestType {
+        case .friendRequest :
+            AppStatus.current.user.addUserToContact(user: toUser)
+        }
+        
+    }
     
     public func toDictionary() -> [String:Any] {
         return [
@@ -105,12 +125,14 @@ final class Request: NSManagedObject, BaseModel{
             Key.createdAt: createdAt.toYearToMillisecondStringUTC(),
             Key.isCompleted: isCompleted,
             Key.urgencyNumberValue: urgencyNumberValue,
-            Key.requestTypeNumberValue: requestTypeNumberValue
-        ]
+            Key.requestTypeNumberValue: requestTypeNumberValue,
+            Key.needsToDisplay : needsToDisplay
+        ].addValueIfNotEmpty(forKey: Key.completedAt, value: completedAt,
+                             configuration: {$0.toYearToMillisecondStringUTC()})
     }
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext = mainContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User, toUser: User, urgency: Urgency, requestType: RequestType) -> Request {
+    public static func create(into moc: NSManagedObjectContext = mainContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User, toUser: User, urgency: Urgency, requestType: RequestType, needsToDisplay :Bool = true) -> Request {
         let predicate = NSPredicate(format: "%K == %@", #keyPath(Request.uid), uid)
         return Request.findOrCreate(in: moc, matching: predicate, configure: { (request) in
             request.uid = uid
@@ -122,19 +144,21 @@ final class Request: NSManagedObject, BaseModel{
             request.toUID = toUser.uid!
             request.urgencyNumberValue = Int16(urgency.rawValue)
             request.requestTypeNumberValue = Int16(requestType.rawValue)
+            request.needsToDisplay = needsToDisplay
         })
     }
     
     public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, success:@escaping success, failure: @escaping failure) {
         let currentUser = AppStatus.current.user!
         let uid = json[Key.uid].stringValue
-        let createdAt = Date.withISODateString(json[Key.createdAt].stringValue)
+        let createdAt = Date.ConvertToString(json[Key.createdAt].stringValue)
         let fromUID = json[Key.fromUID].stringValue
         let toUID = json[Key.toUID].stringValue
         let isCompleted = json[Key.isCompleted].boolValue
         let urgencyNumber = json[Key.urgencyNumberValue].intValue
         let requestNumber = json[Key.requestTypeNumberValue].intValue
         let requestType = RequestType.init(rawValue: requestNumber)!
+        let needsToDisplay = json[Key.needsToDisplay].boolValue
         
         assert(toUID == currentUser.uid!, "It must be a request toward the current user")
         
@@ -142,18 +166,14 @@ final class Request: NSManagedObject, BaseModel{
         case .friendRequest:
             // we need to create an user who sent this request and save it.
             // and then make a connection btw the current user and the recently-created user.
-//            assert(User.findOrFetch(forUID: fromUID) == nil)
-            DispatchQueue.performOnBackground {
-                User.fetchUserFromServerAndCreate(withUID: fromUID, needContactAndGroupNode: false, success: { (fromUser) in
-                    DispatchQueue.performOnMain {
-                        let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType)
-                        currentUser.insert(request: request, intoSentNode: false)
-                    }
-                }, failure: { (error) in
-                    logError(error.localizedDescription)
-                    failure(error)
-                })
-            }
+            //assert(User.findOrFetch(forUID: fromUID) == nil)
+            User.fetchUserFromServerAndCreate(withUID: fromUID, needContactAndGroupNode: false, success: { (fromUser) in
+                let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType, needsToDisplay: needsToDisplay)
+                    success(request)
+            }, failure: { (error) in
+                logError(error.localizedDescription)
+                failure(error)
+            })
         }
     }
     
@@ -165,6 +185,16 @@ final class Request: NSManagedObject, BaseModel{
     
     // MARK: - Fileprivate
     
+    fileprivate func uploadToNodeOfApprovedRequests(success:@escaping successWithoutModel, failure:@escaping failure) {
+        FireDatabase.user(uid: fromUser.uid!).reference.child(FireDatabase.PathKeys.approvedRequests.rawValue)
+            .setValue(toDictionary()) { (error, _) in
+                guard error == nil else {
+                    failure(error!)
+                    return
+                }
+                success()
+        }
+    }
     
 
 }

@@ -15,7 +15,7 @@ extension Unwrappable {
         return String(describing: Self.self)
     }
     
-    static func unwrapFrom(userInfo: [String:Any]) -> Self {
-        return (userInfo[className] as! Self)
+    static func unwrapFrom(userInfo: [String:Any]?) -> Self {
+        return (userInfo![className] as! Self)
     }
 }

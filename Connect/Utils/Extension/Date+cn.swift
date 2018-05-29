@@ -53,37 +53,18 @@ extension Date {
         return date as! Template
     }
     
-    static func withISODateString(_ isoDateString: String) -> Date {
-        return dateWithISODateStringHelper(isoDateString)
-    }
+    static func ConvertToString(_ target: String) -> Date {
+        let formatter = DateFormatter()
     
-    fileprivate static func dateWithISODateStringHelper<Template>(_ isoDateString: String) -> Template {
-        let dateStringFormatter = DateFormatter()
-        var isoDateString = isoDateString
-        isoDateString = isoDateString.replacingOccurrences(of: "‐", with: "-")
-        
-        if let _ = isoDateString.range(of: "T") {
-            if let _ = isoDateString.range(of: ".") {
-                isoDateString = isoDateString.replacingOccurrences(of: "Z", with: "")
-                dateStringFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-            } else {
-                isoDateString = isoDateString.replacingOccurrences(of: "Z", with: "")
-                dateStringFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-            }
+        if target.contains("T") {
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         } else {
-            dateStringFormatter.dateFormat = "yyyy-MM-dd"
+            formatter.dateFormat = "yyyy-MM-dd"
         }
         
-        dateStringFormatter.locale = Date.getUTCLocale()
-        dateStringFormatter.timeZone = Date.getUTCTimeZone()
-        let d = dateStringFormatter.date(from: isoDateString)!
-        return d as! Template
-    }
-    
-    static func from(isoDateString: String) -> Date {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        return formatter.date(from: isoDateString)!
+        formatter.locale = Date.getUTCLocale()
+        formatter.timeZone = Date.getUTCTimeZone()
+        return formatter.date(from: target)!
     }
     
     static func getUTCLocale() -> Locale {

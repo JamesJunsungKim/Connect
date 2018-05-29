@@ -12,11 +12,17 @@ import FirebaseStorage
 
 enum FireDatabase {
     
-    struct PathKeys {
-        static let isPrivate = "private"
-        static let isPublic = "public"
-        static let sentRequests = "sentRequests"
-        static let receivedRequests = "receivedRequests"
+    enum Category: String {
+        case user = "User"
+        case message = "Message"
+    }
+
+    enum PathKeys: String {
+        case isPrivate = "private"
+        case isPublic = "public"
+        case sentRequests = "sentRequests"
+        case receivedRequests = "receivedRequests"
+        case approvedRequests = "approvedRequests"
     }
     
     case root
@@ -24,6 +30,7 @@ enum FireDatabase {
     case sentRequest(fromUid:String, toUid: String)
     case receivedRequest(fromUid:String, toUid:String)
     case receivedRequests(uid:String)
+    case approvedRequests(uid:String)
     case contacts
     case photos
     case message(userUid: String)
@@ -39,23 +46,35 @@ enum FireDatabase {
         }
     }
     
-    fileprivate func userPath(uid:String)-> String {
-        return "\(User.Key.user)/\(uid)/"
-    }
+    
+    
     
     fileprivate var path: String {
         switch self {
         case .user(let uid): return userPath(uid: uid)
         case .message(let uid): return "\(Message.Keys.message)/\(uid)"
-        case .sentRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.sentRequests)/\(toUID)"
-        case .receivedRequest(let fromUID, let toUID): return userPath(uid: fromUID) + "\(PathKeys.receivedRequests)/\(toUID)"
-        case .receivedRequests(let uid): return userPath(uid: uid) + "\(PathKeys.receivedRequests)"
+        case .sentRequest(let fromUID, let toUID):
+            return createPath(forKey: .sentRequests, withUID: fromUID, toUID: toUID)
+        case .receivedRequest(let fromUID, let toUID):
+            return createPath(forKey: .receivedRequests, withUID: fromUID, toUID: toUID)
+        case .receivedRequests(let uid):
+            return createPath(forKey: .receivedRequests, withUID: uid)
+        case .approvedRequests(let uid):
+            return createPath(forKey: .approvedRequests, withUID: uid)
         default: return ""
         }
     }
     
     fileprivate var rootReference: DatabaseReference {
         return Database.database().reference()
+    }
+    fileprivate func userPath(uid:String)-> String {
+        return "\(User.Key.user)/\(uid)"
+    }
+    
+    fileprivate func createPath(forKey key: PathKeys, withUID uid: String, toUID: String? = nil) -> String {
+        let path = userPath(uid: uid) + "/\(key.rawValue)"
+        return toUID != nil ? path + "/\(toUID!)" : path
     }
 }
 

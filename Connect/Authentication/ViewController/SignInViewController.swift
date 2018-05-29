@@ -33,7 +33,7 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
@@ -58,6 +58,7 @@ class SignInViewController: UIViewController {
     @objc fileprivate func signInBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         User.loginAndFetchAndCreate(into: mainContext, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
+            UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
             ARSLineProgress.showSuccess(andThen: {
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.switchToMainWindow()
@@ -181,7 +182,7 @@ class SignInViewController: UIViewController {
     
 }
 
-extension SignInViewController:DefaultSegue {
+extension SignInViewController:DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         // no-op
     }

@@ -8,10 +8,10 @@
 
 import UIKit
 
-protocol DefaultSegue: AnyObject {
+protocol DefaultViewController: AnyObject {
     func setup(fromVC: UIViewController, userInfo: [String:Any]?)
 }
 
-extension DefaultSegue{
+extension DefaultViewController{
     func setup(fromVC: UIViewController, userInfo: [String:Any]?) {}
 }

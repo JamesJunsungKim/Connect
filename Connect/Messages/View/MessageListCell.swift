@@ -44,23 +44,22 @@ extension MessageListCell {
         
         nameLabel = UILabel.create(text: "James", textAlignment: .left, textColor: .black, fontSize: 17, boldFont: true, numberofLine: 1)
         
-        messageLabel = UILabel.create(text: "Messages will be shown up here and it can be 2-lines long", textAlignment: .left, textColor: .lightBackgroundGray, fontSize: 12, boldFont: false, numberofLine: 0)
+        messageLabel = UILabel.create(text: "Messages will be shown up here and it can be 2-lines long", textAlignment: .left, textColor: .gray, fontSize: 12, boldFont: false, numberofLine: 0)
         
-        sentDateLabel = UILabel.create(text: "12:00 PM", textAlignment: .right, textColor: .lightBackgroundGray, fontSize: 11, boldFont: false, numberofLine: 1)
+        sentDateLabel = UILabel.create(text: "12:00 PM", textAlignment: .right, textColor: .gray, fontSize: 11, boldFont: false, numberofLine: 1)
         
         let separatorLine = UIView.create()
         
         
-        let group: [UIView] = [profileImageView, nameLabel, messageLabel, sentDateLabel]
+        let group: [UIView] = [profileImageView, nameLabel, messageLabel, sentDateLabel, separatorLine]
         
         group.forEach(self.addSubview(_:))
         
         profileImageView.snp.makeConstraints { (make) in
-            make.top.equalToSuperview().offset(7.5)
+            make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(15)
-            make.bottom.equalToSuperview().offset(-7.5)
-            make.width.equalTo(profileImageView.frame.height)
-            profileImageView.setCornerRadious(value: profileImageView.frame.height*1/2)
+            make.sizeEqualTo(width: 60, height: 60)
+            profileImageView.setCornerRadious(value: 30)
         }
         
         nameLabel.snp.makeConstraints { (make) in
@@ -78,13 +77,13 @@ extension MessageListCell {
         
         sentDateLabel.snp.makeConstraints { (make) in
             make.bottom.equalTo(nameLabel)
-            make.right.equalToSuperview().offset(5)
+            make.right.equalToSuperview().offset(-15)
         }
         
         separatorLine.snp.makeConstraints { (make) in
             make.top.equalTo(messageLabel.snp.bottom)
             make.leading.equalTo(nameLabel)
-            make.right.equalToSuperview()
+            make.right.equalToSuperview().offset(-15)
             make.height.equalTo(0.5)
         }
     }

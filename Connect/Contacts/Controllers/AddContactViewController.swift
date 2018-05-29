@@ -20,7 +20,7 @@ class AddContactViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
@@ -54,22 +54,23 @@ class AddContactViewController: UIViewController {
         }
     }
     
-    fileprivate func tableViewCellselected(atIndexPath indexPath: IndexPath) {
+    fileprivate func userDidselectedCell(atIndexPath indexPath: IndexPath) {
         let currentUser = AppStatus.current.user!
         
         let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
         presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
             //check this user is not saved to disk..
             
-            guard User.findOrFetch(forUID: targetUser.uid) == nil else {
-                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "You already sent a request!")
-                return
-            }
+            // TODO: To enable to check if the target user is already in system
+//            guard User.findOrFetch(forUID: targetUser.uid) == nil else {
+//                self.presentDefaultAlertWithoutCancel(withTitle: "Error", message: "You already sent a request!")
+//                return
+//            }
             
             let toUser = targetUser.convertAndCreateUser()
             let request = Request.create(fromUser: AppStatus.current.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
             currentUser.insert(request: request, intoSentNode: true)
-            request.uploadToServer(success: {[unowned self] in
+            request.uploadToNodeOfSentRequestsAndReceivedRequests(success: {[unowned self] in
                 self.presentDefaultAlertWithoutCancel(withTitle: "Succeed", message: nil)
                 }, failure: {[unowned self] (error) in
                     self.presentDefaultError(message: error.localizedDescription, okAction: nil)
@@ -93,15 +94,6 @@ class AddContactViewController: UIViewController {
     }
 }
 
-extension AddContactViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableViewCellselected(atIndexPath: indexPath)
-    }
-}
 extension AddContactViewController:UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchBtnClicked()
@@ -109,16 +101,24 @@ extension AddContactViewController:UITextFieldDelegate {
     }
 }
 
-extension AddContactViewController: TableViewDataSourceDelegate {
+extension AddContactViewController: TableViewDataSourceDelegate,UITableViewDelegate {
     typealias Object = NonCDUser
     typealias Cell = ContactCell
     
     func configure(_ cell: ContactCell, for object: NonCDUser) {
         cell.configure(withNonCDUser: object)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        userDidselectedCell(atIndexPath: indexPath)
+    }
 }
 
-extension AddContactViewController: DefaultSegue {
+extension AddContactViewController: DefaultViewController {
     fileprivate func setupUI() {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)

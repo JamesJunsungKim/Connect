@@ -37,7 +37,7 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         addTargets()
@@ -211,7 +211,7 @@ class SignUpViewController: UIViewController {
     
 }
 
-extension SignUpViewController:DefaultSegue {
+extension SignUpViewController:DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {/*no-op*/}
 }
 

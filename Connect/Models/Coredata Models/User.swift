@@ -59,6 +59,10 @@ final class User: NSManagedObject, BaseModel {
         leaveReferenceDictionary(forType: self.classForCoder)
     }
     
+    static var defaultSortDescriptors: [NSSortDescriptor] {
+        return [NSSortDescriptor(key: "name", ascending: true)]
+    }
+    
     // MARK: - Public
     
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
@@ -125,6 +129,13 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
+    public func addUserToContact(user: User) {
+        let result = contacts?.insert(user)
+        // TODO: Need to enable it
+        print("the insert result: " + String(describing: result?.inserted))
+//        guard result!.inserted else {assertionFailure(); return}
+    }
+    
     public func setProfilePhoto(with photo: Photo) {
         profilePhoto = photo
     }
@@ -150,12 +161,12 @@ final class User: NSManagedObject, BaseModel {
                     users.forEach({dict_[$0.uid!] = $0.toDictionary()})
                     return dict_
                 }
-                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.sentRequests, value: sentRequests) { (requests) -> [String:[String:Any]] in
+                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.sentRequests.rawValue, value: sentRequests) { (requests) -> [String:[String:Any]] in
                     var dict_ = [String:[String:Any]]()
                     requests.forEach({dict_[$0.uid] = $0.toDictionary()})
                     return dict_
                 }
-                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.receivedRequests, value: receivedRequests) { (requests) -> [String:[String:Any]] in
+                .addValueIfNotEmpty(forKey: FireDatabase.PathKeys.receivedRequests.rawValue, value: receivedRequests) { (requests) -> [String:[String:Any]] in
                     var dict_ = [String:[String:Any]]()
                     requests.forEach({dict_[$0.uid] = $0.toDictionary()})
                     return dict_
@@ -209,46 +220,45 @@ final class User: NSManagedObject, BaseModel {
     public static func createAndRegister(into moc: NSManagedObjectContext, name:String, email: String, password: String, completion:@escaping (User)->(), failure:@escaping (Error)->()) {
         
         let user = User.create(into: moc, uid: nil, name: name, email: email)
-        Auth.auth().createUser(withEmail: email, password: password) { (user_, error) in
+        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
                 return
             }
-            user.uid = user_!.uid
+            
+            user.uid = result!.user.uid
             UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
             completion(user)
         }
     }
     
     public static func loginAndFetchAndCreate(into moc: NSManagedObjectContext,withEmail email: String, password: String, success:@escaping (User)->(), failure:@escaping (Error?)->()) {
-        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
+        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)
                 return
             }
-            let uid = user!.uid
+            let uid = result!.user.uid
             fetchUserFromServerAndCreate(withUID: uid, needContactAndGroupNode: true, success: success, failure: failure)
         }
         
     }
     
     public static func fetchUserFromServerAndCreate(withUID uid: String, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
+        
         FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value) { (snapshot) in
             guard let dict = snapshot.value else{
                 assertionFailure()
                 return
             }
-            
             let json = JSON(dict)
             User.convertAndCreate(fromJSON: json, into: mainContext, completion: { (user) in
-                UserDefaults.store(object: uid, forKey: .uidForSignedInUser)
                 success(user)
             }, failure: { (error) in
                 failure(error)
             }, needContactAndGroup: flag)
-            
         }
     }
     

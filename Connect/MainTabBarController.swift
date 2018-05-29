@@ -38,13 +38,24 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         // observe a node added to receivedReques to notify user of the request.
         FireDatabase.receivedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
             guard let result = snapshot.value as? [String:Any] else {return}
-            
             Request.convertAndCreate(fromJSON: JSON(result), into: mainContext, success: { (request) in
                 AppStatus.current.user.insert(request: request, intoSentNode: false)
                 AppStatus.current.received(request: request)
             }, failure: {[unowned self] (error) in
                 self.presentDefaultError(message: error.localizedDescription, okAction: nil)
             })
+        }
+        
+        // Observe for completed Requests
+        FireDatabase.approvedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
+            guard let result = snapshot.value as? [String:Any], let uid = result[Request.Key.uid] as? String else {return}
+            
+            guard let targetRequest = Request.findOrFetch(forUID: uid) else {
+                assertionFailure()
+                return
+            }
+            targetRequest.completedByFromUser()
+            
         }
         
         // observe all uids from contacts for status & name change.

@@ -27,6 +27,7 @@ class NotificationCell: ReusableTableViewCell {
     // MARK: - Public
     
     public func configure(withRequest request: Request) {
+        self.request = request
         profileImageView.image = request.fromUser.profilePhoto!.image
         
         switch request.requestType {
@@ -37,11 +38,26 @@ class NotificationCell: ReusableTableViewCell {
     
     // MARK: - Actions
     @objc fileprivate func buttonClicked() {
+        // what's the main goal here.
+        // actions might be different depending on which request type it is
         
+        switch request.requestType {
+        case .friendRequest:
+            // at first, add the user to the contact
+            
+            AppStatus.current.addUserToContact(user: request.fromUser)
+            request.completedByToUser(success: {[unowned self] in
+                //TODO: Think about what to do when it's completed.
+            }) {[unowned self] (error) in
+                self.getParentViewController()?.presentDefaultError(message: error.localizedDescription, okAction: nil)
+            }
+        }
     }
     
     
     // MARK: - Fileprivate
+    fileprivate weak var request: Request!
+    
     fileprivate func addTarget() {
         actionButton.addTarget(self, action: #selector(buttonClicked), for: .touchUpInside)
     }

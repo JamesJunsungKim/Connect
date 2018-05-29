@@ -18,12 +18,11 @@ enum LogEvent: String {
     case severe = "[Severe 🔥]"
 }
 
-func enterViewControllerMemoryLogAndSaveToDisk(type: AnyClass) {
+func enterViewControllerMemoryLog(type: AnyClass) {
     let newEntry = nameFor(type: type)
     viewControllerMemoryArray.append(newEntry)
     let sum = reduce(array: viewControllerMemoryArray)
     logInfo("New entry in Memery \nnew:\(newEntry)\n"+sum+"\n")
-    mainContext.performSaveorRollback()
 }
 
 func leaveViewControllerMomeryLogAndSaveDataToDisk(type:AnyClass) {

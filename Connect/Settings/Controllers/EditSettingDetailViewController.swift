@@ -20,7 +20,7 @@ class EditSettingDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enterViewControllerMemoryLogAndSaveToDisk(type: self.classForCoder)
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupVC()
         addTarget()
     }
@@ -99,7 +99,7 @@ class EditSettingDetailViewController: UIViewController {
     }
 }
 
-extension EditSettingDetailViewController: DefaultSegue {
+extension EditSettingDetailViewController: DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)
