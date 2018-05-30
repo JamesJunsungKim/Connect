@@ -51,14 +51,18 @@ final class Message: NSManagedObject {
         return fromUser == AppStatus.current.user
     }
     
-    //1) send message without photo
+    // MARK: - Static
+    
+    public static var defaultSortDescriptors: [NSSortDescriptor] {
+        return [NSSortDescriptor(key: Keys.timeStamp, ascending: true)]
+    }
+    
     public static func insert(into moc: NSManagedObjectContext, text:String)->Message {
         let message = createBaseMessage(moc: moc)
         message.text = text
         return message
     }
     
-    //2) send message with photo
     public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Message {
         let message = createBaseMessage(moc: moc)
         let photo = Photo.create(into: moc, image: image, withType: .defaultResolution)
@@ -82,15 +86,9 @@ final class Message: NSManagedObject {
 
 }
 
-extension Message:Managed {
-    static var defaultSortDescriptors: [NSSortDescriptor]  {
-        return [NSSortDescriptor(key: Keys.timeStamp, ascending: true)]
-    }
-}
 
 
-
-
+extension Message:Managed{}
 
 
 

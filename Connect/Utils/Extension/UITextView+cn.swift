@@ -12,9 +12,10 @@ extension UITextView {
     
     // MARK: - static
     
-    internal static func create(text:String, mainFontSize:CGFloat?, customFont: UIFont? = nil, textColor: UIColor = .black, textAlignment: NSTextAlignment = .left, isEditable: Bool = false, attributedText: NSAttributedString? = nil)-> UITextView {
+    internal static func create(text:String, mainFontSize:CGFloat?, customFont: UIFont? = nil, textColor: UIColor = .black, backgroundColor: UIColor = .clear, textAlignment: NSTextAlignment = .left, isEditable: Bool = false, attributedText: NSAttributedString? = nil)-> UITextView {
         let tv = UITextView()
         tv.text = text
+        tv.backgroundColor = backgroundColor
         tv.font = customFont != nil ? customFont! : UIFont.mainFont(size: mainFontSize!)
         tv.textAlignment = textAlignment
         tv.textColor = textColor

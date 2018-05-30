@@ -27,15 +27,18 @@ class MessageCell: ReusableTableViewCell {
     
     
     // MARK: - Public
+    public func configure() {
+        sentImageView.isHidden = true
+        bubbleView.backgroundColor = .mainBlue
+    }
+    
     public func configure(withMessage message: Message) {
-        
         
     }
     
     // MARK: - Actions
     
     // MARK: - Fileprivate
-    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -52,6 +55,44 @@ extension MessageCell {
         textView = UITextView.create(text: "Your text will be shown in here. it might go more than 1 line", mainFontSize: 15)
         
         sentImageView = UIImageView.create(withImageKey: .personPlaceHolder)
+        
+        timeStampLabel = UILabel.create(text: "12:22 PM")
+        
+        bubbleView.addSubview(textView)
+        
+        let groupForCell:[UIView] = [partnerProfileImageView, bubbleView, sentImageView, timeStampLabel]
+        groupForCell.forEach(self.addSubview(_:))
+        
+        let frame = self.frame
+        
+        partnerProfileImageView.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().offset(15)
+            make.bottom.equalToSuperview().offset(-8)
+            make.sizeEqualTo(width: 20, height: 20)
+        }
+        
+        bubbleView.snp.makeConstraints { (make) in
+            bubbleView.setCornerRadious(value: 5)
+            make.left.equalToSuperview().offset(40)
+            make.topBottomEqualToSuperView(withOffset: 1)
+            make.width.equalTo(frame.width*4/5)
+        }
+        
+        textView.snp.makeConstraints { (make) in
+            make.left.top.right.bottom.equalToSuperview()
+        }
+        
+        sentImageView.snp.makeConstraints { (make) in
+            make.left.equalToSuperview().offset(40)
+            make.topBottomEqualToSuperView(withOffset: 1)
+            make.width.equalTo(200)
+        }
+        
+        timeStampLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(bubbleView.snp.right).offset(3)
+            make.bottom.equalToSuperview().offset(-3)
+        }
+        
         
         
         

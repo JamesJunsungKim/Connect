@@ -14,19 +14,13 @@ extension UITextField {
     
     func validateIfHasTextAndMakeBorderColored(with color: UIColor)-> Bool {
         if hasText {
-            makeBorder(color: .black, width: 0)
+            self.setBorder(color: .black, width: 0)
             return true
         } else {
-            makeBorder(color: .red)
+            self.setBorder(color: .red, width: 0.5)
             return false
         }
     }
-    
-    func makeBorder(color: UIColor, width: CGFloat = 1.0) {
-        layer.borderColor = color.cgColor
-        layer.borderWidth = width
-    }
-    
     
     
     // MARK: static funcs

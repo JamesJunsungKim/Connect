@@ -15,14 +15,13 @@ extension UIFont {
     }
     
     // MARK: - Public
-    public func withTraits(traits:UIFontDescriptorSymbolicTraits...) -> UIFont {
-        let descriptor = self.fontDescriptor
-            .withSymbolicTraits(UIFontDescriptorSymbolicTraits(traits))
-        return UIFont(descriptor: descriptor!, size: 0)
-    }
     
     public func bold() -> UIFont {
         return withTraits(traits: .traitBold)
+    }
+    
+    public func italic() -> UIFont {
+        return withTraits(traits: .traitItalic)
     }
     
     // MARK: - Static
@@ -35,6 +34,13 @@ extension UIFont {
         return UIFont(name: key.rawValue, size: size)!
     }
     
+    // MARK: - Filepriavte
+    
+    fileprivate func withTraits(traits:UIFontDescriptorSymbolicTraits...) -> UIFont {
+        let descriptor = self.fontDescriptor
+            .withSymbolicTraits(UIFontDescriptorSymbolicTraits(traits))
+        return UIFont(descriptor: descriptor!, size: 0)
+    }
     
     
 }

@@ -32,7 +32,8 @@ class MessageListViewController: UIViewController {
     }
     
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
-        
+        // TODO: get the target user from data source and pass it to the next view controller
+        presentDefaultVC(targetVC: MessageDetailViewController(), userInfo: nil)
     }
     
     // MARK: - Filepriavte
