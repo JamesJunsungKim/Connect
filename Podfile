@@ -29,6 +29,7 @@ pod 'SnapKit'
 pod 'Hero'
 pod 'PopupDialog'
 pod 'ARSLineProgress'
+pod 'DeckTransition'
 
 
   target 'ConnectTests' do
