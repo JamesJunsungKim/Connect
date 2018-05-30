@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 
 class ProfileCell: ReusableTableViewCell {
+    typealias Object = User
     
     // UI
     fileprivate var profileImageView: UIImageView!
@@ -19,6 +20,12 @@ class ProfileCell: ReusableTableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+    }
+    
+    func setup(withObject object: User, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        profileImageView.image = object.profilePhoto!.image
+        nameLabel.text = object.name
+        statusLabel.text = object.statusMessage.unwrapOr(defaultValue: "Your status message will be displayed here.")
     }
     
     public func configure(withUser user: User) {

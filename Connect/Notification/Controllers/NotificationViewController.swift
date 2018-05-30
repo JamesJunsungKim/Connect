@@ -41,7 +41,7 @@ class NotificationViewController: UIViewController {
     }
     
     // MARK: - Fileprivate
-    fileprivate var dataSource: CoreDataTableViewDataSource<Request, NotificationViewController>!
+    fileprivate var dataSource: CoreDataTableViewDataSource<NotificationCell>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
@@ -63,8 +63,8 @@ class NotificationViewController: UIViewController {
         request.fetchBatchSize = 20
         
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: #keyPath(Request.sectionTitle), cacheName: nil)
-        
-        dataSource = CoreDataTableViewDataSource(tableView: tableView, fetchedResultsController: frc, dataSource: self)
+
+        dataSource = CoreDataTableViewDataSource(tableView:tableView, fetchedResultsController:frc, parentViewController: self)
     }
 }
 
@@ -86,13 +86,13 @@ extension NotificationViewController: UITableViewDelegate {
     }
 }
 
-extension NotificationViewController: TableViewDataSourceDelegate {
-    typealias Object = Request
-    typealias Cell = NotificationCell
-    func configure(_ cell: NotificationCell, for object: Request) {
-        cell.configure(withRequest: object)
-    }
-}
+//extension NotificationViewController: TableViewDataSourceDelegate {
+//    typealias Object = Request
+//    typealias Cell = NotificationCell
+//    func configure(_ cell: NotificationCell, for object: Request) {
+//        cell.configure(withRequest: object)
+//    }
+//}
 
 
 extension NotificationViewController {

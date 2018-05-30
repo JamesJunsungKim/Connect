@@ -9,6 +9,7 @@
 import UIKit
 
 class MessageListCell: ReusableTableViewCell {
+    typealias Object = Dummy
     // UI
     
     fileprivate var profileImageView: UIImageView!
@@ -24,6 +25,9 @@ class MessageListCell: ReusableTableViewCell {
     
     
     // MARK: - Public
+    public func setup(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+//        configure(withMessage: object)
+    }
     
     public func configure(withMessage: Message) {
         

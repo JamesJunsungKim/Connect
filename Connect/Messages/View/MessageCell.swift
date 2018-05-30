@@ -9,6 +9,9 @@
 import UIKit
 
 class MessageCell: ReusableTableViewCell {
+    
+    typealias Object = Dummy
+    
     // UI
     
     fileprivate var partnerProfileImageView: UIImageView!
@@ -27,6 +30,11 @@ class MessageCell: ReusableTableViewCell {
     
     
     // MARK: - Public
+    public func setup(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        sentImageView.isHidden = true
+        bubbleView.backgroundColor = .mainBlue
+    }
+    
     public func configure() {
         sentImageView.isHidden = true
         bubbleView.backgroundColor = .mainBlue

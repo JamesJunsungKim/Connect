@@ -38,8 +38,8 @@ class MessageDetailViewController: UIViewController{
     
     // MARK: - Filepriavte
     fileprivate weak var targetUser: User!
-    fileprivate var dataSource : CoreDataTableViewDataSource<Message,MessageDetailViewController>!
-    fileprivate var dataSource___ : DefaultTableViewDataSource<MessageDetailViewController>!
+//    fileprivate var dataSource : CoreDataTableViewDataSource<MessageCell>!
+    fileprivate var dataSource___ : DefaultTableViewDataSource<MessageCell>!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -51,7 +51,8 @@ class MessageDetailViewController: UIViewController{
     
     fileprivate func setupTableView() {
         tableView.delegate = self
-        dataSource___ = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
+//        dataSource___ = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
+        dataSource___ = DefaultTableViewDataSource(tableView: tableView, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
         
 //        let fromUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.fromUser.uid), targetUser.uid!)
 //        let toUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.toUser.uid), targetUser.uid!)
@@ -61,34 +62,21 @@ class MessageDetailViewController: UIViewController{
 //        request.fetchBatchSize = 20
 //
 //        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
-//
-//        dataSource = CoreDataTableViewDataSource(tableView: tableView, fetchedResultsController: frc, dataSource: self)
+        
+
     }
     
     fileprivate func hideOrShowTabbar(needsToShow flag:Bool) {
         if flag {
             self.tabBarController?.tabBar.layer.zPosition = 0
-            UIView.animate(withDuration: 0.3) {
-               self.view.layoutIfNeeded()
-            }
         } else {
             self.tabBarController?.tabBar.layer.zPosition = -1
-            UIView.animate(withDuration: 0.3) {
-                self.view.layoutIfNeeded()
-            }
         }
     }
     
     
 }
-extension MessageDetailViewController: TableViewDataSourceDelegate, UITableViewDelegate {
-    typealias Object = Dummy
-    typealias Cell = MessageCell
-    
-    func configure(_ cell: MessageCell, for object: Dummy) {
-        cell.configure()
-    }
-    
+extension MessageDetailViewController: UITableViewDelegate {
     // Delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90

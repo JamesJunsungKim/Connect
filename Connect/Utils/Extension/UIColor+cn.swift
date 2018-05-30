@@ -18,7 +18,7 @@ extension UIColor {
         return UIColor(red: red, green: green, blue: blue, alpha: 1)
     }
     
-    static func color(R: Int, G:Int, B:Int, alpha: CGFloat = 1) -> UIColor {
+    static func create(R: Int, G:Int, B:Int, alpha: CGFloat = 1) -> UIColor {
         return UIColor(red: CGFloat(R/255), green: CGFloat(G/255), blue: CGFloat(B/255), alpha: alpha)
     }
     
@@ -42,8 +42,11 @@ extension UIColor {
     }
     
     static var mainBlue: UIColor {
-//        return color(R: 67, G: 116, B: 178)
         return eateryBlue
+    }
+    
+    static var mainGray: UIColor {
+        return UIColor.create(R: 230, G: 230, B: 230)
     }
     
     static var transparentEateryBlue: UIColor {

@@ -10,6 +10,7 @@ import UIKit
 import SDWebImage
 
 class ContactCell: ReusableTableViewCell {
+    typealias Object = NonCDUser
     
     // UI
     fileprivate var profileImageView :UIImageView!
@@ -22,6 +23,9 @@ class ContactCell: ReusableTableViewCell {
         setupUI()
     }
     
+    public func setup(withObject object: NonCDUser, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        configure(withNonCDUser: object)
+    }
     
     public func configure(withUser user: User, isSelectMode: Bool = false) {
         profileImageView.image = user.profilePhoto?.image
@@ -31,7 +35,7 @@ class ContactCell: ReusableTableViewCell {
     
     public func configure(withNonCDUser user: NonCDUser, isSelectMode: Bool = false) {
         nameLabel.text = user.name
-        profileImageView.sd_setImage(with: user.profilePhoto!.url.convertToURL(), completed: nil)
+//        profileImageView.sd_setImage(with: user.profilePhoto!.url.convertToURL(), completed: nil)
         checkImageView.isHidden = !isSelectMode
     }
     

@@ -11,6 +11,8 @@ import ARSLineProgress
 
 class SettingAttributeCell: ReusableTableViewCell {
     
+    typealias Object = SettingAttribute
+    
     // UI
     fileprivate var titleLabel: UILabel!
     fileprivate var contentLabel: UILabel!
@@ -23,6 +25,10 @@ class SettingAttributeCell: ReusableTableViewCell {
     }
     
     // MARK: - Public
+    public func setup(withObject object: SettingAttribute, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        configure(withAttribute: object, withUser: AppStatus.current.user)
+    }
+    
     public func configure(withAttribute attribute: SettingAttribute, withUser user: User) {
         // UI
         self.attribute = attribute

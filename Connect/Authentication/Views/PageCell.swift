@@ -10,6 +10,9 @@ import UIKit
 
 class PageCell: ReusableCollectionViewCell {
     
+    typealias Object = Page
+
+    
     // UI
     fileprivate var imageView: UIImageView!
     fileprivate var titleLabel: UILabel!
@@ -23,6 +26,13 @@ class PageCell: ReusableCollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    func setup(withObject object: Page, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        imageView.image = UIImage(named: object.imageName)
+        titleLabel.text = object.title
+        descriptionLabel.text = object.description
     }
     
     public func configure(withPage page: Page) {

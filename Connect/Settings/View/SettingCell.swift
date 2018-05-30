@@ -10,6 +10,8 @@ import SnapKit
 
 class SettingCell: ReusableTableViewCell {
     
+    typealias Object = Setting
+    
     // UI
     fileprivate var settingImageView: UIImageView!
     fileprivate var titleLabel: UILabel!
@@ -17,6 +19,10 @@ class SettingCell: ReusableTableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
+    }
+    
+    public func setup(withObject object: Setting, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        configure(withSetting: object)
     }
     
     public func configure(withSetting setting: Setting) {

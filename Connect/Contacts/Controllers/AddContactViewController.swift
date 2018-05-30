@@ -79,7 +79,7 @@ class AddContactViewController: UIViewController {
     )}
     
     // MARK: - Fileprivate
-    fileprivate var dataSource : DefaultTableViewDataSource<AddContactViewController>!
+    fileprivate var dataSource : DefaultTableViewDataSource<ContactCell>!
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
     
@@ -101,13 +101,7 @@ extension AddContactViewController:UITextFieldDelegate {
     }
 }
 
-extension AddContactViewController: TableViewDataSourceDelegate,UITableViewDelegate {
-    typealias Object = NonCDUser
-    typealias Cell = ContactCell
-    
-    func configure(_ cell: ContactCell, for object: NonCDUser) {
-        cell.configure(withNonCDUser: object)
-    }
+extension AddContactViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -137,7 +131,7 @@ extension AddContactViewController: DefaultViewController {
         
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = self
-        dataSource = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self)
+        dataSource = DefaultTableViewDataSource<ContactCell>.init(tableView: tableView, parentViewController: self, initialData: nil)
 
         let group: [UIView] = [typeSegment, textfield, searchButton, tableView]
         

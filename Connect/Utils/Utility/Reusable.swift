@@ -7,26 +7,38 @@
 //
 
 import UIKit
-
-protocol Reusable:AnyObject {
-    associatedtype Object = Self
-}
+import CoreData
 
 typealias ReusableTableViewCell = Reusable & UITableViewCell
 typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell
+typealias CoreDataReusableTableViewCell = CoredataReusable & UITableViewCell
+typealias CoreDataReusableCollectionViewCell = CoredataReusable & UICollectionViewCell
+
+protocol Reusable:AnyObject {
+    associatedtype Object
+    func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
+    func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
+}
 
 extension Reusable {
     static var reuseIdentifier: String {
-        let className = String(describing: Self.self)
+        let className = String(describing: self)
         return className
     }
+    func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
 }
 
-extension Reusable where Self: UITableViewCell {
-    
-    static func cell(fromTableView tableView: UITableView, atIndexPath indexPath: IndexPath, configuration:(Self)->()) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! Self
-        configuration(cell)
-        return cell
+protocol CoredataReusable:AnyObject {
+    associatedtype Object:NSFetchRequestResult
+    func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
+    func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
+}
+
+extension CoredataReusable {
+    static var reuseIdentifier: String {
+        let className = String(describing: self)
+        return className
     }
+    
+    func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
 }

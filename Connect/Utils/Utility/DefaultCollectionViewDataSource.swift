@@ -8,16 +8,15 @@
 
 import UIKit
 
-class DefaultCollectionViewDataSource<Delegate:CollectionViewDataSourceDelegate>:NSObject, UICollectionViewDataSource {
+class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UICollectionViewDataSource {
     
-    typealias Object = Delegate.Object
-    typealias Cell = Delegate.Cell
+    typealias Object = A.Object
+    typealias Cell = A
     
-    init(collectionView: UICollectionView, sourceDelegate: Delegate, initialData: [Object]?) {
+    init(collectionView: UICollectionView, parentViewController: UIViewController, initialData: [Object]?) {
         self.collectionView = collectionView
-        self.sourceDelegate = sourceDelegate
+        self.parentViewController = parentViewController
         super.init()
-        
         collectionView.register(Cell.self, forCellWithReuseIdentifier: Cell.reuseIdentifier)
         collectionView.dataSource = self
         arrayOfObjects = initialData.unwrapOr(defaultValue: [Object]())
@@ -45,7 +44,7 @@ class DefaultCollectionViewDataSource<Delegate:CollectionViewDataSourceDelegate>
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        sourceDelegate.configure(cell, for: arrayOfObjects[indexPath.item])
+        cell.setup(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
         return cell
     }
     
@@ -53,5 +52,5 @@ class DefaultCollectionViewDataSource<Delegate:CollectionViewDataSourceDelegate>
     // MARK: - Fileprivate
     fileprivate let collectionView: UICollectionView
     fileprivate var arrayOfObjects = [Object]()
-    fileprivate weak var sourceDelegate: Delegate!
+    fileprivate weak var parentViewController: UIViewController!
 }

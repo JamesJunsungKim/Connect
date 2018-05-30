@@ -23,9 +23,6 @@ class ContactViewController: UIViewController {
         setupUI()
         setupVC()
         setupTableView()
-        
-        // Need to delete it.
-        dataSource___.update(data: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
     }
     
     deinit {
@@ -43,8 +40,8 @@ class ContactViewController: UIViewController {
     }
     
     // MARK: - Filepriavte
-    fileprivate var dataSource___: DefaultTableViewDataSource<ContactViewController>!
-    fileprivate var datasource : CoreDataTableViewDataSource<User,ContactViewController>!
+    fileprivate var dataSource___: DefaultTableViewDataSource<ContactCell>!
+//    fileprivate var datasource : CoreDataTableViewDataSource<User,ContactViewController>!
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     fileprivate var searchbarIsPresent = false
     
@@ -61,7 +58,7 @@ class ContactViewController: UIViewController {
     
     fileprivate func setupTableView() {
         tableview.delegate = self
-        dataSource___ = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self)
+        dataSource___ = DefaultTableViewDataSource<ContactCell>.init(tableView: tableview, parentViewController: self, initialData: [NonCDUser(uid: "A", name: "HI", phoneNumber: nil, emailAddress: "B", isPrivate: false, isFavorite: false, isOwner: true, isSelected: false, contacts: [], profilePhoto: nil, groups: [])])
         
 //        let request = User.sortedFetchRequest
 //        request.returnsObjectsAsFaults = false
@@ -115,14 +112,14 @@ extension ContactViewController: UITableViewDelegate {
     }
 }
 
-extension ContactViewController: TableViewDataSourceDelegate {
-    typealias Object = Dummy
-    typealias Cell = ContactCell
-    
-    func configure(_ cell: ContactCell, for object: Dummy) {
-        
-    }
-}
+//extension ContactViewController: TableViewDataSourceDelegate {
+//    typealias Object = Dummy
+//    typealias Cell = ContactCell
+//    
+//    func configure(_ cell: ContactCell, for object: Dummy) {
+//        
+//    }
+//}
 
 
 extension ContactViewController {

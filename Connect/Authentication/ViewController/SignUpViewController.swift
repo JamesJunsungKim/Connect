@@ -221,7 +221,7 @@ extension SignUpViewController {
         facebookSignUpButton = {
             let bt = UIButton(type: .system)
             bt.backgroundColor = .clear
-            let title = NSAttributedString(string: "Sign up with Facebook", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 13), NSAttributedStringKey.foregroundColor:UIColor.color(R: 68, G: 89, B: 150)])
+            let title = NSAttributedString(string: "Sign up with Facebook", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 13), NSAttributedStringKey.foregroundColor:UIColor.create(R: 68, G: 89, B: 150)])
             bt.setAttributedTitle(title, for: .normal)
             bt.addTarget(self, action: #selector(facebookBtnClicked), for: .touchUpInside)
             return bt

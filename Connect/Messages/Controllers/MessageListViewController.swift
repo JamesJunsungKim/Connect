@@ -37,8 +37,8 @@ class MessageListViewController: UIViewController {
     }
     
     // MARK: - Filepriavte
-    fileprivate var dataSource: CoreDataTableViewDataSource<Message,MessageListViewController>!
-    fileprivate var dataSource__: DefaultTableViewDataSource<MessageListViewController>!
+//    fileprivate var dataSource: CoreDataTableViewDataSource<Message,MessageListViewController>!
+    fileprivate var dataSource__: DefaultTableViewDataSource<MessageListCell>!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -50,8 +50,7 @@ class MessageListViewController: UIViewController {
     fileprivate func setupTableView(){
         tableview.delegate = self
         
-        dataSource__ = DefaultTableViewDataSource.init(tableView: tableview, sourceDelegate: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
-        
+        dataSource__ = DefaultTableViewDataSource(tableView: tableview, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
 //        let request = Message.sortedFetchRequest
 //        request.returnsObjectsAsFaults = false
 //        request.fetchBatchSize = 12
@@ -62,14 +61,7 @@ class MessageListViewController: UIViewController {
         
     }
 }
-extension MessageListViewController: TableViewDataSourceDelegate, UITableViewDelegate {
-    typealias Object = Dummy
-    typealias Cell = MessageListCell
-    
-    func configure(_ cell: MessageListCell, for object: Dummy) {
-        
-    }
-    
+extension MessageListViewController: UITableViewDelegate {
     // MARK: - TableView Delegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80

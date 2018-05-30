@@ -8,7 +8,9 @@
 
 import UIKit
 
-class NotificationCell: ReusableTableViewCell {
+class NotificationCell: CoreDataReusableTableViewCell {
+    typealias Object = Request
+    
     // UI
     fileprivate var profileImageView: UIImageView!
     fileprivate var descriptionLabel: UILabel!
@@ -25,6 +27,10 @@ class NotificationCell: ReusableTableViewCell {
     }
     
     // MARK: - Public
+    
+    public func setup(withObject object: Request, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        configure(withRequest: object)
+    }
     
     public func configure(withRequest request: Request) {
         self.request = request

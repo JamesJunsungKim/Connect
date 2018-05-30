@@ -8,14 +8,15 @@
 
 import UIKit
 
-class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject, UITableViewDataSource {
+class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableViewDataSource {
     
-    typealias Object = Delegate.Object
-    typealias Cell = Delegate.Cell
+    typealias Object = A.Object
+    typealias Cell = A
     
-    init(tableView: UITableView, sourceDelegate: Delegate, initialData: [Object]? = nil) {
+    init(tableView: UITableView, parentViewController: UIViewController, initialData: [Object]? = nil, observableCell: ((A)->())? = nil) {
         self.tableView = tableView
-        self.sourceDelegate = sourceDelegate
+        self.parentViewController = parentViewController
+        if observableCell != nil {self.observe = observableCell!}
         super.init()
         tableView.dataSource = self
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
@@ -44,7 +45,8 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        sourceDelegate.configure(cell, for: arrayOfObjects[indexPath.row])
+        cell.setup(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
+        if observe != nil {observe(cell)}
         return cell
     }
     
@@ -54,7 +56,8 @@ class DefaultTableViewDataSource<Delegate:TableViewDataSourceDelegate>: NSObject
     
     fileprivate let tableView: UITableView
     fileprivate var arrayOfObjects = [Object]()
-    fileprivate weak var sourceDelegate: Delegate!
+    fileprivate weak var parentViewController: UIViewController!
+    fileprivate var observe: ((A)->())!
 }
 
 

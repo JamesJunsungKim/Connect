@@ -9,15 +9,16 @@
 import UIKit
 import CoreData
 
-class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: TableViewDataSourceDelegate>:NSObject, UITableViewDataSource, NSFetchedResultsControllerDelegate {
+class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UITableViewDataSource, NSFetchedResultsControllerDelegate {
     
-    typealias Object = DataSource.Object
-    typealias Cell = DataSource.Cell
+    typealias Object = A.Object
+    typealias Cell = A
     
-    required init(tableView:UITableView, fetchedResultsController:NSFetchedResultsController<Result>, dataSource:DataSource) {
+    required init(tableView:UITableView, fetchedResultsController:NSFetchedResultsController<Object>, parentViewController: UIViewController, observableCell: ((A)->())? = nil) {
         self.tableView = tableView
         self.fetchedResultsController = fetchedResultsController
-        self.dataSource = dataSource
+        self.parentViewController = parentViewController
+        if observableCell != nil {self.observe = observableCell!}
         super.init()
         fetchedResultsController.delegate = self
         try! fetchedResultsController.performFetch()
@@ -32,10 +33,11 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     }
     
     public func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
-        return (fetchedResultsController.object(at: indexPath) as! Object)
+        return fetchedResultsController.object(at: indexPath)
+        
     }
     
-    public func reconfigureFetchRequest(_ configure: (NSFetchRequest<Result>) -> ()) {
+    public func reconfigureFetchRequest(_ configure: (NSFetchRequest<Object>) -> ()) {
         NSFetchedResultsController<NSFetchRequestResult>.deleteCache(withName: fetchedResultsController.cacheName)
         configure(fetchedResultsController.fetchRequest)
         do { try fetchedResultsController.performFetch() } catch { fatalError("fetch request failed") }
@@ -44,8 +46,9 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     
     // MARK: - Filepriavte
     fileprivate let tableView: UITableView
-    fileprivate let fetchedResultsController: NSFetchedResultsController<Result>
-    fileprivate weak var dataSource: DataSource!
+    fileprivate let fetchedResultsController: NSFetchedResultsController<Object>
+    fileprivate weak var parentViewController: UIViewController!
+    fileprivate var observe: ((A)->())!
     
     // MARK: - UITableViewDataSource
     
@@ -56,13 +59,13 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = fetchedResultsController.sections?[section] else {return 0}
-        return section.numberOfObjects + dataSource.numberOfAdditionalRows
+        return section.numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let object = objectAtIndexPath(indexPath)
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as? Cell else {fatalError()}
-        dataSource.configure(cell, for: object)
+        cell.setup(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
+        if observe != nil {observe(cell)}
         return cell
     }
     
@@ -82,7 +85,7 @@ class CoreDataTableViewDataSource<Result: NSFetchRequestResult, DataSource: Tabl
             guard let indexPath = indexPath else { fatalError("Index path should be not nil") }
             let object = objectAtIndexPath(indexPath)
             guard let cell = tableView.cellForRow(at: indexPath) as? Cell else { break }
-            dataSource.configure(cell, for: object)
+            cell.update(withObject: object, atIndexPath: indexPath)
         case .delete:
             guard let indexPath = indexPath else { fatalError("Index path should be not nil") }
             tableView.deleteRows(at: [indexPath], with: .fade)
