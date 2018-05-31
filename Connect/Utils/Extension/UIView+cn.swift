@@ -9,6 +9,7 @@
 import UIKit
 
 extension UIView {
+    
     public func getParentViewController() -> UIViewController? {
         var parentResponder: UIResponder? = self
         while parentResponder != nil {
@@ -38,6 +39,8 @@ extension UIView {
         return result!
     }
     
+   
+    
     // MARK: - static
     
     public static func create(withColor color: UIColor = .lightGray) -> UIView {
@@ -45,4 +48,15 @@ extension UIView {
         v.backgroundColor = color
         return v
     }
+    
+    public static func debugArea(target:[UIView]) {
+        let debugColor: [UIColor] = [.red, .blue, .green, .magenta, .cyan, .orange, .brown, .mainBlue]
+        guard target.count <= debugColor.count else {assertionFailure();return}
+        
+        for index in 0..<target.count {
+            target[index].backgroundColor = debugColor[index]
+        }
+    }
+    
+    // MARK: - Fileprivate
 }

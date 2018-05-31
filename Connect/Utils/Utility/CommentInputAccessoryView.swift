@@ -74,7 +74,7 @@ extension CommentInputAccessoryView {
         
         submitButton = UIButton.create(title: "Submit", titleColor: .mainBlue, fontSize: 14, backgroundColor: .clear)
         
-        let separatorLine = UIView.create(withColor: .mainGray)
+        let separatorLine = UIView.create(withColor: .lightGray)
         
         textView.addSubview(placeholderLabel)
         

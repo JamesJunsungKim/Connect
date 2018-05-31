@@ -117,7 +117,7 @@ extension MessageDetailViewController: DefaultViewController {
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.keyboardDismissMode = .interactive
         
-        commentInputAccessroyView = CommentInputAccessoryView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 40))
+        commentInputAccessroyView = CommentInputAccessoryView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 30))
         
         let group:[UIView] = [tableView]
         group.forEach(view.addSubview(_:))

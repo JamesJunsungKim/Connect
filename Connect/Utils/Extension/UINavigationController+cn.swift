@@ -16,6 +16,10 @@ extension UINavigationController {
         navigationBar.setTitleVerticalPositionAdjustment(size, for: .default)
     }
     
+    public func searchFor<A:UIViewController>(targetViewController: A) -> A {
+        return (self.viewControllers.first(where: {$0 is A}) as! A)
+    }
+    
     // MARK: - Static
    internal static func createDefaultNavigationController(rootViewController: UIViewController, withLargeTitle flag: Bool = false)->UINavigationController {
         let nav = UINavigationController(rootViewController: rootViewController)

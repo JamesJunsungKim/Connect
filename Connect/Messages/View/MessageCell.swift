@@ -22,15 +22,9 @@ class MessageCell: ReusableTableViewCell {
     fileprivate var timeStampLabel: UILabel!
     fileprivate var checkboxImageView: UIImageView!
     
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupUI()
-    }
-    
-    
     // MARK: - Public
     public func setup(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+        setupUI()
         sentImageView.isHidden = true
         bubbleView.backgroundColor = .mainBlue
     }
@@ -48,9 +42,6 @@ class MessageCell: ReusableTableViewCell {
     
     // MARK: - Fileprivate
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }
 
 extension MessageCell {
@@ -83,7 +74,7 @@ extension MessageCell {
             bubbleView.setCornerRadious(value: 5)
             make.left.equalToSuperview().offset(40)
             make.topBottomEqualToSuperView(withOffset: 1)
-            make.width.equalTo(frame.width*4/5)
+            make.width.equalTo(frame.width*5/8)
         }
         
         textView.snp.makeConstraints { (make) in

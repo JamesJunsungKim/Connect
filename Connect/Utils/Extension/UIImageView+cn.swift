@@ -23,6 +23,7 @@ extension UIImageView {
         let iv = UIImageView()
         let image = UIImage(named: imageName)
         iv.image = image
+        iv.isUserInteractionEnabled = true
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         return iv
@@ -31,20 +32,15 @@ extension UIImageView {
     public static func create(withImage image: UIImage, contentMode: UIViewContentMode = .scaleAspectFit) -> UIImageView {
         let iv = UIImageView()
         iv.image = image
+        iv.isUserInteractionEnabled = true
         iv.contentMode = contentMode
         iv.clipsToBounds = true
         return iv
     }
     
     static func create(withImageKey key: UIImage.Name) -> UIImageView {
-        let iv = UIImageView()
-        iv.image = UIImage.create(forKey: key)
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
+        return create(withImage: UIImage.create(forKey: key))
     }
-    
-    
 }
 
 

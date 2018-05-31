@@ -19,7 +19,6 @@ extension UITableView {
         register(cell.classForCoder, forCellReuseIdentifier: A.reuseIdentifier)
     }
     
-    
     // MARK: - Fileprivate
     fileprivate func set(delegate: UITableViewDelegate, datasource: UITableViewDataSource) {
         self.dataSource = datasource
