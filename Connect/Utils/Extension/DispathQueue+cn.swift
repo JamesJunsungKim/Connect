@@ -21,8 +21,6 @@ extension DispatchQueue{
 extension DispatchTime {
     static func waitFor(milliseconds: Int, completion: @escaping ()->()) {
         let deadlineTime = DispatchTime.now() + .milliseconds(milliseconds)
-        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            completion()
-        }
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime, execute: completion)
     }
 }

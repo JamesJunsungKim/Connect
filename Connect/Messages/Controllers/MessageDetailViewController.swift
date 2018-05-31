@@ -47,7 +47,7 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     
     // MARK: - Actions
     
-    fileprivate var userDidTypeText: (String)->() = { text in
+    fileprivate var userDidTypeText: (String)->() = { _ in
         // TODO: need to make a new message based on the text
     }
     
