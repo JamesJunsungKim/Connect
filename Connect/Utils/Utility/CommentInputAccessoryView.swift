@@ -9,7 +9,6 @@
 import UIKit
 import RxSwift
 
-
 class CommentInputAccessoryView: UIView {
     // UI
     fileprivate var textView: UITextView!
@@ -24,12 +23,11 @@ class CommentInputAccessoryView: UIView {
     }
     
     // MARK: - Public/Internal
-    public func textViewObservable: Observable<String> {
+    public var textViewObservable: Observable<String> {
         return textSubject.asObservable()
     }
     
     // MARK: - Actions
-    
     @objc fileprivate func submitBtnClicked() {
         textSubject.onNext(textView.text)
         textView.text = nil
@@ -40,16 +38,16 @@ class CommentInputAccessoryView: UIView {
     fileprivate var textSubject = PublishSubject<String>()
     
     fileprivate func setupView() {
+        self.backgroundColor = .white
         autoresizingMask = .flexibleHeight
     }
     
     fileprivate func addTarget() {
         submitButton.addTarget(self, action: #selector(submitBtnClicked), for: .touchUpInside)
-        textView.delegate = self
     }
     
     fileprivate func showOrHidePlaceHolder() {
-        placeholderLabel.isHidden = textView.text.isEmpty
+        placeholderLabel.isHidden = !textView.text.isEmpty
     }
     
     override var intrinsicContentSize: CGSize {
@@ -71,9 +69,10 @@ extension CommentInputAccessoryView {
     fileprivate func setupUI() {
         placeholderLabel = UILabel.create(text: "Enter Comment", textAlignment: .left, textColor: .lightGray, fontSize: 15, boldFont: false, numberofLine: 1)
         
-        textView = UITextView.create(text: "", mainFontSize: 18, customFont: nil, textColor: .black, backgroundColor: .clear, textAlignment: .left, isEditable: false, isScrollEnabled: false, attributedText: nil)
+        textView = UITextView.create(text: "", mainFontSize: 18, customFont: nil, textColor: .black, backgroundColor: .clear, textAlignment: .left, isEditable: true, isScrollEnabled: false, attributedText: nil)
+        textView.delegate = self
         
-        submitButton = UIButton.create(title: "Submit", titleColor: .white, fontSize: 14, backgroundColor: .mainBlue)
+        submitButton = UIButton.create(title: "Submit", titleColor: .mainBlue, fontSize: 14, backgroundColor: .clear)
         
         let separatorLine = UIView.create(withColor: .mainGray)
         
@@ -83,7 +82,8 @@ extension CommentInputAccessoryView {
         group.forEach(self.addSubview(_:))
         
         placeholderLabel.snp.makeConstraints { (make) in
-            make.top.left.equalToSuperview().offset(8)
+            make.top.equalToSuperview().offset(9)
+            make.left.equalToSuperview().offset(6)
         }
         
         textView.snp.makeConstraints { (make) in
@@ -93,18 +93,14 @@ extension CommentInputAccessoryView {
         }
         
         submitButton.snp.makeConstraints { (make) in
-            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-14)
             make.right.equalToSuperview().offset(-12)
-            make.sizeEqualTo(width: 50, height: 50)
+            make.sizeEqualTo(width: 50, height: 30)
         }
         
-        
-        
-        
-        
-        
-        
-        
-        
+        separatorLine.snp.makeConstraints { (make) in
+            make.left.right.top.equalToSuperview()
+            make.height.equalTo(0.5)
+        }
     }
 }

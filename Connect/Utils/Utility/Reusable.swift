@@ -14,7 +14,7 @@ typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell
 typealias CoreDataReusableTableViewCell = CoredataReusable & UITableViewCell
 typealias CoreDataReusableCollectionViewCell = CoredataReusable & UICollectionViewCell
 
-protocol Reusable:AnyObject {
+protocol Reusable:AnyObject, NameDescribable {
     associatedtype Object
     func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
@@ -22,13 +22,12 @@ protocol Reusable:AnyObject {
 
 extension Reusable {
     static var reuseIdentifier: String {
-        let className = String(describing: self)
-        return className
+        return Self.staticClassName
     }
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
 }
 
-protocol CoredataReusable:AnyObject {
+protocol CoredataReusable:AnyObject, NameDescribable {
     associatedtype Object:NSFetchRequestResult
     func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
@@ -36,8 +35,7 @@ protocol CoredataReusable:AnyObject {
 
 extension CoredataReusable {
     static var reuseIdentifier: String {
-        let className = String(describing: self)
-        return className
+        return Self.staticClassName
     }
     
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
