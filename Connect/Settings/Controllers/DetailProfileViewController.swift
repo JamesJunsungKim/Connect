@@ -23,6 +23,11 @@ class DetailProfileViewController: UIViewController {
     fileprivate var nameLabel: UILabel!
     fileprivate var tableView: UITableView!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +52,8 @@ class DetailProfileViewController: UIViewController {
     @objc fileprivate func nameTapped() {
         let targetAttribute = userSettingAttributes.first(where: {$0.contentType == .name})!
         let userInfo: [String:Any] = [SettingAttribute.Key.settingAttribute: targetAttribute]
-        presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: userInfo)
+        presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: userInfo)
+        
     }
     
     fileprivate func didSelectTableViewCell(atIndexPath indexPath:IndexPath) {
@@ -57,7 +63,7 @@ class DetailProfileViewController: UIViewController {
             switch attribute.contentType {
             case .email: break
             default:
-                presentDefaultVC(targetVC: EditSettingDetailViewController(), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
+                presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
             }
         case .toggle: break
             
@@ -84,10 +90,12 @@ class DetailProfileViewController: UIViewController {
     
     // MARK: - Filepriavte
     
+    fileprivate let appStatus: AppStatus
+    
     fileprivate var userSettingAttributes = User.settingAttributes()
     
     fileprivate var user: User {
-        return AppStatus.current.user
+        return appStatus.user
     }
     
     fileprivate let bag = DisposeBag()
@@ -96,7 +104,7 @@ class DetailProfileViewController: UIViewController {
         view.backgroundColor = .white
         navigationItem.largeTitleDisplayMode = .never
         
-        AppStatus.current.userObservable
+        appStatus.userObservable
             .subscribe(
             onNext: {[unowned self] (user) in
                 // set profile photo
@@ -130,6 +138,11 @@ class DetailProfileViewController: UIViewController {
     fileprivate func targetAttribute(forIndexPath indexPath: IndexPath) -> SettingAttribute {
         return userSettingAttributes.first(where: {$0.targetIndexPath == indexPath})!
     }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     
 }
 
@@ -179,7 +192,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
         
         Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
-            AppStatus.current.user.setProfilePhoto(with: photo)
+            self.appStatus.user.setProfilePhoto(with: photo)
             self.user.patch(toNode: User.Key.profilePhoto + Photo.Key.url, withValue: photo.url!, success: {
                ARSLineProgress.showSuccess()
             }, failure: {[unowned self] (error) in
@@ -241,6 +254,7 @@ extension DetailProfileViewController:DefaultViewController {
             make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
+
     
 }
 

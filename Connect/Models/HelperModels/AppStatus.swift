@@ -8,14 +8,17 @@
 
 import Foundation
 import RxSwift
+import CoreData
 
 class AppStatus {
-    static let current = AppStatus()
     
-    private init() {}
+    init(currentUser: User, mainContext: NSManagedObjectContext) {
+        self.user = currentUser
+        self.mainContext = mainContext
+    }
     
-    
-    var user: User!
+    var user: User
+    let mainContext: NSManagedObjectContext
     
     public var userObservable : Observable<User> {
         return currentUserSubject.asObservable()

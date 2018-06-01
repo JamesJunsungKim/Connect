@@ -12,11 +12,14 @@ import CoreData
 class ContactViewController: UIViewController {
     
     // UI
-    
     fileprivate var tableview: UITableView!
     
-    public var user: User!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -36,10 +39,11 @@ class ContactViewController: UIViewController {
     }
     
     @objc fileprivate func plusBtnClicked() {
-        presentDefaultVC(targetVC: AddContactViewController(), userInfo: nil)
+        presentDefaultVC(targetVC: AddContactViewController(appStatus: appStatus), userInfo: nil)
     }
     
     // MARK: - Filepriavte
+    fileprivate let appStatus : AppStatus
     fileprivate var dataSource___: DefaultTableViewDataSource<ContactCell>!
 //    fileprivate var datasource : CoreDataTableViewDataSource<User,ContactViewController>!
     fileprivate let searchController = UISearchController(searchResultsController: nil)
@@ -91,6 +95,10 @@ class ContactViewController: UIViewController {
             navigationItem.titleView = nil
             hideOrShowNavigationItems(needsToShow: true)
         }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     

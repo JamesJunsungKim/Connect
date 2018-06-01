@@ -18,6 +18,12 @@ class EditSettingDetailViewController: UIViewController {
     fileprivate var textLimitLabel: UILabel!
     fileprivate var saveButton: UIButton!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -34,7 +40,7 @@ class EditSettingDetailViewController: UIViewController {
     @objc fileprivate func saveBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
         attribute.content = textField.text!
-        AppStatus.current.updateSettingAttributeAndPatch(withAttribute: self.attribute, success: {[unowned self] in
+        appStatus.updateSettingAttributeAndPatch(withAttribute: self.attribute, success: {[unowned self] in
             ARSLineProgress.showSuccess(andThen: { [unowned self] in
                 self.navigationController?.popViewController(animated: true)
             })
@@ -49,8 +55,9 @@ class EditSettingDetailViewController: UIViewController {
     
     
     // MARK: - Fileprivate
+    fileprivate let appStatus:AppStatus
     fileprivate var user: User {
-        return AppStatus.current.user
+        return appStatus.user
     }
     
     fileprivate var attribute: SettingAttribute!
@@ -97,13 +104,17 @@ class EditSettingDetailViewController: UIViewController {
         textLimitLabel.textColor = letterCount <= maxCount ? .black : .red
         return "\(letterCount!)/\(maxCount)"
     }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
 extension EditSettingDetailViewController: DefaultViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
-        attribute = SettingAttribute.unwrapFrom(userInfo: userInfo!)
-        configure(withUser: AppStatus.current.user, withAttribute: attribute)
+        attribute = SettingAttribute.unwrapSingleInstanceFrom(userInfo: userInfo!)
+        configure(withUser: appStatus.user, withAttribute: attribute)
     }
     
     fileprivate func setupUI() {

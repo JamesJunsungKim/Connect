@@ -13,15 +13,25 @@ import SwiftyJSON
 
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
-    public var context: NSManagedObjectContext!
+    init(appStatus: AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabbar()
         setupViewControllers()
-        checkSignInUserAndFetchAndSaveToAppStatus()
         setupObservers()
     }
+    
+    // MARK: - Public/Intenral
+    public let appStatus: AppStatus
     
     // MARK: - Fileprivate
     
@@ -36,18 +46,18 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         // observe a node deleted from setnRequest (cuz it will be deleted when the user accepts or disapprove it)
 
         // observe a node added to receivedReques to notify user of the request.
-        FireDatabase.receivedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
+        FireDatabase.receivedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) { (snapshot) in
             guard let result = snapshot.value as? [String:Any] else {return}
-            Request.convertAndCreate(fromJSON: JSON(result), into: mainContext, success: { (request) in
-                AppStatus.current.user.insert(request: request, intoSentNode: false)
-                AppStatus.current.received(request: request)
+            Request.convertAndCreate(fromJSON: JSON(result), into: mainContext, success: {[unowned self] (request) in
+                self.appStatus.user.insert(request: request, intoSentNode: false)
+                self.appStatus.received(request: request)
             }, failure: {[unowned self] (error) in
                 self.presentDefaultError(message: error.localizedDescription, okAction: nil)
             })
         }
         
         // Observe for completed Requests
-        FireDatabase.approvedRequests(uid: AppStatus.current.user.uid!).reference.observe(.childAdded) { (snapshot) in
+        FireDatabase.approvedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) { (snapshot) in
             guard let result = snapshot.value as? [String:Any], let uid = result[Request.Key.uid] as? String else {return}
             
             guard let targetRequest = Request.findOrFetch(forUID: uid) else {
@@ -64,11 +74,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     
     fileprivate func setupViewControllers() {
-        let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController(), withLargetitle: false)
-        let contactNav = templatenavController(unselected: #imageLiteral(resourceName: "contacts_unselected"), selected: #imageLiteral(resourceName: "contacts_selected"), rootViewController: ContactViewController(), withLargetitle: false)
-        let messageNav = templatenavController(unselected: #imageLiteral(resourceName: "message_unselected"), selected: #imageLiteral(resourceName: "message_selected"), rootViewController: MessageListViewController(), withLargetitle: false)
-        let notificationNav = templatenavController(unselected: #imageLiteral(resourceName: "notification_unselected"), selected: #imageLiteral(resourceName: "notification_selected"), rootViewController: NotificationViewController(), withLargetitle: false)
-        let settingsNav = templatenavController(unselected: #imageLiteral(resourceName: "settings_unselected"), selected: #imageLiteral(resourceName: "settings_selected"), rootViewController: SettingsViewController(), withLargetitle: false)
+        let homeNav = templatenavController(unselected: #imageLiteral(resourceName: "home_unselected"), selected: #imageLiteral(resourceName: "home_selected"), rootViewController: HomeViewController(appStatus: appStatus), withLargetitle: false)
+        let contactNav = templatenavController(unselected: #imageLiteral(resourceName: "contacts_unselected"), selected: #imageLiteral(resourceName: "contacts_selected"), rootViewController: ContactViewController(appStatus: appStatus), withLargetitle: false)
+        let messageNav = templatenavController(unselected: #imageLiteral(resourceName: "message_unselected"), selected: #imageLiteral(resourceName: "message_selected"), rootViewController: MessageListViewController(appStatus: appStatus), withLargetitle: false)
+        let notificationNav = templatenavController(unselected: #imageLiteral(resourceName: "notification_unselected"), selected: #imageLiteral(resourceName: "notification_selected"), rootViewController: NotificationViewController(appStatus: appStatus), withLargetitle: false)
+        let settingsNav = templatenavController(unselected: #imageLiteral(resourceName: "settings_unselected"), selected: #imageLiteral(resourceName: "settings_selected"), rootViewController: SettingsViewController(appStatus: appStatus), withLargetitle: false)
         
         viewControllers = [homeNav, contactNav, messageNav, notificationNav, settingsNav]
     }
@@ -84,11 +94,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         return navController
     }
     
-    fileprivate func checkSignInUserAndFetchAndSaveToAppStatus() {
-        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), AppStatus.current.user != nil else {
-            AppStatus.current.user = User.fetchSignedInUser()
-            return}
-    }
+//    fileprivate func checkSignInUserAndFetchAndSaveToAppStatus() {
+//        guard UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser), AppStatus.current.user != nil else {
+//            AppStatus.current.user = User.fetchSignedInUser()
+//            return}
+//    }
 }
 
 

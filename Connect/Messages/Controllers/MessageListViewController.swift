@@ -13,6 +13,14 @@ class MessageListViewController: UIViewController {
     
     fileprivate var tableview: UITableView!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+    
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -33,10 +41,12 @@ class MessageListViewController: UIViewController {
     
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
         // TODO: get the target user from data source and pass it to the next view controller
-        presentDefaultVC(targetVC: MessageDetailViewController(), userInfo: nil)
+        presentDefaultVC(targetVC: MessageDetailViewController(appStatus: appStatus), userInfo: nil)
+        
     }
     
     // MARK: - Filepriavte
+    fileprivate let appStatus: AppStatus
 //    fileprivate var dataSource: CoreDataTableViewDataSource<Message,MessageListViewController>!
     fileprivate var dataSource__: DefaultTableViewDataSource<MessageListCell>!
     
@@ -59,6 +69,9 @@ class MessageListViewController: UIViewController {
 //
 //        dataSource = CoreDataTableViewDataSource(tableView: tableview, fetchedResultsController: frc, dataSource: self)
         
+    }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 extension MessageListViewController: UITableViewDelegate {

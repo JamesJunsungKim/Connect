@@ -15,7 +15,6 @@ extension DispatchQueue{
     static func performOnBackground(block:@escaping block) {
         DispatchQueue.global(qos: .background).async(execute: block)
     }
-    
 }
 
 extension DispatchTime {

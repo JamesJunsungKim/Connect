@@ -40,8 +40,7 @@ class SetupDetailAccountViewController: UIViewController {
                 ARSLineProgress.showSuccess(andThen: {[unowned self] in
                     UserDefaults.store(object: self.user.uid!, forKey: .uidForSignedInUser)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.switchToMainWindow()
-                    AppStatus.current.user = self.user
+                    appDelegate.switchToMainWindow(user: self.user)
                 })
             }, failure: {[unowned self] (error) in
                 ARSLineProgress.hide()
@@ -67,13 +66,6 @@ class SetupDetailAccountViewController: UIViewController {
     }
 }
 
-extension SetupDetailAccountViewController: DefaultViewController {
-    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        let user = User.unwrapFrom(userInfo: userInfo!)
-        self.user = user
-    }
-}
-
 extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         guard let image = unwrapEditImageOrOriginal(fromInfo: info)?.withRenderingMode(.alwaysOriginal) else {fatalError("Image must exist")}
@@ -84,7 +76,11 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 }
 
 // UI
-extension SetupDetailAccountViewController {
+extension SetupDetailAccountViewController:DefaultViewController {
+    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
+        self.user = User.unwrapSingleInstanceFrom(userInfo: userInfo)
+    }
+    
     fileprivate func setupUI(){
         profileImageButton = UIButton.create(withImageName: "profile_image")
         profileImageButton.setCornerRadious(value: 60)

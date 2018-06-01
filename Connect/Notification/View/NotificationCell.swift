@@ -51,7 +51,7 @@ class NotificationCell: CoreDataReusableTableViewCell {
         case .friendRequest:
             // at first, add the user to the contact
             
-            AppStatus.current.addUserToContact(user: request.fromUser)
+            AppStatus.addUserToContact(user: request.fromUser)
             request.completedByToUser(success: {[unowned self] in
                 //TODO: Think about what to do when it's completed.
             }) {[unowned self] (error) in

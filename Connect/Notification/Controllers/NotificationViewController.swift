@@ -13,9 +13,14 @@ import CoreData
 class NotificationViewController: UIViewController {
 
     // UI
-    
     fileprivate var tableView: UITableView!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -41,6 +46,7 @@ class NotificationViewController: UIViewController {
     }
     
     // MARK: - Fileprivate
+    fileprivate let appStatus: AppStatus
     fileprivate var dataSource: CoreDataTableViewDataSource<NotificationCell>!
     fileprivate let bag = DisposeBag()
     
@@ -66,6 +72,11 @@ class NotificationViewController: UIViewController {
 
         dataSource = CoreDataTableViewDataSource(tableView:tableView, fetchedResultsController:frc, parentViewController: self)
     }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
 extension NotificationViewController: UITableViewDelegate {

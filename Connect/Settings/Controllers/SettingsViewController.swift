@@ -18,6 +18,12 @@ class SettingsViewController: UIViewController {
     // UI
     fileprivate var tableView: UITableView!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -32,8 +38,10 @@ class SettingsViewController: UIViewController {
     
     //MARK: - Filepriavte
     
+    fileprivate let appStatus: AppStatus
+    
     fileprivate var user: User {
-        return AppStatus.current.user
+        return appStatus.user
     }
     
     fileprivate var settings = Setting.fetchDefaultSettings()
@@ -44,7 +52,7 @@ class SettingsViewController: UIViewController {
         navigationItem.title = "Settings"
         
         // Observe the app status for UI changes.
-        AppStatus.current.userObservable
+        appStatus.userObservable
             .subscribe(
                 onNext: {[unowned self] (user) in
                     self.tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
@@ -58,6 +66,11 @@ class SettingsViewController: UIViewController {
     
     fileprivate func targetSetting(forIndexPath indexPath: IndexPath) -> Setting {
         return settings.first(where: {$0.indexPath == indexPath})!
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
 }
@@ -97,7 +110,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch SectionTitle(rawValue: indexPath.section)! {
         case .profile:
-            presentDefaultVC(targetVC: DetailProfileViewController(), userInfo: nil)
+            presentDefaultVC(targetVC: DetailProfileViewController(appStatus: appStatus), userInfo: nil)
         default:
             break
         }

@@ -14,9 +14,14 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     
     //UI
     fileprivate var tableView: UITableView!
-    
     fileprivate var commentInputAccessroyView: CommentInputAccessoryView!
+    
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()  
@@ -52,6 +57,7 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     }
     
     // MARK: - Filepriavte
+    fileprivate let appStatus: AppStatus
     fileprivate weak var targetUser: User!
 //    fileprivate var dataSource : CoreDataTableViewDataSource<MessageCell>!
     fileprivate var dataSource___ : DefaultTableViewDataSource<MessageCell>!
@@ -95,6 +101,10 @@ class MessageDetailViewController: UIViewController, NameDescribable{
         tabBarController?.tabBar.layer.zPosition = flag ? 0 : -1
     }
     
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
 }
 extension MessageDetailViewController: UITableViewDelegate {

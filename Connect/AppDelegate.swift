@@ -28,17 +28,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
         
-        testMode(targetVC: MessageDetailViewController())
-        
+//        testMode(targetVC: )
         return true
     }
     
     //MARK: - Public
-    public func switchToMainWindow() {
+    public func switchToMainWindow(user: User) {
+        let appStatus = AppStatus(currentUser: user, mainContext: persistentContainer.viewContext)
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         mainWindow?.makeKeyAndVisible()
         mainWindow?.windowLevel = UIWindowLevelAlert
-        mainWindow?.rootViewController = MainTabBarController()
+        mainWindow?.rootViewController = MainTabBarController(appStatus: appStatus)
         
         signupWindow = nil
     }
@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Private
     private func setupScreenAndRootVC() {
-        UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) ? switchToMainWindow():switchToSignUpWindow()
+        UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) ? switchToMainWindow(user: User.findOrFetch(forUID: UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String)!):switchToSignUpWindow()
     }
     
     private func setupCoreStack() {

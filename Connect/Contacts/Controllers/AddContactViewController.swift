@@ -18,6 +18,12 @@ class AddContactViewController: UIViewController {
     fileprivate var searchButton: UIButton!
     fileprivate var tableView: UITableView!
     
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -42,7 +48,7 @@ class AddContactViewController: UIViewController {
         ARSLineProgress.ars_showOnView(view)
         User.getList(withInput: input, selectedType: typeSegment.selectedTitle()) {[unowned self] (list_) in
             
-            let list = list_.removeElement(condition: {$0.uid == AppStatus.current.user.uid})
+            let list = list_.removeElement(condition: {$0.uid == self.appStatus.user.uid})
             
             guard list.count != 0 else {
                 ARSLineProgress.hide()
@@ -55,7 +61,7 @@ class AddContactViewController: UIViewController {
     }
     
     fileprivate func userDidselectedCell(atIndexPath indexPath: IndexPath) {
-        let currentUser = AppStatus.current.user!
+        let currentUser = appStatus.user
         
         let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
         presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
@@ -68,7 +74,7 @@ class AddContactViewController: UIViewController {
 //            }
             
             let toUser = targetUser.convertAndCreateUser()
-            let request = Request.create(fromUser: AppStatus.current.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
+            let request = Request.create(fromUser: self.appStatus.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
             currentUser.insert(request: request, intoSentNode: true)
             request.uploadToNodeOfSentRequestsAndReceivedRequests(success: {[unowned self] in
                 self.presentDefaultAlertWithoutCancel(withTitle: "Succeed", message: nil)
@@ -79,6 +85,7 @@ class AddContactViewController: UIViewController {
     )}
     
     // MARK: - Fileprivate
+    fileprivate let appStatus: AppStatus
     fileprivate var dataSource : DefaultTableViewDataSource<ContactCell>!
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
@@ -92,6 +99,11 @@ class AddContactViewController: UIViewController {
         typeSegment.addTarget(self, action: #selector(segmentValueChanged), for: .valueChanged)
         searchButton.addTarget(self, action: #selector(searchBtnClicked), for: .touchUpInside)
     }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
 extension AddContactViewController:UITextFieldDelegate {

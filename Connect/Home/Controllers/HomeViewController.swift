@@ -11,7 +11,12 @@ import SnapKit
 
 class HomeViewController: UIViewController {
     
-    var user: User!
+    init(appStatus:AppStatus) {
+        self.appStatus = appStatus
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +29,10 @@ class HomeViewController: UIViewController {
         leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
     }
     
+    // MARK: - Public
+    
     //MARK: - Filepriavte
+    fileprivate let appStatus :AppStatus
     
     fileprivate func setupViewController() {
         view.backgroundColor = .white
@@ -36,6 +44,9 @@ class HomeViewController: UIViewController {
     }
     
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 
