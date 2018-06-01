@@ -13,9 +13,10 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
     typealias Object = A.Object
     typealias Cell = A
     
-    init(collectionView: UICollectionView, parentViewController: UIViewController, initialData: [Object]?) {
+    init(collectionView: UICollectionView, parentViewController: UIViewController, initialData: [Object]?, observeCell:((A)->())? = nil) {
         self.collectionView = collectionView
         self.parentViewController = parentViewController
+        self.observeCell = observeCell
         super.init()
         collectionView.register(Cell.self, forCellWithReuseIdentifier: Cell.reuseIdentifier)
         collectionView.dataSource = self
@@ -45,12 +46,14 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
         cell.setup(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
+        observeCell?(cell)
         return cell
     }
     
     
     // MARK: - Fileprivate
     fileprivate let collectionView: UICollectionView
+    fileprivate let observeCell: ((A)->())?
     fileprivate var arrayOfObjects = [Object]()
     fileprivate weak var parentViewController: UIViewController!
 }

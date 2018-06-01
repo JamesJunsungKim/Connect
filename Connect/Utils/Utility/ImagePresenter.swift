@@ -1,15 +1,6 @@
-//
-//  ImagePresenter.swift
-//  Connect
-//
-//  Created by montapinunt Pimonta on 5/31/18.
-//  Copyright © 2018 James Kim. All rights reserved.
-//
-
 import UIKit
 
 class ImagePresenter: UIView {
-    
     // UI
     fileprivate var imageView: UIImageView!
     
@@ -19,52 +10,54 @@ class ImagePresenter: UIView {
         addTarget()
     }
     
-    // MARK: - Public/Internal
-    
-    public func setup(withSize size:CGSize)  {
-        frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        center = superview!.center
-        layer.transform = CATransform3DMakeScale(0, 0, 0)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    public func present(image: UIImage) {
+    // MARK: - Public/Internal
+    
+    public func present(image: UIImage, atSize size: CGSize, fromStartPoint startPoint: CGPoint) {
+        // initial point.
+        self.startPoint = startPoint
+        frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        center = startPoint
+        layer.transform = CATransform3DMakeScale(0, 0, 0)
+        
         imageView.image = image
-        getParentViewController()?.view.bringSubview(toFront: self)
         presentOrDismissImage(needsToShow: true)
     }
     
     // MARK: - Actions
     @objc fileprivate func didTapImage() {
         presentOrDismissImage(needsToShow: false)
+        
     }
     
     // MARK: - Fileprivate
-    fileprivate var targetImage: UIImage!
+    fileprivate weak var parentView: UIView!
+    fileprivate var startPoint : CGPoint!
+    fileprivate lazy var tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
     
     fileprivate func addTarget() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
         imageView.addGestureRecognizer(tap)
     }
     
     fileprivate func presentOrDismissImage(needsToShow flag: Bool) {
         let targetNumber = CGFloat(flag ? 1 : 0.1)
+        let topView = self.getMostTopViewController()?.view
+        flag ? topView?.addGestureRecognizer(tap) : topView?.removeGestureRecognizer(tap)
         UIView.animate(withDuration: 0.3, animations: {
+            self.center = flag ? self.superview!.center : self.startPoint
             self.alpha = flag ? 1 : 0
             self.layer.transform = CATransform3DMakeScale(targetNumber, targetNumber, targetNumber)
         })
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 
 extension ImagePresenter {
     fileprivate func setupUI() {
         imageView = UIImageView.create(withImageKey: .noImage)
-        
         addSubview(imageView)
-        
         imageView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalToSuperview()
         }

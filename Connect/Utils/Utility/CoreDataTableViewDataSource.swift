@@ -18,7 +18,7 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
         self.tableView = tableView
         self.fetchedResultsController = fetchedResultsController
         self.parentViewController = parentViewController
-        if observableCell != nil {self.observe = observableCell!}
+        self.observe = observableCell
         super.init()
         fetchedResultsController.delegate = self
         try! fetchedResultsController.performFetch()
@@ -65,7 +65,7 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as? Cell else {fatalError()}
         cell.setup(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
-        if observe != nil {observe(cell)}
+        observe?(cell)
         return cell
     }
     

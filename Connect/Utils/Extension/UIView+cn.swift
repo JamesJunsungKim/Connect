@@ -9,6 +9,14 @@
 import UIKit
 
 extension UIView {
+    // MARK: - Public/Internal
+    public func getMostTopViewController() -> UIViewController? {
+        var topVC = UIApplication.shared.keyWindow?.rootViewController
+        while topVC?.presentedViewController != nil {
+            topVC = topVC?.presentedViewController!
+        }
+        return topVC
+    }
     
     public func getParentViewController() -> UIViewController? {
         var parentResponder: UIResponder? = self

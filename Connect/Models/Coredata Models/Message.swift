@@ -43,10 +43,13 @@ final class Message: NSManagedObject {
         leaveReferenceDictionary(forType: self.classForCoder)
     }
     
+    // MARK: - Public
+    
     public var sectionTitle: String {
         return dateSection()
     }
     
+//    public func isSentByCurrentUser()
     public var isSentByCurrentUser: Bool {
         return fromUser == AppStatus.current.user
     }
