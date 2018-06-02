@@ -8,40 +8,70 @@
 
 import UIKit
 
-class MessageCell: ReusableTableViewCell {
+class MessageCell: CoreDataReusableTableViewCell {
     
-    typealias Object = Dummy
+    
+    
+//class MessageCell: ReusableTableViewCell {
+    //    typealias Object = Dummy
+    
+    typealias Object = Message
     
     // UI
-    
     fileprivate var partnerProfileImageView: UIImageView!
-    fileprivate var bubbleView: UIView!
     fileprivate var textView: UITextView!
     fileprivate var sentImageView: UIImageView!
     
     fileprivate var timeStampLabel: UILabel!
     fileprivate var checkboxImageView: UIImageView!
     
-    // MARK: - Public
-    public func setup(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-        sentImageView.isHidden = true
-        bubbleView.backgroundColor = .mainBlue
     }
     
-    public func configure() {
-        sentImageView.isHidden = true
-        bubbleView.backgroundColor = .mainBlue
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(withMessage message: Message) {
-        
+    // MARK: - Public
+    func configure(withObject object: Message, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        textView.backgroundColor = .mainBlue
     }
+    
     
     // MARK: - Actions
     
     // MARK: - Fileprivate
-    
+    fileprivate func adjustUI(forMessage message: Message) {
+        if message.isSentByCurrentUser {
+            // it's me who sends this message
+            // constraints will be applied differently whether or not it's an image.
+            
+            
+            
+            
+            
+            
+        } else {
+            // it's one of my contacts who sends this message
+            // constraints will be applied differently whether or not it's an image.
+            
+            partnerProfileImageView.image = message.fromUser.profilePhoto!.image
+//            timeStampLabel.text = message.sentAt
+            
+            
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+    }
 }
 
 extension MessageCell {
@@ -49,36 +79,28 @@ extension MessageCell {
         
         partnerProfileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
-        bubbleView = UIView.create(withColor: .gray)
-        
         textView = UITextView.create(text: "Your text will be shown in here. it might go more than 1 line", mainFontSize: 15)
         
         sentImageView = UIImageView.create(withImageKey: .personPlaceHolder)
         
         timeStampLabel = UILabel.create(text: "12:22 PM")
         
-        bubbleView.addSubview(textView)
         
-        let groupForCell:[UIView] = [partnerProfileImageView, bubbleView, sentImageView, timeStampLabel]
+        let groupForCell:[UIView] = [partnerProfileImageView,textView, sentImageView, timeStampLabel]
         groupForCell.forEach(self.addSubview(_:))
         
-        let frame = self.frame
-        
+        let frame = UIScreen.main.bounds
         partnerProfileImageView.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(15)
             make.bottom.equalToSuperview().offset(-8)
             make.sizeEqualTo(width: 20, height: 20)
         }
         
-        bubbleView.snp.makeConstraints { (make) in
-            bubbleView.setCornerRadious(value: 5)
+        textView.snp.makeConstraints { (make) in
+            textView.setCornerRadious(value: 5)
             make.left.equalToSuperview().offset(40)
             make.topBottomEqualToSuperView(withOffset: 1)
-            make.width.equalTo(frame.width*5/8)
-        }
-        
-        textView.snp.makeConstraints { (make) in
-            make.left.top.right.bottom.equalToSuperview()
+            make.width.equalTo(frame.width*2/3)
         }
         
         sentImageView.snp.makeConstraints { (make) in
@@ -88,7 +110,7 @@ extension MessageCell {
         }
         
         timeStampLabel.snp.makeConstraints { (make) in
-            make.left.equalTo(bubbleView.snp.right).offset(3)
+            make.left.equalTo(textView.snp.right).offset(3)
             make.bottom.equalToSuperview().offset(-3)
         }
         

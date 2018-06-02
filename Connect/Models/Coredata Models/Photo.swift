@@ -12,7 +12,7 @@ import Firebase
 import CoreData
 import SDWebImage
 
-final class Photo: NSManagedObject, uploadableModel {
+final class Photo: CDBaseModel {
     
     @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var imageData: Data
@@ -21,8 +21,8 @@ final class Photo: NSManagedObject, uploadableModel {
     @NSManaged fileprivate(set) var isDownloaded: Bool
     @NSManaged fileprivate(set) var url : String?
     
-    public var ratio: Double {
-        return width/height
+    public var ratio: CGFloat {
+        return CGFloat(width/height)
     }
     
     struct Key {
@@ -106,15 +106,6 @@ final class Photo: NSManagedObject, uploadableModel {
     // MARK: - Filepriavte
     
 }
-
-
-
-
-extension Photo: Managed {}
-
-
-
-
 
 
 

@@ -9,14 +9,10 @@
 import UIKit
 import CoreData
 
-typealias ReusableTableViewCell = Reusable & UITableViewCell
-typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell
-typealias CoreDataReusableTableViewCell = CoredataReusable & UITableViewCell
-typealias CoreDataReusableCollectionViewCell = CoredataReusable & UICollectionViewCell
 
 protocol Reusable:AnyObject, NameDescribable {
     associatedtype Object
-    func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
+    func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]? )
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
 }
 
@@ -29,7 +25,7 @@ extension Reusable {
 
 protocol CoredataReusable:AnyObject, NameDescribable {
     associatedtype Object:NSFetchRequestResult
-    func setup(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath)
+    func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]?)
     func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
 }
 

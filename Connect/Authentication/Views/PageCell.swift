@@ -28,8 +28,7 @@ class PageCell: ReusableCollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    func setup(withObject object: Page, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+    func configure(withObject object: Page, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         imageView.image = UIImage(named: object.imageName)
         titleLabel.text = object.title
         descriptionLabel.text = object.description

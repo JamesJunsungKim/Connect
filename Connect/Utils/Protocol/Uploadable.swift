@@ -11,10 +11,9 @@ import CoreData
 import FirebaseStorage
 import ARSLineProgress
 
-protocol uploadableModel: BaseModel {}
+protocol Uploadable: CompletionHandler {}
 
-
-extension uploadableModel {
+extension Uploadable {
     static func upload(data: Data, toStorage reference: StorageReference ,success: @escaping (String)->(), failure: @escaping (Error)->()) {
         _ = reference.putData(data, metadata: nil) { (metadata, error) in
             guard error == nil else {

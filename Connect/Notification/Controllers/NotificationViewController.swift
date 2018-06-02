@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import CoreData
 
-class NotificationViewController: UIViewController {
+class NotificationViewController: UIViewController, NameDescribable {
 
     // UI
     fileprivate var tableView: UITableView!
@@ -45,6 +45,27 @@ class NotificationViewController: UIViewController {
         Request.deleteAll(fromMOC: mainContext)
     }
     
+    fileprivate lazy var observeCell: (NotificationCell)->() = {[unowned self](cell) in
+        cell.clickObservable.subscribe(onNext: { (request) in
+            // what's the main goal here.
+            // actions might be different depending on which request type it is
+            
+            switch request.requestType {
+            case .friendRequest:
+                // at first, add the user to the contact
+                
+                self.appStatus.addUserToContact(user: request.fromUser)
+                request.completedByToUser(success: {[unowned self] in
+                    //TODO: Think about what to do when it's completed.
+                }) {[unowned self] (error) in
+                    self.presentDefaultError(message: error.localizedDescription, okAction: nil)
+                }
+            }
+        }, onDisposed: self.observerDisposedDescription)
+            .disposed(by: self.bag)
+
+    }
+    
     // MARK: - Fileprivate
     fileprivate let appStatus: AppStatus
     fileprivate var dataSource: CoreDataTableViewDataSource<NotificationCell>!
@@ -70,7 +91,7 @@ class NotificationViewController: UIViewController {
         
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: #keyPath(Request.sectionTitle), cacheName: nil)
 
-        dataSource = CoreDataTableViewDataSource(tableView:tableView, fetchedResultsController:frc, parentViewController: self)
+        dataSource = CoreDataTableViewDataSource<NotificationCell>(tableView: tableView, fetchedResultsController: frc, parentViewController: self, userInfo: nil, observableCell: observeCell)
     }
     
     required init?(coder aDecoder: NSCoder) {

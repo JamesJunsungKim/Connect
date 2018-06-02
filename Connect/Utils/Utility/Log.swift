@@ -31,7 +31,8 @@ func leaveViewControllerMomeryLogAndSaveDataToDisk(type:AnyClass) {
     viewControllerMemoryArray.remove(at: index)
     let sum = reduce(array: viewControllerMemoryArray)
     logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")
-    mainContext.performSaveorRollback()
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    appDelegate.persistentContainer.viewContext.performSaveorRollback()
 }
 
 func enterReferenceDictionary(forType type: AnyClass, withUID uid: String?) {

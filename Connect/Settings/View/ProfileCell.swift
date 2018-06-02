@@ -22,7 +22,7 @@ class ProfileCell: ReusableTableViewCell {
         setupUI()
     }
     
-    func setup(withObject object: User, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+    func configure(withObject object: User, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         profileImageView.image = object.profilePhoto!.image
         nameLabel.text = object.name
         statusLabel.text = object.statusMessage.unwrapOr(defaultValue: "Your status message will be displayed here.")

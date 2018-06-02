@@ -12,8 +12,7 @@ import SwiftyJSON
 import FirebaseAuth
 import FirebaseDatabase
 
-final class User: NSManagedObject, BaseModel {
-    
+final class User: CDBaseModel {
     
     @NSManaged fileprivate(set) var uid: String?
     @NSManaged fileprivate(set) var name: String
@@ -65,6 +64,10 @@ final class User: NSManagedObject, BaseModel {
     
     // MARK: - Public
     
+    public func assign(uid:String?) {
+        self.uid = uid
+    }
+    
     public func uploadToServer(success:@escaping ()->(), failure:@escaping (Error)->()) {
         let ref = FireDatabase.user(uid: uid!).reference
         ref.setValue(toDictionary(needToIncludeContactAndRequest: true)) { (error, _) in
@@ -79,6 +82,7 @@ final class User: NSManagedObject, BaseModel {
     
     public func patch(toNode node: String, withValue value :Any, success:@escaping ()->(), failure: @escaping (Error)->()) {
         let ref = FireDatabase.user(uid: uid!).reference.child(node)
+        
         ref.setValue(value) { (error, _) in
             guard error == nil else {
                 logError(error!.localizedDescription)
@@ -108,24 +112,27 @@ final class User: NSManagedObject, BaseModel {
     }
     
     public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping successWithoutModel, failure:@escaping failure) {
-        var path: String!
+        var dict = [String:String]()
         switch attribute.contentType {
         case .name:
             name = attribute.content!
-            path = Key.name
+            dict[Key.name] = name
+            dict[Key.isPrivateAndName] = getValueForPrivateAndName()
         case .status:
             statusMessage = attribute.content!
-            path = Key.statusMessage
+            dict[Key.statusMessage] = statusMessage
         case .phoneNumber:
             phoneNumber = attribute.content!
-            path = Key.phoneNumber
+            dict[Key.phoneNumber] = phoneNumber
         default: fatalError()
         }
         
-        patch(toNode: path, withValue: attribute.content!, success: {
-            success()
-        }) { (error) in
-            failure(error)
+        guard !isTesting else {success();return}
+        dict.asyncForEach(completion: success) {[unowned self] (arg, innerCompletion) in
+            let (key, value) = arg
+            self.patch(toNode: key, withValue: value, success: innerCompletion, failure: { (error) in
+                failure(error)
+            })
         }
     }
     
@@ -181,6 +188,7 @@ final class User: NSManagedObject, BaseModel {
         isPrivate = !isPrivate
         let groupForPrivate:[String:Any] = [Key.isPrivate: isPrivate, Key.isPrivateAndName: getValueForPrivateAndName()]
         
+        guard !isTesting else {success();return}
         groupForPrivate.asyncForEach(completion: success) {[unowned self] (arg0, innerCompletion) in
             let (key, value) = arg0
             self.patch(toNode: key, withValue: value, success: innerCompletion, failure: { (error) in
@@ -192,10 +200,10 @@ final class User: NSManagedObject, BaseModel {
     public func insert(request:Request, intoSentNode flag: Bool) {
         if flag {
             // TODO: make sure that it is inserted only one time.
-            let result = sentRequests?.insert(request)
+            let _ = sentRequests?.insert(request)
 //            guard result!.inserted else{assertionFailure(); return}
         } else {
-            let result = receivedRequests?.insert(request)
+            let _ = receivedRequests?.insert(request)
 //            guard result!.inserted else {assertionFailure(); return}
         }
     }
@@ -203,12 +211,12 @@ final class User: NSManagedObject, BaseModel {
     // MARK: - Static
     public static func create(into moc: NSManagedObjectContext, uid: String?, name: String, email: String, isFavorite:Bool = false, isPrivate: Bool = false)->User {
         if uid != nil {
-            let result = findOrFetch(forUID: uid!)
-            guard result == nil else {return result!}
+            let result = findOrFetch(forUID: uid!, fromMOC: moc)
+            if result != nil {return result!}
         }
         
         let user: User = moc.insertObject()
-        user.uid = uid
+        user.assign(uid: uid)
         user.name = name
         user.emailAddress = email
         user.isFavorite = isFavorite
@@ -227,8 +235,7 @@ final class User: NSManagedObject, BaseModel {
                 failure(error!)
                 return
             }
-            
-            user.uid = result!.user.uid
+            user.assign(uid: result!.user.uid)
             UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
             completion(user)
         }
@@ -244,7 +251,6 @@ final class User: NSManagedObject, BaseModel {
             let uid = result!.user.uid
             fetchUserFromServerAndCreate(withUID: uid, needContactAndGroupNode: true, success: success, failure: failure)
         }
-        
     }
     
     public static func fetchUserFromServerAndCreate(withUID uid: String, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
@@ -263,9 +269,9 @@ final class User: NSManagedObject, BaseModel {
         }
     }
     
-    public static func fetchSignedInUser() -> User {
+    public static func fetchSignedInUser(fromMOC moc: NSManagedObjectContext = mainContext) -> User {
         let uid = UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String
-        return findOrFetch(forUID: uid)!
+        return findOrFetch(forUID: uid, fromMOC: moc)!
     }
     
     public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, completion: @escaping (User)->(), failure: @escaping (Error)->(), needContactAndGroup: Bool = false) {
@@ -342,11 +348,6 @@ final class User: NSManagedObject, BaseModel {
         ]
     }
     
-    public static func findOrFetch(forUID uid: String, fromMOC moc: NSManagedObjectContext = mainContext) -> User? {
-        let predicate = predicateFor(uid: uid)
-        return User.findOrFetch(in: moc, matching: predicate)
-    }
-    
     public static func predicateFor(uid: String) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(User.uid), uid)
     }
@@ -382,21 +383,11 @@ final class User: NSManagedObject, BaseModel {
         return "\(isPrivate)\(name)"
     }
     
-//    fileprivate func
-    
-    
 }
 
 extension User {
     
 }
-
-
-extension User: Managed {
-    
-    
-}
-
 
 
 

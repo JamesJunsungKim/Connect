@@ -15,7 +15,7 @@ import SwiftyJSON
 final class Message: NSManagedObject {
     @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var text: String?
-    @NSManaged fileprivate(set) var timeStamp: Date
+    @NSManaged fileprivate(set) var sentAt: Date
     
     @NSManaged fileprivate(set) var toUser: User
     @NSManaged fileprivate(set) var fromUser: User
@@ -25,7 +25,7 @@ final class Message: NSManagedObject {
         static let message = "Message"
         static let uid = "uid"
         static let text = "text"
-        static let timeStamp = "timeStamp"
+        static let sentAt = "sentAt"
         static let toUser = "toUser"
         static let fromUser = "fromUser"
         static let photo = "photo"
@@ -49,15 +49,30 @@ final class Message: NSManagedObject {
         return dateSection()
     }
     
-//    public func isSentByCurrentUser()
     public var isSentByCurrentUser: Bool {
-        return fromUser == AppStatus.current.user
+        let uid = (UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String)
+        return fromUser.uid! == uid
+    }
+    
+    public var isImageMessage: Bool {
+        return photo != nil
+    }
+   
+    public func estimatedSizeForText(targetWidth: CGFloat)-> CGSize {
+        if isImageMessage {
+            let targetHeight = targetWidth / photo!.ratio
+            return CGSize(width: targetWidth, height: targetHeight)
+        } else {
+            // text message
+            let rect = UITextView.estimateFrameForText(cellWidth: targetWidth, forText: text!)
+            return rect.size.extend(widthBy: 10, heightBy: 15)
+        }
     }
     
     // MARK: - Static
     
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(key: Keys.timeStamp, ascending: true)]
+        return [NSSortDescriptor(key: Keys.sentAt, ascending: true)]
     }
     
     public static func insert(into moc: NSManagedObjectContext, text:String)->Message {
@@ -79,12 +94,12 @@ final class Message: NSManagedObject {
     fileprivate static func createBaseMessage(moc: NSManagedObjectContext) -> Message {
         let message: Message = moc.insertObject()
         message.uid = UUID().uuidString
-        message.timeStamp = Date()
+        message.sentAt = Date()
         return message
     }
     
     fileprivate func dateSection() -> String {
-        return self.timeStamp.format(with: "EEEE - MMM d, yyyy")
+        return self.sentAt.format(with: "EEEE - MMM d, yyyy")
     }
 
 }

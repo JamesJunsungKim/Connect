@@ -20,8 +20,8 @@ class SettingCell: ReusableTableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
-    
-    public func setup(withObject object: Setting, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+
+    public func configure(withObject object: Setting, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         configure(withSetting: object)
     }
     

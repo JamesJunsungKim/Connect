@@ -25,8 +25,8 @@ class MessageListCell: ReusableTableViewCell {
     
     
     // MARK: - Public
-    public func setup(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath) {
-//        configure(withMessage: object)
+    func configure(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        //        configure(withMessage: object)
     }
     
     public func configure(withMessage: Message) {

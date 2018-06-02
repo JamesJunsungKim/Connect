@@ -16,7 +16,6 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     init(appStatus: AppStatus) {
         self.appStatus = appStatus
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -27,7 +26,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         super.viewDidLoad()
         setupTabbar()
         setupViewControllers()
-        setupObservers()
+        setupObservers(forAppStatus: appStatus)
     }
     
     // MARK: - Public/Intenral
@@ -42,7 +41,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         self.delegate = self
     }
     
-    fileprivate func setupObservers() {
+    fileprivate func setupObservers(forAppStatus appStatus: AppStatus) {
         // observe a node deleted from setnRequest (cuz it will be deleted when the user accepts or disapprove it)
 
         // observe a node added to receivedReques to notify user of the request.
@@ -57,15 +56,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         }
         
         // Observe for completed Requests
-        FireDatabase.approvedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) { (snapshot) in
+        FireDatabase.approvedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) {(snapshot) in
             guard let result = snapshot.value as? [String:Any], let uid = result[Request.Key.uid] as? String else {return}
             
-            guard let targetRequest = Request.findOrFetch(forUID: uid) else {
-                assertionFailure()
-                return
-            }
-            targetRequest.completedByFromUser()
-            
+            let targetRequest = Request.findOrFetch(forUID: uid, fromMOC: appStatus.mainContext)!
+            targetRequest.completedByFromUser(updatedTo: appStatus)
         }
         
         // observe all uids from contacts for status & name change.

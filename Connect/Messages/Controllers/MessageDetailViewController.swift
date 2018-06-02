@@ -21,7 +21,6 @@ class MessageDetailViewController: UIViewController, NameDescribable{
         super.init(nibName: nil, bundle: nil)
     }
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()  
@@ -41,6 +40,8 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     }
     
     override var inputAccessoryView: UIView? {
+        commentInputAccessroyView.textViewObservable.subscribe(
+            onNext: userDidTypeText, onDisposed: observerDisposedDescription).disposed(by: bag)
         return commentInputAccessroyView
     }
     
@@ -59,8 +60,8 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     // MARK: - Filepriavte
     fileprivate let appStatus: AppStatus
     fileprivate weak var targetUser: User!
-//    fileprivate var dataSource : CoreDataTableViewDataSource<MessageCell>!
-    fileprivate var dataSource___ : DefaultTableViewDataSource<MessageCell>!
+    fileprivate var dataSource : CoreDataTableViewDataSource<MessageCell>!
+//    fileprivate var dataSource___ : DefaultTableViewDataSource<MessageCell>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
@@ -73,19 +74,20 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     
     fileprivate func setupTableView() {
         tableView.delegate = self
-//        dataSource___ = DefaultTableViewDataSource.init(tableView: tableView, sourceDelegate: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
-        dataSource___ = DefaultTableViewDataSource(tableView: tableView, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
         
-//        let fromUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.fromUser.uid), targetUser.uid!)
-//        let toUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.toUser.uid), targetUser.uid!)
-//        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [fromUserPredicate, toUserPredicate])
-//        let request = Message.sortedFetchRequest(with: predicate)
-//        request.returnsObjectsAsFaults = false
-//        request.fetchBatchSize = 20
-//
-//        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
+//        dataSource___ = DefaultTableViewDataSource(tableView: tableView, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
         
+        let fromUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.fromUser.uid), targetUser.uid!)
+        let toUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.toUser.uid), targetUser.uid!)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [fromUserPredicate, toUserPredicate])
+        let request = Message.sortedFetchRequest(with: predicate)
+        request.returnsObjectsAsFaults = false
+        request.fetchBatchSize = 20
 
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
+        
+        dataSource = CoreDataTableViewDataSource<MessageCell>.init(tableView: tableView, fetchedResultsController: frc, parentViewController: self)
+        
     }
     
     fileprivate func setupObserver() {
@@ -109,7 +111,8 @@ class MessageDetailViewController: UIViewController, NameDescribable{
 }
 extension MessageDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        let object = dataSource.objectAtIndexPath(indexPath)
+        return object.estimatedSizeForText(targetWidth: view.bounds.width*2/3).height
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {

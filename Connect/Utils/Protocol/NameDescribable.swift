@@ -15,11 +15,11 @@ extension NameDescribable {
         return String(describing: self)
     }
     
-    var className: String {
+    public var className: String {
         return String(describing: Self.self)
     }
     
-    var observerDisposedDescription: String {
-        return "observer is disposed from: \(className)"
+    public func observerDisposedDescription() {
+        logInfo("observer is disposed from: \(className)")
     }
 }

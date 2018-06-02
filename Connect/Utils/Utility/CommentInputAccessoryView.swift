@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 
-class CommentInputAccessoryView: UIView {
+class CommentInputAccessoryView: UIView, NameDescribable {
     // UI
     fileprivate var textView: UITextView!
     fileprivate var placeholderLabel: UILabel!

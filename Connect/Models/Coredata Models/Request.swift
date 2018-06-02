@@ -18,7 +18,7 @@ enum RequestType: Int {
     case friendRequest
 }
 
-final class Request: NSManagedObject, BaseModel{
+final class Request: CDBaseModel{
     
     @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var fromUID: String
@@ -109,10 +109,10 @@ final class Request: NSManagedObject, BaseModel{
         uploadToNodeOfApprovedRequests(success: success, failure: failure)
     }
     
-    public func completedByFromUser() {
+    public func completedByFromUser(updatedTo appstatus: AppStatus) {
         switch requestType {
         case .friendRequest :
-            AppStatus.current.user.addUserToContact(user: toUser)
+            appstatus.user.addUserToContact(user: toUser)
         }
         
     }
@@ -149,7 +149,6 @@ final class Request: NSManagedObject, BaseModel{
     }
     
     public static func convertAndCreate(fromJSON json: JSON, into moc: NSManagedObjectContext, success:@escaping success, failure: @escaping failure) {
-        let currentUser = AppStatus.current.user!
         let uid = json[Key.uid].stringValue
         let createdAt = Date.ConvertToString(json[Key.createdAt].stringValue)
         let fromUID = json[Key.fromUID].stringValue
@@ -159,8 +158,7 @@ final class Request: NSManagedObject, BaseModel{
         let requestNumber = json[Key.requestTypeNumberValue].intValue
         let requestType = RequestType.init(rawValue: requestNumber)!
         let needsToDisplay = json[Key.needsToDisplay].boolValue
-        
-        assert(toUID == currentUser.uid!, "It must be a request toward the current user")
+        let currentUser = User.findOrFetch(forUID: toUID, fromMOC: moc)
         
         switch requestType {
         case .friendRequest:
@@ -168,18 +166,13 @@ final class Request: NSManagedObject, BaseModel{
             // and then make a connection btw the current user and the recently-created user.
             //assert(User.findOrFetch(forUID: fromUID) == nil)
             User.fetchUserFromServerAndCreate(withUID: fromUID, needContactAndGroupNode: false, success: { (fromUser) in
-                let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType, needsToDisplay: needsToDisplay)
+                let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser!, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType, needsToDisplay: needsToDisplay)
                     success(request)
             }, failure: { (error) in
                 logError(error.localizedDescription)
                 failure(error)
             })
         }
-    }
-    
-    public static func findOrFetch(forUID uid: String, fromMOC moc: NSManagedObjectContext = mainContext) -> Request? {
-        let predicate = NSPredicate(format: "%K == %@", #keyPath(Request.uid), uid)
-        return Request.findOrFetch(in: moc, matching: predicate)
     }
     
     
@@ -199,5 +192,3 @@ final class Request: NSManagedObject, BaseModel{
 
 }
 
-
-extension Request: Managed{}

@@ -13,6 +13,8 @@ extension UserDefaults {
     enum Key : String {
         case defaultResolution
         case uidForSignedInUser
+        
+        
     }
     
     
@@ -43,3 +45,11 @@ extension UserDefaults {
     }
     
 }
+
+
+
+
+
+
+
+

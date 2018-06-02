@@ -10,6 +10,7 @@ import UIKit
 
 extension UIView {
     // MARK: - Public/Internal
+    
     public func getMostTopViewController() -> UIViewController? {
         var topVC = UIApplication.shared.keyWindow?.rootViewController
         while topVC?.presentedViewController != nil {
@@ -50,7 +51,6 @@ extension UIView {
    
     
     // MARK: - static
-    
     public static func create(withColor color: UIColor = .lightGray) -> UIView {
         let v = UIView()
         v.backgroundColor = color

@@ -13,8 +13,13 @@ import CoreData
 class AppStatus {
     
     init(currentUser: User, mainContext: NSManagedObjectContext) {
+        enterReferenceDictionary(forType: AppStatus.self, withUID: nil)
         self.user = currentUser
         self.mainContext = mainContext
+    }
+    
+    deinit {
+        leaveReferenceDictionary(forType: AppStatus.self)
     }
     
     var user: User

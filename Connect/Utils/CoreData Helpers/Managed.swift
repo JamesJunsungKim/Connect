@@ -57,9 +57,11 @@ extension Managed {
 
 extension Managed where Self:NSManagedObject {
     public static var entity: NSEntityDescription { return entity() }
+    
     public static var entityName: String {
-        guard let name = entity.name else {fatalError("must have entity name")}
-        return name
+//        guard let name = entity.name else {fatalError("must have entity name")}
+//        return name
+        return String(describing: Self.self)
     }
     
     public static func deleteAll(fromMOC context: NSManagedObjectContext) {

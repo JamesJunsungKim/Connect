@@ -10,7 +10,7 @@ import CoreData
 import SwiftyJSON
 import Firebase
 
-struct NonCDUser:BaseModel {
+struct NonCDUser:Equatable {
     var uid: String
     let name: String
     var phoneNumber: String?
@@ -27,7 +27,7 @@ struct NonCDUser:BaseModel {
 
 }
 
-extension NonCDUser: Equatable {
+extension NonCDUser {
     
     public struct Key {
         static let user = "NonCDUser"

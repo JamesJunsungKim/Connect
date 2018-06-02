@@ -13,10 +13,11 @@ class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableView
     typealias Object = A.Object
     typealias Cell = A
     
-    init(tableView: UITableView, parentViewController: UIViewController, initialData: [Object]? = nil, observableCell: ((A)->())? = nil) {
+    init(tableView: UITableView, parentViewController: UIViewController, initialData: [Object]? = nil, userInfo: [String:Any]? = nil, observableCell: ((A)->())? = nil) {
         self.tableView = tableView
         self.parentViewController = parentViewController
-        if observableCell != nil {self.observe = observableCell!}
+        self.userInfo = userInfo
+        self.observe = observableCell
         super.init()
         tableView.dataSource = self
         tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
@@ -45,19 +46,18 @@ class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        cell.setup(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
-        if observe != nil {observe(cell)}
+        cell.configure(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
+        observe?(cell)
         return cell
     }
     
-    
-    
     // MARK: - Fileprivate
     
+    fileprivate weak var parentViewController: UIViewController!
     fileprivate let tableView: UITableView
     fileprivate var arrayOfObjects = [Object]()
-    fileprivate weak var parentViewController: UIViewController!
-    fileprivate var observe: ((A)->())!
+    fileprivate let observe: ((A)->())?
+    fileprivate let userInfo: [String:Any]?
 }
 
 

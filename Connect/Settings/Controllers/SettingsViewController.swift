@@ -130,7 +130,7 @@ extension SettingsViewController {
     fileprivate func setupUI() {
         tableView = UITableView(frame: .zero, style: .grouped)
         tableView.setup(withCell: ProfileCell(), delegate: self, dataSource: self)
-        tableView.setup(additionalCell: SettingCell())
+        tableView.register(SettingCell.self, forCellReuseIdentifier: SettingCell.reuseIdentifier)
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) in

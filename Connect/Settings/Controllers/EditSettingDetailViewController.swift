@@ -56,9 +56,6 @@ class EditSettingDetailViewController: UIViewController {
     
     // MARK: - Fileprivate
     fileprivate let appStatus:AppStatus
-    fileprivate var user: User {
-        return appStatus.user
-    }
     
     fileprivate var attribute: SettingAttribute!
     fileprivate var maxCount: String!
@@ -92,11 +89,11 @@ class EditSettingDetailViewController: UIViewController {
         var letterCount: Int!
         switch attribute.contentType {
         case .name:
-            letterCount = user.name.count
+            letterCount = appStatus.user.name.count
         case .status:
-            letterCount = user.statusMessage != nil ? user.statusMessage!.count: attribute.content!.count
+            letterCount = appStatus.user.statusMessage != nil ? appStatus.user.statusMessage!.count: attribute.content!.count
         case .phoneNumber:
-            letterCount = user.phoneNumber != nil ? user.phoneNumber!.count: attribute.content!.count
+            letterCount = appStatus.user.phoneNumber != nil ? appStatus.user.phoneNumber!.count: attribute.content!.count
         default: fatalError()
         }
         

@@ -20,9 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     fileprivate var signupWindow: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
 //        UserDefaults.removeValue(forKey: .uidForSignedInUser)
         
+        setFlag()
         setupCoreStack()
         setupFirebase()
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
@@ -55,7 +55,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     //MARK: - Private
     private func setupScreenAndRootVC() {
-        UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) ? switchToMainWindow(user: User.findOrFetch(forUID: UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String)!):switchToSignUpWindow()
+        if UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
+            let uid = (UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String)
+            let user = User.findOrFetch(forUID: uid, fromMOC: persistentContainer.viewContext)!
+            switchToMainWindow(user: user)
+        } else {
+            switchToSignUpWindow()
+        }
     }
     
     private func setupCoreStack() {
@@ -77,6 +83,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainWindow = UIWindow(frame: UIScreen.main.bounds)
         mainWindow?.makeKeyAndVisible()
         mainWindow?.rootViewController = targetVC
+    }
+    private func setFlag() {
+        if let _ = NSClassFromString("XCTest") {
+            isTesting = true
+            print("\n\n\n\nTesting is running\n\n\n\n")
+        }
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -104,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        _ = mainContext.saveOrRollback()
+        _ = persistentContainer.viewContext.saveOrRollback()
     }
 
 

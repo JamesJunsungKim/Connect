@@ -23,7 +23,7 @@ class ContactCell: ReusableTableViewCell {
         setupUI()
     }
     
-    public func setup(withObject object: NonCDUser, parentViewController: UIViewController, currentIndexPath: IndexPath) {
+    func configure(withObject object: NonCDUser, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         configure(withNonCDUser: object)
     }
     

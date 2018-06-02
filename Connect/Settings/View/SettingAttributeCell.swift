@@ -26,7 +26,11 @@ class SettingAttributeCell: ReusableTableViewCell {
     
     // MARK: - Public
     public func setup(withObject object: SettingAttribute, parentViewController: UIViewController, currentIndexPath: IndexPath) {
-        configure(withAttribute: object, withUser: AppStatus.current.user)
+    }
+    
+    func configure(withObject object: SettingAttribute, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        let user = User.unwrapSingleInstanceFrom(userInfo: userInfo)
+        configure(withAttribute: object, withUser: user)
     }
     
     public func configure(withAttribute attribute: SettingAttribute, withUser user: User) {
@@ -62,7 +66,6 @@ class SettingAttributeCell: ReusableTableViewCell {
         case .isAccountPrivate:
             toggle.isOn = user.isPrivate
         case .auctionNotRequired: break /*no-op*/
-            
         }
     }
     

@@ -14,10 +14,11 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     typealias Object = A.Object
     typealias Cell = A
     
-    required init(tableView:UITableView, fetchedResultsController:NSFetchedResultsController<Object>, parentViewController: UIViewController, observableCell: ((A)->())? = nil) {
+    required init(tableView:UITableView, fetchedResultsController:NSFetchedResultsController<Object>, parentViewController: UIViewController, userInfo:[String:Any]? = nil, observableCell: ((A)->())? = nil) {
         self.tableView = tableView
         self.fetchedResultsController = fetchedResultsController
         self.parentViewController = parentViewController
+        self.userInfo = userInfo
         self.observe = observableCell
         super.init()
         fetchedResultsController.delegate = self
@@ -34,7 +35,6 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     
     public func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
         return fetchedResultsController.object(at: indexPath)
-        
     }
     
     public func reconfigureFetchRequest(_ configure: (NSFetchRequest<Object>) -> ()) {
@@ -48,7 +48,8 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     fileprivate let tableView: UITableView
     fileprivate let fetchedResultsController: NSFetchedResultsController<Object>
     fileprivate weak var parentViewController: UIViewController!
-    fileprivate var observe: ((A)->())!
+    fileprivate let observe: ((A)->())?
+    fileprivate let userInfo: [String:Any]?
     
     // MARK: - UITableViewDataSource
     
@@ -64,7 +65,7 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as? Cell else {fatalError()}
-        cell.setup(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath)
+        cell.configure(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
         observe?(cell)
         return cell
     }

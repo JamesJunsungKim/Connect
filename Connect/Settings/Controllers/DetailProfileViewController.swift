@@ -15,7 +15,7 @@ fileprivate enum SectionTitle: Int {
     case status, accountDetail, privateAccount, signOut
 }
 
-class DetailProfileViewController: UIViewController {
+class DetailProfileViewController: UIViewController, NameDescribable {
     
     // UI
     fileprivate var profileView: UIView!
@@ -51,9 +51,7 @@ class DetailProfileViewController: UIViewController {
     
     @objc fileprivate func nameTapped() {
         let targetAttribute = userSettingAttributes.first(where: {$0.contentType == .name})!
-        let userInfo: [String:Any] = [SettingAttribute.Key.settingAttribute: targetAttribute]
-        presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: userInfo)
-        
+        presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: SettingAttribute.createUserInfo(withObject: targetAttribute))
     }
     
     fileprivate func didSelectTableViewCell(atIndexPath indexPath:IndexPath) {
@@ -63,10 +61,11 @@ class DetailProfileViewController: UIViewController {
             switch attribute.contentType {
             case .email: break
             default:
-                presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: [User.Key.user:user, SettingAttribute.Key.settingAttribute: targetAttribute(forIndexPath: indexPath)])
+                let userInfo = User.createUserInfo(withObject: user)
+                    .addValueIfNotEmpty(forKey: SettingAttribute.className, value: targetAttribute(forIndexPath: indexPath))
+                presentDefaultVC(targetVC: EditSettingDetailViewController(appStatus: appStatus), userInfo: userInfo)
             }
-        case .toggle: break
-            
+        
         case .onlyAction:
             presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
                 self.user.signOut(success: {
@@ -83,9 +82,19 @@ class DetailProfileViewController: UIViewController {
                     self.presentDefaultError(message: error.localizedDescription, okAction: nil)
                 })
                 }, cancelAction: nil)
+            
+        default: break
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    fileprivate lazy var observeUser: (User)->() = {[unowned self] (user) in
+        if self.profileButton.currentImage != user.profilePhoto?.image {
+            self.profileButton.setImage(user.profilePhoto!.image, for: .normal)
+        }
+        self.nameLabel.text = user.name
+        self.tableView.reloadData()
     }
     
     // MARK: - Filepriavte
@@ -105,22 +114,7 @@ class DetailProfileViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
         
         appStatus.userObservable
-            .subscribe(
-            onNext: {[unowned self] (user) in
-                // set profile photo
-                if self.profileButton.currentImage != user.profilePhoto?.image {
-                    self.profileButton.setImage(user.profilePhoto!.image, for: .normal)
-                }
-                
-                self.nameLabel.text = user.name
-                self.tableView.reloadData()
-                
-        },
-            onDisposed: {
-                //TODO: what should I do?
-                logInfo("Disposed..")
-        })
-        .disposed(by: bag)
+            .subscribe(onNext: observeUser, onDisposed: observerDisposedDescription).disposed(by: bag)
     }
     
     fileprivate func addTarget() {

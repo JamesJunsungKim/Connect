@@ -21,4 +21,12 @@ extension Unwrappable {
     static func unwrapListFrom(userInfo: [String:Any]?) -> [Self] {
         return (userInfo![className] as! [Self])
     }
+    
+    static func createUserInfo(withObject object: Self) -> [String:Any] {
+        return [Self.className:object]
+    }
+    
+    static func createUserInfo(withList list: [Self]) -> [String:Any] {
+        return [Self.className:list]
+    }
 }
