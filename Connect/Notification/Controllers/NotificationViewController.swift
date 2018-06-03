@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import CoreData
 
-class NotificationViewController: UIViewController, NameDescribable {
+class NotificationViewController: DefaultViewController{
 
     // UI
     fileprivate var tableView: UITableView!

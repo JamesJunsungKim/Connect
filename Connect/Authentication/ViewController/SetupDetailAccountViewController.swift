@@ -10,7 +10,7 @@ import UIKit
 import FirebaseStorage
 import ARSLineProgress
 import CoreData
-class SetupDetailAccountViewController: UIViewController {
+class SetupDetailAccountViewController: DefaultViewController {
     
     // UI
     fileprivate var profileImageButton: UIButton!
@@ -87,7 +87,7 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 }
 
 // UI
-extension SetupDetailAccountViewController:DefaultViewController {
+extension SetupDetailAccountViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         self.user = User.unwrapSingleInstanceFrom(userInfo: userInfo)
     }

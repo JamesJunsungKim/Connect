@@ -11,7 +11,7 @@ import SnapKit
 import ARSLineProgress
 import CoreData
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: DefaultViewController {
     
     //MARK: - UI
     fileprivate var facebookSignUpButton: UIButton!
@@ -220,7 +220,7 @@ class SignUpViewController: UIViewController {
     
 }
 
-extension SignUpViewController:DefaultViewController {
+extension SignUpViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {/*no-op*/}
 }
 

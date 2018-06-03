@@ -8,8 +8,9 @@
 
 import UIKit
 import Photos
+import RxSwift
 
-class MasterAlbumViewController: UIViewController {
+class MasterAlbumViewController: UIViewController, NameDescribable {
     // UI
     fileprivate var tableView: UITableView!
     
@@ -24,7 +25,7 @@ class MasterAlbumViewController: UIViewController {
         setupUI()
         setupVC()
         setupTableView()
-        fetchSampleAssets()
+        checkIfAuthorizedAndThenFetch()
     }
     
     deinit {
@@ -36,8 +37,17 @@ class MasterAlbumViewController: UIViewController {
     // MARK: - Actions
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
         // Segue to the selected type with data
-        
         _ = dataSource.object(atIndexPath: indexPath)
+    }
+    
+    fileprivate lazy var checkIfAuthorizedAndLoadPhotosIfSo: (Bool)->() = {[unowned self] (authorized)in
+        if !authorized {
+            self.presentDefaultError(message: "Access Denied", okAction: {
+                self.dismiss(animated: true, completion: nil)
+            })
+        } else {
+            self.fetchSampleAssets()
+        }
     }
     
     // MARK: - Filepriavte
@@ -54,8 +64,11 @@ class MasterAlbumViewController: UIViewController {
     fileprivate var smartAlbumsInfo = [AlbumInfo]()
     fileprivate var userCollectionAlbumInfo = [AlbumInfo]()
     
+    fileprivate let bag = DisposeBag()
+    
     fileprivate func setupVC() {
         view.backgroundColor = .white
+        navigationItem.title = "Albums"
     }
     
     fileprivate func setupTableView() {
@@ -63,38 +76,54 @@ class MasterAlbumViewController: UIViewController {
         tableView.delegate = self
     }
     
+    fileprivate func checkIfAuthorizedAndThenFetch() {
+        PHPhotoLibrary.authorized
+            .skipWhile({$0 == false})
+            .subscribe(onNext: checkIfAuthorizedAndLoadPhotosIfSo,
+            onCompleted: observerDisposedDescription).disposed(by: bag)
+    }
+    
     fileprivate func fetchSampleAssets(){
         allPhoto = PHAsset.fetchAssets(with: .image, options: sampleOptions)
-        smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
-        userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+        smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: sampleOptions)
+        userCollections = PHCollectionList.fetchTopLevelUserCollections(with: sampleOptions)
         
+        let group = DispatchGroup()
+        group.enter()
         AlbumInfo.fetchAndCreate(fromFetchResult: allPhoto, targetSize: targetSize, batchSize: 3, name: "All Photos", collection: nil) {[unowned self] (album) in
+            group.leave()
             self.allPhotoInfo = album
         }
         
         for index in 0..<smartAlbums.count {
+            group.enter()
             let collection = smartAlbums.object(at: index)
             let fetch = PHAsset.fetchAssets(in: collection, options: sampleOptions)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle!, collection: collection) {[unowned self] (album) in
+                group.leave()
                 self.smartAlbumsInfo.append(album)
             }
         }
         
         for index in 0..<userCollections.count {
+            group.enter()
             let collection = userCollections.object(at: index)
             guard let assetCollection = collection as? PHAssetCollection else {continue}
             let fetch = PHAsset.fetchAssets(in: assetCollection, options: sampleOptions)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle.unwrapOr(defaultValue: "Undefined Name"), collection: assetCollection) {[unowned self] (album) in
+                group.leave()
                 self.userCollectionAlbumInfo.append(album)
             }
         }
         
-        let objectDictionary = AlbumInfo.createObjectDictionary()
-        .updateObject(atSection: 0, withData: [allPhotoInfo])
-        .updateObject(atSection: 1, withData: smartAlbumsInfo)
-        .updateObject(atSection: 2, withData: userCollectionAlbumInfo)
-        
-        dataSource.update(data: objectDictionary)
+        group.notify(queue: DispatchQueue.main) {[unowned self] in
+            let objectDictionary = AlbumInfo.createObjectDictionary()
+                .updateObject(atSection: 0, withData: [self.allPhotoInfo])
+                .updateObject(atSection: 1, withData: self.smartAlbumsInfo)
+                .updateObject(atSection: 2, withData: self.userCollectionAlbumInfo)
+            
+            self.dataSource.update(data: objectDictionary)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

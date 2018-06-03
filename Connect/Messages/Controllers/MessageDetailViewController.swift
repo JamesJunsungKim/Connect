@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 import RxSwift
 
-class MessageDetailViewController: UIViewController, NameDescribable{
+class MessageDetailViewController: DefaultViewController{
     
     //UI
     fileprivate var tableView: UITableView!
@@ -118,7 +118,7 @@ extension MessageDetailViewController: UITableViewDelegate {
     }
 }
 
-extension MessageDetailViewController: DefaultViewController {
+extension MessageDetailViewController: DefaultSegue {
     
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
 //        targetUser = User.unwrapFrom(userInfo: userInfo)

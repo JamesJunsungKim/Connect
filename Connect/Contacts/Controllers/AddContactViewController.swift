@@ -10,7 +10,7 @@ import UIKit
 import ARSLineProgress
 import SnapKit
 
-class AddContactViewController: UIViewController {
+class AddContactViewController: DefaultViewController {
     
     // UI
     fileprivate var typeSegment: UISegmentedControl!
@@ -124,7 +124,7 @@ extension AddContactViewController: UITableViewDelegate {
     }
 }
 
-extension AddContactViewController: DefaultViewController {
+extension AddContactViewController: DefaultSegue {
     fileprivate func setupUI() {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)

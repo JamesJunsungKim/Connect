@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import CoreData
 
-class ContactViewController: UIViewController {
+class ContactViewController: DefaultViewController {
     
     // UI
     fileprivate var tableview: UITableView!

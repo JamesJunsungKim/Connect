@@ -15,7 +15,7 @@ fileprivate enum SectionTitle: Int {
     case status, accountDetail, privateAccount, signOut
 }
 
-class DetailProfileViewController: UIViewController, NameDescribable {
+class DetailProfileViewController: DefaultViewController {
     
     // UI
     fileprivate var profileView: UIView!
@@ -201,7 +201,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
 }
 
 
-extension DetailProfileViewController:DefaultViewController {
+extension DetailProfileViewController:DefaultSegue {
     
     fileprivate func setupUI(){
         profileView = UIView.create(withColor: .white)

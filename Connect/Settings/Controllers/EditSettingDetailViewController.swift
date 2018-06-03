@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import ARSLineProgress
 
-class EditSettingDetailViewController: UIViewController {
+class EditSettingDetailViewController: DefaultViewController {
     
     // UI
     fileprivate var textField: UITextField!
@@ -22,7 +22,6 @@ class EditSettingDetailViewController: UIViewController {
         self.appStatus = appStatus
         super.init(nibName: nil, bundle: nil)
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -107,7 +106,7 @@ class EditSettingDetailViewController: UIViewController {
     
 }
 
-extension EditSettingDetailViewController: DefaultViewController {
+extension EditSettingDetailViewController: DefaultSegue {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapSingleInstanceFrom(userInfo: userInfo!)

@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     fileprivate var mainWindow: UIWindow?
     fileprivate var signupWindow: UIWindow?
+    fileprivate var textWindow: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 //        UserDefaults.removeValue(forKey: .uidForSignedInUser)
@@ -28,7 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
         
-//        testMode(targetVC: )
+        let a: (UIImage)-> () = {_ in }
+        testMode(targetVC: MasterAlbumViewController(photoSelectAction: a))
         return true
     }
     
@@ -80,10 +82,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func testMode(targetVC: UIViewController) {
-        mainWindow = UIWindow(frame: UIScreen.main.bounds)
-        mainWindow?.makeKeyAndVisible()
-        mainWindow?.rootViewController = targetVC
+        mainWindow = nil
+        signupWindow = nil
+        
+        textWindow = UIWindow(frame: UIScreen.main.bounds)
+        textWindow?.makeKeyAndVisible()
+        textWindow?.rootViewController = targetVC
     }
+    
     private func setFlag() {
         if let _ = NSClassFromString("XCTest") {
             isTesting = true

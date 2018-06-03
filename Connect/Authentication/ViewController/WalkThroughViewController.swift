@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import CoreData
 
-class WalkThroughViewController: UIViewController {
+class WalkThroughViewController: DefaultViewController {
     
     // UI
     fileprivate var collectionView: UICollectionView!

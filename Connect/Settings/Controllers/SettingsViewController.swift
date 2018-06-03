@@ -13,7 +13,7 @@ fileprivate enum SectionTitle: Int {
     case profile, setting, about
 }
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: DefaultViewController {
     
     // UI
     fileprivate var tableView: UITableView!
