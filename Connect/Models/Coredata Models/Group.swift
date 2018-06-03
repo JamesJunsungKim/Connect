@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-final class Group: NSManagedObject {
+final class Group: CDBaseModel {
     @NSManaged fileprivate(set) var name: String
     @NSManaged fileprivate(set) var createdAt: Date
     
@@ -29,10 +29,5 @@ final class Group: NSManagedObject {
     deinit {
         leaveReferenceDictionary(forType: self.classForCoder)
     }
-    
-}
-
-
-extension Group: Managed {
     
 }

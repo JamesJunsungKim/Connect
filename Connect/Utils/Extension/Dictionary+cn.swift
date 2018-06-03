@@ -8,6 +8,14 @@
 
 import Foundation
 
+extension Dictionary where Key == Int {
+    public func updateObject(atSection section: Int, withData data:Value)->[Int:Value] {
+        var dict = self
+        dict[section] = data
+        return dict
+    }
+}
+
 extension Dictionary where Key == String {
     public func checkIfValueExists(forKey key: String) -> Bool {
         return self[key] != nil

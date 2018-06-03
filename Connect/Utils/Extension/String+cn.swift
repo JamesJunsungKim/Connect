@@ -11,6 +11,8 @@ import UIKit
 
 extension String {
     
+    // MARK: - Public / Internal
+    
     public func removingCharacters(in string: String) -> String {
         var chars = Substring(self)
         let convertSet = CharacterSet(charactersIn: string)
@@ -55,4 +57,8 @@ extension String {
         let predicate = NSPredicate(format: "SELF MATCHES %@", arg)
         return predicate.evaluate(with: self)
     }
+    
+    // MARK: - Static
+    
+    
 }

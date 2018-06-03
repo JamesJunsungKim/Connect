@@ -9,12 +9,21 @@
 import UIKit
 import FirebaseStorage
 import ARSLineProgress
-
+import CoreData
 class SetupDetailAccountViewController: UIViewController {
     
     // UI
     fileprivate var profileImageButton: UIButton!
     fileprivate var finishButton: UIButton!
+
+    init(context:NSManagedObjectContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +32,9 @@ class SetupDetailAccountViewController: UIViewController {
         setupVC()
         addtarget()
     }
+    
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -34,7 +44,7 @@ class SetupDetailAccountViewController: UIViewController {
     
     @objc fileprivate func finishBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
-        Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, withType: .profileResolution, success: {[unowned self] (photo) in
+        Photo.createAndUpload(into: context, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
             self.user.uploadToServer(success: {
                 ARSLineProgress.showSuccess(andThen: {[unowned self] in
@@ -55,6 +65,7 @@ class SetupDetailAccountViewController: UIViewController {
     
     // MARK: - Fileprivate
     fileprivate var user: User!
+    fileprivate let context: NSManagedObjectContext
     
     fileprivate func setupVC() {
         view.backgroundColor = .white

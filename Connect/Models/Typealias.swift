@@ -10,7 +10,7 @@ import CoreData
 import FirebaseDatabase
 import SwiftyJSON
 
-typealias CDBaseModel = NSManagedObject & Uploadable & Managed & UidFetchable & NameDescribable & Unwrappable
+typealias CDBaseModel = NSManagedObject & FileUploadable & Managed & UidFetchable & NameDescribable & Unwrappable
 
 typealias ReusableTableViewCell = Reusable & UITableViewCell
 typealias ReusableCollectionViewCell = Reusable & UICollectionViewCell

@@ -30,7 +30,7 @@ class MessageListViewController: UIViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -60,7 +60,7 @@ class MessageListViewController: UIViewController {
     fileprivate func setupTableView(){
         tableview.delegate = self
         
-        dataSource__ = DefaultTableViewDataSource(tableView: tableview, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy(),Dummy(),Dummy()])
+        dataSource__ = DefaultTableViewDataSource<MessageListCell>.init(tableView: tableview, parentViewController: self, initialData: [0:[Dummy(),Dummy(),Dummy(),Dummy(),Dummy(),Dummy()]], userInfo: nil, observableCell: nil)
 //        let request = Message.sortedFetchRequest
 //        request.returnsObjectsAsFaults = false
 //        request.fetchBatchSize = 12

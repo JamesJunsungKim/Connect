@@ -11,11 +11,11 @@ import CoreData
 import FirebaseStorage
 import ARSLineProgress
 
-protocol Uploadable: CompletionHandler {}
+protocol FileUploadable: CompletionHandler {}
 
-extension Uploadable {
-    static func upload(data: Data, toStorage reference: StorageReference ,success: @escaping (String)->(), failure: @escaping (Error)->()) {
-        _ = reference.putData(data, metadata: nil) { (metadata, error) in
+extension FileUploadable {
+    static func upload(fileData: Data, toStorage reference: StorageReference ,success: @escaping (String)->(), failure: @escaping (Error)->()) {
+        _ = reference.putData(fileData, metadata: nil) { (metadata, error) in
             guard error == nil else {
                 logError(error!.localizedDescription)
                 failure(error!)

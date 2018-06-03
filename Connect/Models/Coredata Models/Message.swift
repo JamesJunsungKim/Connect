@@ -10,9 +10,7 @@ import UIKit
 import CoreData
 import SwiftyJSON
 
-
-
-final class Message: NSManagedObject {
+final class Message: CDBaseModel {
     @NSManaged fileprivate(set) var uid: String
     @NSManaged fileprivate(set) var text: String?
     @NSManaged fileprivate(set) var sentAt: Date
@@ -42,6 +40,8 @@ final class Message: NSManagedObject {
     deinit {
         leaveReferenceDictionary(forType: self.classForCoder)
     }
+    
+    
     
     // MARK: - Public
     
@@ -75,43 +75,30 @@ final class Message: NSManagedObject {
         return [NSSortDescriptor(key: Keys.sentAt, ascending: true)]
     }
     
-    public static func insert(into moc: NSManagedObjectContext, text:String)->Message {
-        let message = createBaseMessage(moc: moc)
+    public static func create(moc: NSManagedObjectContext, fromUser: User, toUser:User, text:String?, image: UIImage?) -> Message {
+        let message: Message = moc.insertObject()
+        message.uid = UUID().uuidString
+        message.fromUser = fromUser
+        message.toUser = toUser
+        message.sentAt = Date()
         message.text = text
+        
+        if image != nil {
+            let photo = Photo.create(into: moc, image: image!, withType: .defaultResolution)
+            message.photo = photo
+        }
+        
         return message
     }
-    
-    public static func insert(into moc: NSManagedObjectContext, image: UIImage) -> Message {
-        let message = createBaseMessage(moc: moc)
-        let photo = Photo.create(into: moc, image: image, withType: .defaultResolution)
-        message.photo = photo
-        return message
-    }
-    
     
     
     // MARK: - Fileprivate
-    fileprivate static func createBaseMessage(moc: NSManagedObjectContext) -> Message {
-        let message: Message = moc.insertObject()
-        message.uid = UUID().uuidString
-        message.sentAt = Date()
-        return message
-    }
     
     fileprivate func dateSection() -> String {
         return self.sentAt.format(with: "EEEE - MMM d, yyyy")
     }
 
 }
-
-
-
-extension Message:Managed{}
-
-
-
-
-
 
 
 

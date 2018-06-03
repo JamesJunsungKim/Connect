@@ -113,6 +113,7 @@ final class User: CDBaseModel {
     
     public func updateSettingAttributeAndPatch(withAttribute attribute: SettingAttribute, success:@escaping successWithoutModel, failure:@escaping failure) {
         var dict = [String:String]()
+        
         switch attribute.contentType {
         case .name:
             name = attribute.content!
@@ -214,7 +215,6 @@ final class User: CDBaseModel {
             let result = findOrFetch(forUID: uid!, fromMOC: moc)
             if result != nil {return result!}
         }
-        
         let user: User = moc.insertObject()
         user.assign(uid: uid)
         user.name = name
@@ -249,19 +249,20 @@ final class User: CDBaseModel {
                 return
             }
             let uid = result!.user.uid
-            fetchUserFromServerAndCreate(withUID: uid, needContactAndGroupNode: true, success: success, failure: failure)
+            fetchUserFromServerAndCreate(withUID: uid, intoMOC: moc, needContactAndGroupNode: true, success: success, failure: failure)
         }
     }
     
-    public static func fetchUserFromServerAndCreate(withUID uid: String, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
+    public static func fetchUserFromServerAndCreate(withUID uid: String, intoMOC moc: NSManagedObjectContext, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
         
         FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value) { (snapshot) in
             guard let dict = snapshot.value else{
                 assertionFailure()
                 return
             }
+            
             let json = JSON(dict)
-            User.convertAndCreate(fromJSON: json, into: mainContext, completion: { (user) in
+            User.convertAndCreate(fromJSON: json, into: moc, completion: { (user) in
                 success(user)
             }, failure: { (error) in
                 failure(error)
@@ -269,7 +270,7 @@ final class User: CDBaseModel {
         }
     }
     
-    public static func fetchSignedInUser(fromMOC moc: NSManagedObjectContext = mainContext) -> User {
+    public static func fetchSignedInUser(fromMOC moc: NSManagedObjectContext) -> User {
         let uid = UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String
         return findOrFetch(forUID: uid, fromMOC: moc)!
     }
@@ -311,7 +312,7 @@ final class User: CDBaseModel {
                 let dictionary = json[Key.contacts].dictionaryValue
                 dictionary.values.forEach({
                     group.enter()
-                    User.convertAndCreate(fromJSON: $0, into: mainContext, completion: { (contact) in
+                    User.convertAndCreate(fromJSON: $0, into: moc, completion: { (contact) in
                         user.contacts?.insert(contact)
                     group.leave()
                 }, failure: { (error) in

@@ -33,7 +33,7 @@ class AddContactViewController: UIViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -56,14 +56,14 @@ class AddContactViewController: UIViewController {
                 return
             }
             ARSLineProgress.hide()
-            self.dataSource.update(data: list)
+            self.dataSource.update(data: [0:list])
         }
     }
     
     fileprivate func userDidselectedCell(atIndexPath indexPath: IndexPath) {
         let currentUser = appStatus.user
         
-        let targetUser = dataSource.selectedObject(atIndexPath: indexPath)
+        let targetUser = dataSource.object(atIndexPath: indexPath)
         presentActionSheetWithCancel(title: "Would you like to add this person?", message: nil, firstTitle: "Send a request", firstAction: {[unowned self] in
             //check this user is not saved to disk..
             
@@ -73,8 +73,8 @@ class AddContactViewController: UIViewController {
 //                return
 //            }
             
-            let toUser = targetUser.convertAndCreateUser()
-            let request = Request.create(fromUser: self.appStatus.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
+            let toUser = targetUser.convertAndCreateUser(in: self.appStatus.mainContext)
+            let request = Request.create(into: self.appStatus.mainContext, fromUser: self.appStatus.user, toUser: toUser, urgency: .normal, requestType: .friendRequest)
             currentUser.insert(request: request, intoSentNode: true)
             request.uploadToNodeOfSentRequestsAndReceivedRequests(success: {[unowned self] in
                 self.presentDefaultAlertWithoutCancel(withTitle: "Succeed", message: nil)

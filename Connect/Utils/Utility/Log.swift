@@ -25,14 +25,12 @@ func enterViewControllerMemoryLog(type: AnyClass) {
     logInfo("New entry in Memery \nnew:\(newEntry)\n"+sum+"\n")
 }
 
-func leaveViewControllerMomeryLogAndSaveDataToDisk(type:AnyClass) {
+func leaveViewControllerMomeryLog(type:AnyClass) {
     let deletedEntry = nameFor(type: type)
     guard let index = viewControllerMemoryArray.index(of: deletedEntry) else {return}
     viewControllerMemoryArray.remove(at: index)
     let sum = reduce(array: viewControllerMemoryArray)
     logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    appDelegate.persistentContainer.viewContext.performSaveorRollback()
 }
 
 func enterReferenceDictionary(forType type: AnyClass, withUID uid: String?) {

@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import CoreData
 
 class WalkThroughViewController: UIViewController {
     
@@ -18,6 +19,15 @@ class WalkThroughViewController: UIViewController {
     fileprivate var signInDescriptionLabel: UILabel!
     fileprivate var signInButton: UIButton!
     
+    init(context:NSManagedObjectContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -27,7 +37,7 @@ class WalkThroughViewController: UIViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,17 +47,17 @@ class WalkThroughViewController: UIViewController {
     // MARK: - Actions
     
     @objc fileprivate func createButtonClicked() {
-        presentDefaultVC(targetVC: SignUpViewController(), userInfo: nil)
+        presentDefaultVC(targetVC: SignUpViewController(context: context), userInfo: nil)
     }
     
     @objc fileprivate func signInButtonClicked() {
-        presentDefaultVC(targetVC: SignInViewController(), userInfo: nil)
+        presentDefaultVC(targetVC: SignInViewController(context: context), userInfo: nil)
     }
     
     
     // MAKR: - Fileprivate
     fileprivate let pages = Page.fetchPages()
-    
+    fileprivate let context: NSManagedObjectContext
     fileprivate func setupVC() {
         view.backgroundColor = .white
     }

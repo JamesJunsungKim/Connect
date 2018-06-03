@@ -33,7 +33,7 @@ class SettingsViewController: UIViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     //MARK: - Filepriavte

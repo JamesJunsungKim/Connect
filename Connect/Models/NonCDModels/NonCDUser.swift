@@ -56,7 +56,7 @@ extension NonCDUser {
     
     // MARK: - Public
     
-    public func convertAndCreateUser(in moc: NSManagedObjectContext = mainContext) -> User {
+    public func convertAndCreateUser(in moc: NSManagedObjectContext) -> User {
         return User.create(into: moc, uid: uid, name: name, email: emailAddress, isFavorite: isFavorite, isPrivate: isPrivate)
     }
     

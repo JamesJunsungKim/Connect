@@ -47,7 +47,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         // observe a node added to receivedReques to notify user of the request.
         FireDatabase.receivedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) { (snapshot) in
             guard let result = snapshot.value as? [String:Any] else {return}
-            Request.convertAndCreate(fromJSON: JSON(result), into: mainContext, success: {[unowned self] (request) in
+            Request.convertAndCreate(fromJSON: JSON(result), into: appStatus.mainContext, success: {[unowned self] (request) in
                 self.appStatus.user.insert(request: request, intoSentNode: false)
                 self.appStatus.received(request: request)
             }, failure: {[unowned self] (error) in

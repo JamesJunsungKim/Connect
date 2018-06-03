@@ -29,7 +29,7 @@ class ContactViewController: UIViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -62,7 +62,8 @@ class ContactViewController: UIViewController {
     
     fileprivate func setupTableView() {
         tableview.delegate = self
-        dataSource___ = DefaultTableViewDataSource<ContactCell>.init(tableView: tableview, parentViewController: self, initialData: [NonCDUser(uid: "A", name: "HI", phoneNumber: nil, emailAddress: "B", isPrivate: false, isFavorite: false, isOwner: true, isSelected: false, contacts: [], profilePhoto: nil, groups: [])])
+        dataSource___ = DefaultTableViewDataSource<ContactCell>.init(tableView: tableview, parentViewController: self, initialData: [0:[NonCDUser(uid: "A", name: "HI", phoneNumber: nil, emailAddress: "B", isPrivate: false, isFavorite: false, isOwner: true, isSelected: false, contacts: [], profilePhoto: nil, groups: [])]], userInfo: nil, observableCell: nil)
+        
         
 //        let request = User.sortedFetchRequest
 //        request.returnsObjectsAsFaults = false

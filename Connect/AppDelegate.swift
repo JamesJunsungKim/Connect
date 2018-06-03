@@ -14,7 +14,7 @@ import FBSDKCoreKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var persistentContainer: NSPersistentContainer!
+    fileprivate var persistentContainer: NSPersistentContainer!
     
     fileprivate var mainWindow: UIWindow?
     fileprivate var signupWindow: UIWindow?
@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         signupWindow?.makeKeyAndVisible()
         signupWindow?.windowLevel = UIWindowLevelAlert
         
-        signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController())
+        signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController(context: persistentContainer.viewContext) )
         
         mainWindow = nil
     }

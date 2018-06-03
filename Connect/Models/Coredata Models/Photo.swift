@@ -70,7 +70,7 @@ final class Photo: CDBaseModel {
     
     public static func createAndUpload(into moc: NSManagedObjectContext, toReference reference: StorageReference, withImage image: UIImage, withType key: UIImage.ResolutionKey, success:@escaping (Photo)->(), failure:@escaping (Error)->())  {
         let photo = Photo.create(into: moc, image: image, withType: key)
-        upload(data: photo.imageData, toStorage: reference, success: { (url) in
+        upload(fileData: photo.imageData, toStorage: reference, success: { (url) in
             photo.url = url
             success(photo)
         }) { (error) in

@@ -26,7 +26,7 @@ class HomeViewController: UIViewController {
         
     }
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Public

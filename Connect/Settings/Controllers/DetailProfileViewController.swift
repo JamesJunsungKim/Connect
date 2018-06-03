@@ -40,7 +40,7 @@ class DetailProfileViewController: UIViewController, NameDescribable {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -69,10 +69,10 @@ class DetailProfileViewController: UIViewController, NameDescribable {
         case .onlyAction:
             presentDefaultAlert(withTitle: "Confirmation", message: "Are you sure to sign out? All data will be removed from your device.", okAction: {[unowned self] in
                 self.user.signOut(success: {
-                    User.deleteAll(fromMOC: mainContext)
-                    Photo.deleteAll(fromMOC: mainContext)
-                    Message.deleteAll(fromMOC: mainContext)
-                    Request.deleteAll(fromMOC: mainContext)
+                    User.deleteAll(fromMOC: self.appStatus.mainContext)
+                    Photo.deleteAll(fromMOC: self.appStatus.mainContext)
+                    Message.deleteAll(fromMOC: self.appStatus.mainContext)
+                    Request.deleteAll(fromMOC: self.appStatus.mainContext)
                     UserDefaults.userRequestToSignOut()
                     
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -184,7 +184,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
             ARSLineProgress.ars_showOnView(self.view)
         }
         
-        Photo.createAndUpload(into: mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
+        Photo.createAndUpload(into: appStatus.mainContext, toReference: FireStorage.profilePhoto(user).reference , withImage: image, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)
             self.appStatus.user.setProfilePhoto(with: photo)
             self.user.patch(toNode: User.Key.profilePhoto + Photo.Key.url, withValue: photo.url!, success: {

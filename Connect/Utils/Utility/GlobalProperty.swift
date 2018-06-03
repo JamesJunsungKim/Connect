@@ -17,9 +17,9 @@ var isTesting = false {
 }
 private var countForFlag = 0
 
-private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-let mainContext = appDelegate.persistentContainer.viewContext
+//private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//
+//let mainContext = appDelegate.persistentContainer.viewContext
 
 var viewControllerMemoryArray: [String] = []
 var referenceMemeoryDictionary : [String:[String:String?]] = [:]

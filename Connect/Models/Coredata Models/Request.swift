@@ -94,6 +94,7 @@ final class Request: CDBaseModel{
             FireDatabase.user(uid: fromUID).reference.child(FireDatabase.PathKeys.sentRequests.rawValue).child(toUID),
             FireDatabase.user(uid: toUID).reference.child(FireDatabase.PathKeys.receivedRequests.rawValue).child(fromUID)
         ]
+        
         references.forEach({
             group.enter()
             $0.setValue(self.toDictionary(), withCompletionBlock: { (error, _) in
@@ -132,7 +133,7 @@ final class Request: CDBaseModel{
     }
     
     // MARK: - Static
-    public static func create(into moc: NSManagedObjectContext = mainContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User, toUser: User, urgency: Urgency, requestType: RequestType, needsToDisplay :Bool = true) -> Request {
+    public static func create(into moc: NSManagedObjectContext, uid: String = UUID().uuidString, creationDate: Date = Date(), isCompleted:Bool = false, fromUser: User, toUser: User, urgency: Urgency, requestType: RequestType, needsToDisplay :Bool = true) -> Request {
         let predicate = NSPredicate(format: "%K == %@", #keyPath(Request.uid), uid)
         return Request.findOrCreate(in: moc, matching: predicate, configure: { (request) in
             request.uid = uid
@@ -165,7 +166,7 @@ final class Request: CDBaseModel{
             // we need to create an user who sent this request and save it.
             // and then make a connection btw the current user and the recently-created user.
             //assert(User.findOrFetch(forUID: fromUID) == nil)
-            User.fetchUserFromServerAndCreate(withUID: fromUID, needContactAndGroupNode: false, success: { (fromUser) in
+            User.fetchUserFromServerAndCreate(withUID: fromUID, intoMOC: moc, needContactAndGroupNode: false, success: { (fromUser) in
                 let request = Request.create(into: moc, uid: uid, creationDate: createdAt, isCompleted: isCompleted, fromUser: fromUser, toUser: currentUser!, urgency: Urgency.init(rawValue: urgencyNumber)!, requestType: requestType, needsToDisplay: needsToDisplay)
                     success(request)
             }, failure: { (error) in

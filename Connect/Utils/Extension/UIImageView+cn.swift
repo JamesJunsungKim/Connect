@@ -38,8 +38,14 @@ extension UIImageView {
         return iv
     }
     
-    static func create(withImageKey key: UIImage.Name) -> UIImageView {
+    internal static func create(withImageKey key: UIImage.Name) -> UIImageView {
         return create(withImage: UIImage.create(forKey: key))
+    }
+    
+    internal static func create(withBackgroundColor color: UIColor) ->UIImageView {
+        let i = create(withImage: UIImage())
+        i.backgroundColor = color
+        return i
     }
 }
 

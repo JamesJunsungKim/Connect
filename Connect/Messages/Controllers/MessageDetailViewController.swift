@@ -53,15 +53,15 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     
     // MARK: - Actions
     
-    fileprivate var userDidTypeText: (String)->() = { _ in
-        // TODO: need to make a new message based on the text
+    fileprivate lazy var userDidTypeText: (String)->() = {[unowned self] (text) in
+        let status = self.appStatus
+        _ = Message.create(moc: status.mainContext, fromUser: status.user, toUser: self.targetUser, text: text, image: nil)
     }
     
     // MARK: - Filepriavte
     fileprivate let appStatus: AppStatus
     fileprivate weak var targetUser: User!
     fileprivate var dataSource : CoreDataTableViewDataSource<MessageCell>!
-//    fileprivate var dataSource___ : DefaultTableViewDataSource<MessageCell>!
     fileprivate let bag = DisposeBag()
     
     fileprivate func setupVC() {
@@ -75,8 +75,6 @@ class MessageDetailViewController: UIViewController, NameDescribable{
     fileprivate func setupTableView() {
         tableView.delegate = self
         
-//        dataSource___ = DefaultTableViewDataSource(tableView: tableView, parentViewController: self, initialData: [Dummy(),Dummy(),Dummy(),Dummy()])
-        
         let fromUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.fromUser.uid), targetUser.uid!)
         let toUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.toUser.uid), targetUser.uid!)
         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [fromUserPredicate, toUserPredicate])
@@ -84,8 +82,8 @@ class MessageDetailViewController: UIViewController, NameDescribable{
         request.returnsObjectsAsFaults = false
         request.fetchBatchSize = 20
 
-        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
-        
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: appStatus.mainContext, sectionNameKeyPath: nil, cacheName: nil)
+
         dataSource = CoreDataTableViewDataSource<MessageCell>.init(tableView: tableView, fetchedResultsController: frc, parentViewController: self)
         
     }

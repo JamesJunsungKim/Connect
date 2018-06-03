@@ -14,6 +14,7 @@ class ConnectTests: XCTestCase {
     
     fileprivate var managedObjectContext: NSManagedObjectContext!
     fileprivate var appStatus: AppStatus!
+    fileprivate var currentUser: User!
     
     struct Checkup {
         static let name = "Random James1"
@@ -25,9 +26,9 @@ class ConnectTests: XCTestCase {
     override func setUp() {
         super.setUp()
         managedObjectContext = NSManagedObjectContext.connectInMemryTestContext()
-        let user = User.create(into: managedObjectContext, uid: nil, name: "Test", email: "Test@gmail.com")
-        user.assign(uid: UUID().uuidString)
-        appStatus = AppStatus(currentUser: user, mainContext: managedObjectContext)
+        currentUser = User.create(into: managedObjectContext, uid: nil, name: "Test", email: "Test@gmail.com")
+        currentUser.assign(uid: UUID.create())
+        appStatus = AppStatus(currentUser: currentUser, mainContext: managedObjectContext)
     }
     
     override func tearDown() {
@@ -35,8 +36,28 @@ class ConnectTests: XCTestCase {
         super.tearDown()
     }
     
+    // MARK: - Contacts
+    
+    func testAddContactViewController() {
+        //check if it sends a friend request to right person.
+        let photo = NonCDPhoto(uid: UUID.create(), url: "https://console.firebase.google.com/u/0/project/connect-ae5e3/overview", width: nil, height: nil, isDownloaded: false)
+        let searchedPerson = NonCDUser(uid: UUID.create(), name: "Search Person", phoneNumber: nil, emailAddress: "Search@gmail.com", isPrivate: false, isFavorite: false, isOwner: false, isSelected: false, contacts: [], profilePhoto: photo, groups: [])
+        
+        let toUser = searchedPerson.convertAndCreateUser(in: managedObjectContext)
+        let request = Request.create(into: managedObjectContext, fromUser: currentUser, toUser: toUser, urgency: .normal, requestType: .friendRequest)
+        let uid = request.toDictionary()[Request.Key.toUID] as! String
+        let targetDict = toUser.toDictionary()
+        XCTAssertEqual(uid, targetDict[User.Key.uid] as! String)
+    }
+    
+    // MARK: - Notification
+    
+    func testNotificationViewController() {
+        XCTAssert(true)
+    }
+    
     // MARK: - Setting
-    func editSettingViewController() {
+    func testEditSettingViewController() {
         let user = appStatus.user
         let attributes = User.settingAttributes()
         
@@ -61,10 +82,9 @@ class ConnectTests: XCTestCase {
         }
         
         // Phone Number
-        
         var numberAttribute = attributes.first(where: {$0.contentType == .phoneNumber})!
         numberAttribute.content = Checkup.phoneNumber
-        
+
         appStatus.updateSettingAttributeAndPatch(withAttribute: numberAttribute, success: {
             XCTAssertEqual(user.phoneNumber, Checkup.phoneNumber)
         }) { (_) in
@@ -78,38 +98,6 @@ class ConnectTests: XCTestCase {
         }) { (_) in
             XCTFail()
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
     
 }

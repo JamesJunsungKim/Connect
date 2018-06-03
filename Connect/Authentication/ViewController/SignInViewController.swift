@@ -9,6 +9,7 @@
 import UIKit
 import SnapKit
 import ARSLineProgress
+import CoreData
 
 class SignInViewController: UIViewController {
     
@@ -30,6 +31,15 @@ class SignInViewController: UIViewController {
     fileprivate var emailWarningLabel: UILabel!
     fileprivate var passwordWarningLabel: UILabel!
     
+    init(context:NSManagedObjectContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +50,7 @@ class SignInViewController: UIViewController {
         
     }
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,7 +67,7 @@ class SignInViewController: UIViewController {
     
     @objc fileprivate func signInBtnClicked() {
         ARSLineProgress.ars_showOnView(view)
-        User.loginAndFetchAndCreate(into: mainContext, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
+        User.loginAndFetchAndCreate(into: context, withEmail: emailTextField.text!, password: passwordTextField.text!, success: { (user) in
             UserDefaults.store(object: user.uid!, forKey: .uidForSignedInUser)
             ARSLineProgress.showSuccess(andThen: {
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -71,7 +81,7 @@ class SignInViewController: UIViewController {
     
     // MARK: - Filepriavte logic part.
     fileprivate let animationDuration = 0.3
-    
+    fileprivate let context : NSManagedObjectContext
     fileprivate var thirdPartyHeightConstraint: Constraint!
     fileprivate var nameWarningHeightConstraint: Constraint!
     fileprivate var emailWarningHeightConstraint: Constraint!

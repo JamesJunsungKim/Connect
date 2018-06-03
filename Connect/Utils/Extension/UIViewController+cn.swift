@@ -12,10 +12,9 @@ import PopupDialog
 import ARSLineProgress
 
 extension UIViewController {
-    typealias block = ()->()
-    // MARK: - Alert & Error
     
-    func presentDefaultAlertWithoutCancel(withTitle title: String, message: String?, okAction: (()->())? = nil) {
+    // MARK: - Alert & Error
+    func presentDefaultAlertWithoutCancel(withTitle title: String, message: String?, okAction: (block)? = nil) {
         let pop = PopupDialog(title: title, message: message)
         let okBtn = PopupDialogButton(title: "Ok", action: {if okAction != nil {okAction!()}})
         
@@ -23,7 +22,7 @@ extension UIViewController {
         present(pop, animated: true, completion: nil)
     }
     
-    func presentDefaultAlert(withTitle title: String?, message: String?, okAction: (()->())? = nil, cancelAction: (()->())? = nil) {
+    func presentDefaultAlert(withTitle title: String?, message: String?, okAction: (block)? = nil, cancelAction: (block)? = nil) {
         let pop = PopupDialog(title: title, message: message)
         let cancelBtn = PopupDialogButton(title: "Cancel") {
             if cancelAction != nil {cancelAction!()}}
@@ -33,7 +32,7 @@ extension UIViewController {
         present(pop, animated: true, completion: nil)
     }
     
-    func presentDefaultError(message: String = "Something went wrong.. \nPlease try it again" ,okAction: (()->())? = nil) {
+    func presentDefaultError(message: String = "Something went wrong.. \nPlease try it again" ,okAction: (block)? = nil) {
         let pop = PopupDialog(title: "Error", message: message)
         let okBtn = PopupDialogButton(title: "Ok") {if okAction != nil {okAction!()}}
         pop.addButton(okBtn)
@@ -51,7 +50,7 @@ extension UIViewController {
     
     // MARK: - Action Sheet
     
-    func presentActionSheetWithCancel(title: String?, message: String?, firstTitle: String?, firstAction: (()->())?, cancelAction: (()->())? = nil, configuration: ((UIAlertController)->())? = nil) {
+    func presentActionSheetWithCancel(title: String?, message: String?, firstTitle: String?, firstAction: (block)?, cancelAction: (block)? = nil, configuration: ((UIAlertController)->())? = nil) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         
         let firstAction = UIAlertAction(title: firstTitle, style: .default) { (_) in
@@ -108,8 +107,14 @@ extension UIViewController {
         imagePicker.delegate = pickerDelegate
         imagePicker.sourceType = sourceType
         imagePicker.allowsEditing = true
-        
         self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    public func presentMasterAlbumViewController(photoSelectAction: @escaping ((UIImage)->())) {
+        let destination = MasterAlbumViewController(photoSelectAction: photoSelectAction)
+        let nav = UINavigationController(rootViewController: destination)
+        nav.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
+        present(nav, animated: true, completion: nil)
     }
     
     // MARK: - Animation

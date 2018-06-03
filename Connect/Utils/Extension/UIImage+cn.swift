@@ -16,6 +16,7 @@ extension UIImage {
         case personPlaceHolder = "placeholder_person"
         case plusIcon = "plus_icon"
         case noImage = "no_image_found"
+        case rightArrow = "right_arrow"
     }
     
     enum ResolutionKey:String {

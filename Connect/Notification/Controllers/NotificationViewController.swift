@@ -20,7 +20,6 @@ class NotificationViewController: UIViewController, NameDescribable {
         super.init(nibName: nil, bundle: nil)
     }
     
-   
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -31,7 +30,7 @@ class NotificationViewController: UIViewController, NameDescribable {
     }
     
     deinit {
-        leaveViewControllerMomeryLogAndSaveDataToDisk(type: self.classForCoder)
+        leaveViewControllerMomeryLog(type: self.classForCoder)
     }
 
     // MARK: - Public
@@ -42,7 +41,7 @@ class NotificationViewController: UIViewController, NameDescribable {
     }
     
     @objc fileprivate func deleteBtnClicked() {
-        Request.deleteAll(fromMOC: mainContext)
+        Request.deleteAll(fromMOC: appStatus.mainContext)
     }
     
     fileprivate lazy var observeCell: (NotificationCell)->() = {[unowned self](cell) in
@@ -89,7 +88,7 @@ class NotificationViewController: UIViewController, NameDescribable {
         request.returnsObjectsAsFaults = false
         request.fetchBatchSize = 20
         
-        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: #keyPath(Request.sectionTitle), cacheName: nil)
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: appStatus.mainContext, sectionNameKeyPath: #keyPath(Request.sectionTitle), cacheName: nil)
 
         dataSource = CoreDataTableViewDataSource<NotificationCell>(tableView: tableView, fetchedResultsController: frc, parentViewController: self, userInfo: nil, observableCell: observeCell)
     }

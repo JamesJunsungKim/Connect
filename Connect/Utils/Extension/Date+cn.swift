@@ -44,15 +44,6 @@ extension Date {
         return Date(year: 0, month: 0, day: 0, hour: hour, minute: minute, second: 0)
     }
     
-    public static func dateWithHour(_ hour: Int, minute: Int) -> Date {
-        return dateWithHourHelper(hour, minute: minute)
-    }
-    
-    fileprivate static func dateWithHourHelper<Template>(_ hour: Int, minute: Int) -> Template {
-        let date = Date(year: 0, month: 0, day: 0, hour: hour, minute: minute, second: 0)
-        return date as! Template
-    }
-    
     static func ConvertToString(_ target: String) -> Date {
         let formatter = DateFormatter()
     
@@ -77,17 +68,20 @@ extension Date {
     
     // MARK:- Format Date to UTC
     public func toYearToDateStringUTC() -> String {
-        return self.format(with: "yyyy-MM-dd", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
+        return format(with: "yyyy-MM-dd", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
     public func toYearToMillisecondStringUTC() -> String {
-        return self.format(with: "yyyy-MM-dd'T'HH:mm:ss", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
+        return format(with: "yyyy-MM-dd'T'HH:mm:ss", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
     public func toHourToMinStringUTC() -> String {
-        return self.format(with: "HH:mm", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
+        return format(with: "HH:mm", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
     }
     
+    public func toHourToAmPmStringUTC() -> String {
+        return format(with: "HH:mm a", timeZone: Date.getUTCTimeZone(), locale: Date.getUTCLocale())
+    }
     
     public func addYear(value: Int)->Date{
         return cal.date(byAdding: .year, value: value, to: self)!
