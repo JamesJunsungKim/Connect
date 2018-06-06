@@ -201,7 +201,7 @@ extension DetailProfileViewController: UIImagePickerControllerDelegate, UINaviga
 }
 
 
-extension DetailProfileViewController:DefaultSegue {
+extension DetailProfileViewController {
     
     fileprivate func setupUI(){
         profileView = UIView.create(withColor: .white)

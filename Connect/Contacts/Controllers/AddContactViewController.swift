@@ -124,7 +124,7 @@ extension AddContactViewController: UITableViewDelegate {
     }
 }
 
-extension AddContactViewController: DefaultSegue {
+extension AddContactViewController {
     fileprivate func setupUI() {
         
         typeSegment = UISegmentedControl.create(withTitles: ["Name","Email"], tintColor: .mainBlue)

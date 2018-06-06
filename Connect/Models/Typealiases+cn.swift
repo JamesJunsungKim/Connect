@@ -11,7 +11,9 @@ import FirebaseDatabase
 import SwiftyJSON
 
 // ViewController
-typealias DefaultViewController = UIViewController & NameDescribable
+typealias DefaultViewController = UIViewController & NameDescribable & DefaultSegue
+typealias PopOverViewController = UIViewController & NameDescribable & PopOverable
+typealias FormSheetViewController = UIViewController & NameDescribable & FormSheetable
 
 // CoreData
 typealias CDBaseModel = NSManagedObject & FileUploadable & Managed & UidFetchable & NameDescribable & Unwrappable

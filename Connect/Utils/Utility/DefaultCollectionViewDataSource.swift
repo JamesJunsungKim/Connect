@@ -12,8 +12,9 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
     
     typealias Object = A.Object
     typealias Cell = A
+    typealias Section = Int
     
-    init(collectionView: UICollectionView, parentViewController: UIViewController, initialData: [Object]?,userInfo:[String:Any]?, observeCell:((A)->())? = nil) {
+    init(collectionView: UICollectionView, parentViewController: UIViewController, initialData: [Section:Object]? = nil, userInfo:[String:Any]? = nil, observeCell:((A)->())? = nil) {
         self.collectionView = collectionView
         self.parentViewController = parentViewController
         self.observeCell = observeCell
@@ -21,27 +22,39 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
         super.init()
         collectionView.register(Cell.self, forCellWithReuseIdentifier: Cell.reuseIdentifier)
         collectionView.dataSource = self
-        arrayOfObjects = initialData.unwrapOr(defaultValue: [Object]())
+        objectDictionary = initialData.unwrapOr(defaultValue: [Section:[Object]]())
         collectionView.reloadData()
     }
     
-    public func update(data: [Object]) {
-        arrayOfObjects = data
+    public func update(dictionary: [Int:[Object]]) {
+        objectDictionary = dictionary
         collectionView.reloadData()
     }
     
-    public func append(data:[Object]) {
-        arrayOfObjects.append(contentsOf: data)
-        collectionView.reloadData()
+    public func update(list:[Object], atSection section:Section) {
+        validate(section: section)
+        objectDictionary[section] = list
+        let indexSet = IndexSet.init(integer: section)
+        collectionView.reloadSections(indexSet)
+    }
+    
+    public func append(list:[Object], atSection section: Section) {
+        validate(section: section)
+        objectDictionary[section]!.append(contentsOf: list)
+        let indexSet = IndexSet.init(integer: section)
+        collectionView.reloadSections(indexSet)
     }
     
     public func selectedObject(atIndexPath indexPath: IndexPath) -> Object {
-        return arrayOfObjects[indexPath.item]
+        return objectDictionary[indexPath.section]![indexPath.item]
     }
     
     // DataSource
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return objectDictionary.keys.count
+    }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return arrayOfObjects.count
+        return objectDictionary[section]!.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -57,5 +70,14 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
     fileprivate let collectionView: UICollectionView
     fileprivate let observeCell: ((A)->())?
     fileprivate let userInfo: [String:Any]?
-    fileprivate var arrayOfObjects = [Object]()
+    fileprivate var objectDictionary = [Section:[Object]]()
+    
+    fileprivate func validate(indexPath: IndexPath) {
+        validate(section: indexPath.section, item: indexPath.item)
+    }
+    
+    fileprivate func validate(section: Int, item: Int? = nil) {
+        guard section < objectDictionary.keys.count else {fatalError()}
+        if item != nil {guard item! < objectDictionary[section]!.count else {fatalError()}}
+    }
 }

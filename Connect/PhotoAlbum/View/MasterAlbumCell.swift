@@ -35,7 +35,6 @@ class MasterAlbumCell: ReusableTableViewCell {
     }
     
     func configure(withObject object: AlbumInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
-        
         separatorLine.isHidden = Section(rawValue: currentIndexPath.section)! == .allPhotos ? false : true
         albumTitleLabel.text = object.name
         photoNumberLabel.text = "\(object.totalNumber)"

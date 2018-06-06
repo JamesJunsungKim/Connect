@@ -87,7 +87,7 @@ extension SetupDetailAccountViewController: UIImagePickerControllerDelegate, UIN
 }
 
 // UI
-extension SetupDetailAccountViewController: DefaultSegue {
+extension SetupDetailAccountViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         self.user = User.unwrapSingleInstanceFrom(userInfo: userInfo)
     }

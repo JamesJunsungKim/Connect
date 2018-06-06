@@ -118,7 +118,7 @@ extension MessageDetailViewController: UITableViewDelegate {
     }
 }
 
-extension MessageDetailViewController: DefaultSegue {
+extension MessageDetailViewController {
     
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
 //        targetUser = User.unwrapFrom(userInfo: userInfo)

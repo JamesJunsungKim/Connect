@@ -8,16 +8,20 @@
 
 import UIKit
 
-class AlbumDetailCell: ReusableTableViewCell {
+class AlbumDetailCell: ReusableCollectionViewCell {
     typealias Object = AlbumInfo
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    // UI
+    fileprivate var albumImageView: UIImageView!
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
+        
     }
     
    
     func configure(withObject object: AlbumInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
-        
+
     }
     
     
@@ -29,6 +33,10 @@ class AlbumDetailCell: ReusableTableViewCell {
 
 extension AlbumDetailCell {
     fileprivate func setupUI(){
-        
+        albumImageView = UIImageView.create()
+        addSubview(albumImageView)
+        albumImageView.snp.makeConstraints { (make) in
+            make.left.top.right.bottom.equalToSuperview()
+        }
     }
 }

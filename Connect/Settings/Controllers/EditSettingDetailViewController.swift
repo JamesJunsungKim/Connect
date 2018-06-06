@@ -106,7 +106,7 @@ class EditSettingDetailViewController: DefaultViewController {
     
 }
 
-extension EditSettingDetailViewController: DefaultSegue {
+extension EditSettingDetailViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
         setupUI()
         attribute = SettingAttribute.unwrapSingleInstanceFrom(userInfo: userInfo!)

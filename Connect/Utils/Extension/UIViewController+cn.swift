@@ -71,33 +71,29 @@ extension UIViewController {
    
     // MARK: - Segue
     
-    func presentFormSheetVC<T:FormSheetable>(targetVC: T, userInfo: [String:Any]?, completion:((T)->())? = nil) {
-        guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
-        target.modalPresentationStyle = .formSheet
-        target.preferredContentSize = targetVC.preferredSize
+    func presentFormSheetVC<T:FormSheetViewController>(targetVC: T, userInfo: [String:Any]?, completion:((T)->())? = nil) {
+        targetVC.modalPresentationStyle = .formSheet
+        targetVC.preferredContentSize = targetVC.preferredSize
 
-        self.present(target, animated: true, completion: nil)
+        self.present(targetVC, animated: true, completion: nil)
         targetVC.setup(fromVC: self, userInfo: userInfo)
         if completion != nil {completion!(targetVC)}
     }
     
-    func presentPopOverVC<T:PopOverable>(targetVC: T, sourceView: UIView, userInfo:[String:Any]?, completion:((T)->())? = nil) {
-        guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
-        target.modalPresentationStyle = .popover
-        target.preferredContentSize = targetVC.preferredSize
-        target.popoverPresentationController?.permittedArrowDirections = targetVC.permittedDirection
-        target.popoverPresentationController?.sourceRect = sourceView.bounds
-        target.popoverPresentationController?.sourceView = sourceView
+    func presentPopOverVC<T:PopOverViewController>(targetVC: T, sourceView: UIView, userInfo:[String:Any]?, completion:((T)->())? = nil) {
+        targetVC.modalPresentationStyle = .popover
+        targetVC.preferredContentSize = targetVC.preferredSize
+        targetVC.popoverPresentationController?.permittedArrowDirections = targetVC.permittedDirection
+        targetVC.popoverPresentationController?.sourceRect = sourceView.bounds
+        targetVC.popoverPresentationController?.sourceView = sourceView
         
-        present(target, animated: true, completion: nil)
+        present(targetVC, animated: true, completion: nil)
         targetVC.setup(fromVC: self, userInfo: userInfo)
         if completion != nil {completion!(targetVC)}
     }
     
-    func presentDefaultVC<T:DefaultSegue>(targetVC: T, userInfo:[String:Any]?,shouldPushOnNavigationController:Bool = true, completion:((T)->())? = nil) {
-        guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
-        
-        shouldPushOnNavigationController ? navigationController?.pushViewController(target, animated: true) : self.present(target, animated: true, completion: nil)
+    func presentDefaultVC<T:DefaultViewController>(targetVC: T, userInfo:[String:Any]?,shouldPushOnNavigationController:Bool = true, completion:((T)->())? = nil) {
+        shouldPushOnNavigationController ? navigationController?.pushViewController(targetVC, animated: true) : self.present(targetVC, animated: true, completion: nil)
         
         targetVC.setup(fromVC: self, userInfo: userInfo)
         if completion != nil {completion!(targetVC)}
