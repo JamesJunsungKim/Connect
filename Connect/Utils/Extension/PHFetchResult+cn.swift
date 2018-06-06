@@ -9,10 +9,10 @@
 import Photos
 
 extension PHFetchOptions {
-    static func sampleFetch() -> PHFetchOptions {
-        let option = PHFetchOptions()
-        option.fetchLimit = 3
-        option.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        return option
-    }
+    static var sampleFetchOptions : PHFetchOptions = {
+        let sampleOption = PHFetchOptions()
+        sampleOption.fetchLimit = 3
+        sampleOption.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        return sampleOption
+    }()
 }

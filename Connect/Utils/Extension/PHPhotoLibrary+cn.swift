@@ -17,6 +17,7 @@ extension PHPhotoLibrary {
                 DispatchQueue.performOnMain {
                     if authorizationStatus() == .authorized {
                         observer.onNext(true)
+                        observer.onNext(true)
                         observer.onCompleted()
                     } else {
                         observer.onNext(false)
@@ -29,5 +30,5 @@ extension PHPhotoLibrary {
             }
         })
     }
-    
 }
+

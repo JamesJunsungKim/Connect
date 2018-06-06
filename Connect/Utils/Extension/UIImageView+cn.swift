@@ -42,7 +42,7 @@ extension UIImageView {
         return create(withImage: UIImage.create(forKey: key))
     }
     
-    internal static func create(withBackgroundColor color: UIColor) ->UIImageView {
+    internal static func create(withBackgroundColor color: UIColor = .clear) ->UIImageView {
         let i = create(withImage: UIImage())
         i.backgroundColor = color
         return i

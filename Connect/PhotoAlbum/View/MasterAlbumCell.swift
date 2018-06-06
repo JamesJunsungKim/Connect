@@ -29,11 +29,13 @@ class MasterAlbumCell: ReusableTableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
+    
     override func prepareForReuse() {
         array.forEach({$0.image = nil; $0.backgroundColor = .clear})
     }
     
     func configure(withObject object: AlbumInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        
         separatorLine.isHidden = Section(rawValue: currentIndexPath.section)! == .allPhotos ? false : true
         albumTitleLabel.text = object.name
         photoNumberLabel.text = "\(object.totalNumber)"
@@ -64,18 +66,24 @@ class MasterAlbumCell: ReusableTableViewCell {
 
 extension MasterAlbumCell {
     fileprivate func setupUI() {
-        firstImageView = UIImageView.create(withBackgroundColor: .yellow)
-        secondImageView = UIImageView.create(withBackgroundColor: .blue)
-        thirdImageView = UIImageView.create(withBackgroundColor: .red)
+        firstImageView = UIImageView.create()
+        secondImageView = UIImageView.create()
+        thirdImageView = UIImageView.create()
         
         albumTitleLabel = UILabel.create(text: "All Photo", textAlignment: .left, textColor: .black, fontSize: 17, boldFont: false, numberofLine: 1)
         photoNumberLabel = UILabel.create(text: "1222", textAlignment: .left, textColor: .mainGray, fontSize: 15, boldFont: false, numberofLine: 1)
+        
+        separatorLine = UIView.create()
+        
         let arrowImageView = UIImageView.create(withImageKey: .rightArrow)
         
         let stackView = UIStackView.create(views: [albumTitleLabel, photoNumberLabel], axis: .vertical, alignment: .leading, distribution: .equalSpacing, spacing: 5)
         
-        let group: [UIView] = [firstImageView, secondImageView, thirdImageView, stackView, arrowImageView]
-        group.forEach(addSubview(_:))
+        let groupForImages : [UIImageView] = [firstImageView, secondImageView, thirdImageView]
+        groupForImages.forEach({$0.contentMode = .scaleAspectFill; $0.setCornerRadious(value: 1)})
+        
+        let groupForMainView: [UIView] = [thirdImageView, secondImageView, firstImageView, separatorLine, stackView, arrowImageView]
+        groupForMainView.forEach(addSubview(_:))
         
         firstImageView.snp.makeConstraints { (make) in
             make.left.equalToSuperview().offset(10)
@@ -106,6 +114,12 @@ extension MasterAlbumCell {
             make.centerY.equalTo(stackView)
             make.sizeEqualTo(width: 15, height: 15)
             make.right.equalToSuperview().offset(-15)
+        }
+        
+        separatorLine.snp.makeConstraints { (make) in
+            make.bottom.equalToSuperview().offset(-0.5)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(0.5)
         }
     }
 }

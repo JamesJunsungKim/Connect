@@ -25,7 +25,9 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         setupUI()
         setupVC()
         setupTableView()
-        checkIfAuthorizedAndThenFetch()
+//        checkIfAuthorizedAndThenFetch()
+        fetchSampleAssets()
+        observePhotoChanges()
     }
     
     deinit {
@@ -40,13 +42,12 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         _ = dataSource.object(atIndexPath: indexPath)
     }
     
-    fileprivate lazy var checkIfAuthorizedAndLoadPhotosIfSo: (Bool)->() = {[unowned self] (authorized)in
-        if !authorized {
-            self.presentDefaultError(message: "Access Denied", okAction: {
-                self.dismiss(animated: true, completion: nil)
-            })
-        } else {
+    fileprivate lazy var observePhotoAcceessPermission: (Bool)->() = {[unowned self] (authorized)in
+        if authorized {
+            guard self.needToFetchSample else {return}
             self.fetchSampleAssets()
+        } else {
+            self.presentDefaultError(message: "Access Denied", okAction: {self.dismiss(animated: true, completion: nil)})
         }
     }
     
@@ -57,12 +58,13 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     fileprivate var allPhoto: PHFetchResult<PHAsset>!
     fileprivate var smartAlbums: PHFetchResult<PHAssetCollection>!
     fileprivate var userCollections: PHFetchResult<PHCollection>!
-    fileprivate let sampleOptions = PHFetchOptions.sampleFetch()
+    fileprivate let sampleOptions = PHFetchOptions.sampleFetchOptions
     fileprivate let targetSize = CGSize(width: 200, height: 200)
     
     fileprivate var allPhotoInfo: AlbumInfo!
     fileprivate var smartAlbumsInfo = [AlbumInfo]()
     fileprivate var userCollectionAlbumInfo = [AlbumInfo]()
+    fileprivate var needToFetchSample = false
     
     fileprivate let bag = DisposeBag()
     
@@ -78,52 +80,50 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     
     fileprivate func checkIfAuthorizedAndThenFetch() {
         PHPhotoLibrary.authorized
-            .skipWhile({$0 == false})
-            .subscribe(onNext: checkIfAuthorizedAndLoadPhotosIfSo,
+            .skip(1)
+            .subscribe(onNext: observePhotoAcceessPermission,
             onCompleted: observerDisposedDescription).disposed(by: bag)
     }
     
     fileprivate func fetchSampleAssets(){
-        allPhoto = PHAsset.fetchAssets(with: .image, options: sampleOptions)
-        smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: sampleOptions)
-        userCollections = PHCollectionList.fetchTopLevelUserCollections(with: sampleOptions)
+        guard needToFetchSample else {return}
+        needToFetchSample = false
         
-        let group = DispatchGroup()
-        group.enter()
+        allPhoto = PHAsset.fetchAssets(with: .image, options: nil)
+        smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
+        userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+        
         AlbumInfo.fetchAndCreate(fromFetchResult: allPhoto, targetSize: targetSize, batchSize: 3, name: "All Photos", collection: nil) {[unowned self] (album) in
-            group.leave()
             self.allPhotoInfo = album
         }
         
         for index in 0..<smartAlbums.count {
-            group.enter()
             let collection = smartAlbums.object(at: index)
             let fetch = PHAsset.fetchAssets(in: collection, options: sampleOptions)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle!, collection: collection) {[unowned self] (album) in
-                group.leave()
                 self.smartAlbumsInfo.append(album)
             }
         }
         
         for index in 0..<userCollections.count {
-            group.enter()
             let collection = userCollections.object(at: index)
             guard let assetCollection = collection as? PHAssetCollection else {continue}
             let fetch = PHAsset.fetchAssets(in: assetCollection, options: sampleOptions)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle.unwrapOr(defaultValue: "Undefined Name"), collection: assetCollection) {[unowned self] (album) in
-                group.leave()
                 self.userCollectionAlbumInfo.append(album)
             }
         }
         
-        group.notify(queue: DispatchQueue.main) {[unowned self] in
-            let objectDictionary = AlbumInfo.createObjectDictionary()
-                .updateObject(atSection: 0, withData: [self.allPhotoInfo])
-                .updateObject(atSection: 1, withData: self.smartAlbumsInfo)
-                .updateObject(atSection: 2, withData: self.userCollectionAlbumInfo)
-            
-            self.dataSource.update(data: objectDictionary)
-        }
+        let objectDictionary = AlbumInfo.createObjectDictionary()
+            .updateObject(atSection: 0, withData: [self.allPhotoInfo])
+            .updateObject(atSection: 1, withData: self.smartAlbumsInfo)
+            .updateObject(atSection: 2, withData: self.userCollectionAlbumInfo)
+        
+        self.dataSource.update(data: objectDictionary)
+    }
+    
+    fileprivate func observePhotoChanges() {
+        PHPhotoLibrary.shared().register(self)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -137,6 +137,27 @@ extension MasterAlbumViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         didSelectTableViewCell(atIndexPath: indexPath)
+    }
+}
+extension MasterAlbumViewController:PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.performOnMain {[unowned self] in
+            if let changeDetails = changeInstance.changeDetails(for: self.allPhoto) {
+                self.allPhoto = changeDetails.fetchResultAfterChanges
+            }
+            
+            if let changeDetails = changeInstance.changeDetails(for: self.smartAlbums) {
+                self.smartAlbums = changeDetails.fetchResultAfterChanges
+                
+            }
+            
+            if let changeDetails = changeInstance.changeDetails(for: self.userCollections) {
+                self.userCollections = changeDetails.fetchResultAfterChanges
+            }
+            
+            self.needToFetchSample = true
+            self.fetchSampleAssets()
+        }
     }
 }
 

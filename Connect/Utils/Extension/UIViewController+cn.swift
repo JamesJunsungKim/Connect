@@ -96,7 +96,9 @@ extension UIViewController {
     
     func presentDefaultVC<T:DefaultSegue>(targetVC: T, userInfo:[String:Any]?,shouldPushOnNavigationController:Bool = true, completion:((T)->())? = nil) {
         guard let target = targetVC as? UIViewController else {fatalError("must be view controller")}
+        
         shouldPushOnNavigationController ? navigationController?.pushViewController(target, animated: true) : self.present(target, animated: true, completion: nil)
+        
         targetVC.setup(fromVC: self, userInfo: userInfo)
         if completion != nil {completion!(targetVC)}
     }
