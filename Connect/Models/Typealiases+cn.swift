@@ -15,9 +15,10 @@ typealias DefaultViewController = UIViewController & NameDescribable & DefaultSe
 typealias PopOverViewController = UIViewController & NameDescribable & PopOverable
 typealias FormSheetViewController = UIViewController & NameDescribable & FormSheetable
 
-// CoreData
-typealias CDBaseModel = NSManagedObject & FileUploadable & Managed & UidFetchable & NameDescribable & Unwrappable
 
+// Model
+typealias CDBaseModel = NSManagedObject & FileUploadable & Managed & UidFetchable & NameDescribable & Unwrappable & DictionaryCreatable
+typealias BaseModel = NameDescribable & Unwrappable & DictionaryCreatable
 
 // TableView & CollectionView
 typealias ReusableTableViewCell = Reusable & UITableViewCell

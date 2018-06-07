@@ -13,26 +13,29 @@ import CoreData
 protocol Reusable:AnyObject, NameDescribable {
     associatedtype Object
     func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]? )
-    func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
+    func didSelectCell()
+    func didDeselectCell()
 }
 
 extension Reusable {
     static var reuseIdentifier: String {
         return Self.staticClassName
     }
-    func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
+    func didSelectCell(){}
+    func didDeselectCell(){}
 }
 
 protocol CoredataReusable:AnyObject, NameDescribable {
     associatedtype Object:NSFetchRequestResult
     func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]?)
-    func update(withObject oject: Object, atIndexPath indexPath: IndexPath)
+    func didSelectCell()
+    func didDeselectCell()
 }
 
 extension CoredataReusable {
     static var reuseIdentifier: String {
         return Self.staticClassName
     }
-    
-    func update(withObject oject: Object, atIndexPath indexPath: IndexPath){}
+    func didSelectCell(){}
+    func didDeselectCell(){}
 }

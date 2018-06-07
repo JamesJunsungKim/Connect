@@ -49,6 +49,10 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
         return objectDictionary[indexPath.section]![indexPath.item]
     }
     
+    public func cellForItem(atIndexPath indexPath: IndexPath) -> Cell {
+        return (collectionView.cellForItem(at: indexPath) as! Cell)
+    }
+    
     // DataSource
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return objectDictionary.keys.count

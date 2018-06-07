@@ -11,6 +11,20 @@ import Photos
 import RxSwift
 
 class MasterAlbumViewController: UIViewController, NameDescribable {
+    
+    enum Section: Int {
+        case allPhotos = 0
+        case smartAlbums = 1
+        case userCollections = 2
+        
+        var description: String {
+            switch self{
+            case .allPhotos: return"AllPhotos"
+            default: return "collection"
+            }
+        }
+    }
+    
     // UI
     fileprivate var tableView: UITableView!
     
@@ -39,7 +53,26 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     // MARK: - Actions
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
         // Segue to the selected type with data
-        _ = dataSource.object(atIndexPath: indexPath)
+        guard let indexPath = tableView.indexPathForSelectedRow else {assertionFailure();return}
+        var userInfo = [String:Any]()
+        let section = Section(rawValue: indexPath.section)!
+        switch section {
+        case .allPhotos:
+            userInfo[section.description] = allPhoto
+        case .smartAlbums, .userCollections:
+            var collection: PHCollection
+            switch Section(rawValue: indexPath.section)! {
+            case .smartAlbums:
+                collection = smartAlbums.object(at: indexPath.row)
+            case .userCollections:
+                collection = userCollections.object(at: indexPath.row)
+            default: fatalError()
+            }
+            guard let assetCollection = collection as? PHAssetCollection else {assertionFailure(); return}
+            userInfo[section.description] = PHAsset.fetchAssets(in: assetCollection, options: nil)
+        }
+        
+        presentDefaultVC(targetVC: AlbumDetailViewController(photoSelectAction: photoSelectAction), userInfo: userInfo)
     }
     
     fileprivate lazy var observePhotoAcceessPermission: (Bool)->() = {[unowned self] (authorized)in
@@ -64,7 +97,7 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     fileprivate var allPhotoInfo: AlbumInfo!
     fileprivate var smartAlbumsInfo = [AlbumInfo]()
     fileprivate var userCollectionAlbumInfo = [AlbumInfo]()
-    fileprivate var needToFetchSample = false
+    fileprivate var needToFetchSample = true
     
     fileprivate let bag = DisposeBag()
     

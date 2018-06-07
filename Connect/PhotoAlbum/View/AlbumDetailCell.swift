@@ -10,6 +10,7 @@ import UIKit
 
 class AlbumDetailCell: ReusableCollectionViewCell {
     typealias Object = AlbumInfo
+    
     // UI
     fileprivate var albumImageView: UIImageView!
     

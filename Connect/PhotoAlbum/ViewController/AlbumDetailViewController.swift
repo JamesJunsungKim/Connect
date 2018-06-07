@@ -13,35 +13,57 @@ class AlbumDetailViewController: DefaultViewController {
     // UI
     fileprivate var collectionView: UICollectionView!
     
+    init(photoSelectAction: @escaping ((UIImage)->())) {
+        self.photoSelectAction = photoSelectAction
+        super.init(nibName: nil, bundle: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         setupCollectionView()
         resetCachedAssets()
         
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateCachedAssets()
+    }
+    
+    deinit {
+        leaveViewControllerMomeryLog(type: self.classForCoder)
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+    
     // MARK: - Public
     
     
     // MARK: - Actions
     
-    fileprivate func didSelectItem(atIndexPath indexPath: IndexPath) {
-        
+    @objc fileprivate func doneBtnClicked() {
+        selectedPhotos.forEach(photoSelectAction)
+        dismiss(animated: true, completion: nil)
+    }
+    
+    fileprivate func didSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
+        let cell = dataSource.cellForItem(atIndexPath: indexPath)
+
     }
     
     // MARK: - Fileprivate
-    fileprivate var thumbnailSize: CGSize!
     fileprivate var fetchResult: PHFetchResult<PHAsset>!
     fileprivate var assetCollection: PHAssetCollection!
+    fileprivate let photoSelectAction: ((UIImage)->())
+    fileprivate var selectedPhotos = [UIImage]()
+    
+    fileprivate var thumbnailSize: CGSize!
     fileprivate var previousPreheatRect = CGRect.zero
     fileprivate let imageManager = PHCachingImageManager()
     
@@ -49,11 +71,22 @@ class AlbumDetailViewController: DefaultViewController {
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
+        PHPhotoLibrary.shared().register(self)
+        
+        navigationController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneBtnClicked))
     }
     
     fileprivate func setupCollectionView() {
-        collectionView.delegate = self
+        let scale = UIScreen.main.scale
+        let cellSize = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
+        thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+        
         dataSource = DefaultCollectionViewDataSource<AlbumDetailCell>.init(collectionView: collectionView, parentViewController: self)
+        collectionView.delegate = self
+        collectionView.allowsMultipleSelection = true
+        
+        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
+        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
     }
     
     fileprivate func resetCachedAssets() {
@@ -117,10 +150,48 @@ class AlbumDetailViewController: DefaultViewController {
             return ([new], [old])
         }
     }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 extension AlbumDetailViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        didSelectItem(atIndexPath: indexPath)
+        didSelectCollectionViewItem(atIndexPath: indexPath)
+    }
+}
+
+extension AlbumDetailViewController: PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        guard let changes = changeInstance.changeDetails(for: fetchResult) else {return}
+        
+        DispatchQueue.main.sync {
+            fetchResult = changes.fetchResultAfterChanges
+            if changes.hasIncrementalChanges {
+                guard let collectionView = self.collectionView else {return}
+                collectionView.performBatchUpdates({
+                    if let removed = changes.removedIndexes, removed.count > 0 {
+                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: 0) }))
+                    }
+                    if let inserted = changes.insertedIndexes, inserted.count > 0 {
+                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: 0) }))
+                    }
+                    if let changed = changes.changedIndexes, changed.count > 0 {
+                        collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: 0) }))
+                    }
+                    changes.enumerateMoves { fromIndex, toIndex in
+                        collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
+                                                to: IndexPath(item: toIndex, section: 0))
+                    }
+                }, completion: nil)
+            } else {
+                collectionView.reloadData()
+            }
+            resetCachedAssets()
+        }
+        
     }
 }
 
@@ -130,8 +201,7 @@ extension AlbumDetailViewController {
     }
     
     fileprivate func setupUI() {
-        let bounds = UIScreen.main.bounds
-        let width = (bounds.width-4)/5
+        let width = (view.frame.width-3) / 4
         collectionView = UICollectionView.create(backgroundColor: .white, configuration: { (layout) in
             layout.itemSize = CGSize(width: width, height: width)
             layout.minimumLineSpacing = 1

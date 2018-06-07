@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-struct AlbumInfo:DictionaryCreatable {
+struct AlbumInfo: BaseModel {
     let images : [UIImage]?
     let name: String
     var totalNumber : Int
@@ -17,11 +17,6 @@ struct AlbumInfo:DictionaryCreatable {
 }
 
 extension AlbumInfo {
-    
-    // MARK: - Public
-    public mutating func updateImageNumber(withCount count: Int) {
-        totalNumber = count
-    }
     
     // MARK: - Static
     

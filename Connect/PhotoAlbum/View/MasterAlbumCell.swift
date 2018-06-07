@@ -70,7 +70,7 @@ extension MasterAlbumCell {
         thirdImageView = UIImageView.create()
         
         albumTitleLabel = UILabel.create(text: "All Photo", textAlignment: .left, textColor: .black, fontSize: 17, boldFont: false, numberofLine: 1)
-        photoNumberLabel = UILabel.create(text: "1222", textAlignment: .left, textColor: .mainGray, fontSize: 15, boldFont: false, numberofLine: 1)
+        photoNumberLabel = UILabel.create(text: "1222", textAlignment: .left, textColor: .gray, fontSize: 13, boldFont: false, numberofLine: 1)
         
         separatorLine = UIView.create()
         

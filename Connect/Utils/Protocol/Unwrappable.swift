@@ -15,10 +15,6 @@ extension Unwrappable {
         return String(describing: Self.self)
     }
     
-    public static func createObjectDictionary() -> [Int:[Self]] {
-        return [:]
-    }
-    
     static func unwrapSingleInstanceFrom(userInfo: [String:Any]?) -> Self {
         return (userInfo![className] as! Self)
     }
