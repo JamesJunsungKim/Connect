@@ -16,13 +16,11 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         case allPhotos = 0
         case smartAlbums = 1
         case userCollections = 2
-        
-        var description: String {
-            switch self{
-            case .allPhotos: return"AllPhotos"
-            default: return "collection"
-            }
-        }
+    }
+    
+    struct Keys {
+        static let fetch = "fetch"
+        static let collection = "collection"
     }
     
     // UI
@@ -58,7 +56,7 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         let section = Section(rawValue: indexPath.section)!
         switch section {
         case .allPhotos:
-            userInfo[section.description] = allPhoto
+            userInfo[Keys.fetch] = allPhoto
         case .smartAlbums, .userCollections:
             var collection: PHCollection
             switch Section(rawValue: indexPath.section)! {
@@ -69,7 +67,8 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
             default: fatalError()
             }
             guard let assetCollection = collection as? PHAssetCollection else {assertionFailure(); return}
-            userInfo[section.description] = PHAsset.fetchAssets(in: assetCollection, options: nil)
+            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: assetCollection, options: nil)
+            userInfo[Keys.collection] = assetCollection
         }
         
         presentDefaultVC(targetVC: AlbumDetailViewController(photoSelectAction: photoSelectAction), userInfo: userInfo)
@@ -170,6 +169,7 @@ extension MasterAlbumViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         didSelectTableViewCell(atIndexPath: indexPath)
+        tableView.deselectRow(at: indexPath, animated: false)
     }
 }
 extension MasterAlbumViewController:PHPhotoLibraryChangeObserver {

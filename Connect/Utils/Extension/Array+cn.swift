@@ -11,6 +11,10 @@ import Foundation
 extension Array {
     
     // MARK: - Public
+    public mutating func update(element: Iterator.Element, atIndex index: Int) {
+        remove(at: index)
+        insert(element, at: index)
+    }
     
     public var decomposed:(Iterator.Element, [Iterator.Element])? {
         guard let x = first else {return nil}
@@ -32,5 +36,13 @@ extension Array {
             result.append(x)
         }
         return result
+    }
+}
+
+extension Array where Iterator.Element: Equatable {
+    public mutating func update(element: Element) {
+        guard let targetIndex = self.index(of: element) else {assertionFailure(); return}
+        remove(at: targetIndex)
+        insert(element, at: targetIndex)
     }
 }

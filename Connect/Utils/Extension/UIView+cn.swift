@@ -51,9 +51,10 @@ extension UIView {
    
     
     // MARK: - static
-    public static func create(withColor color: UIColor = .lightGray) -> UIView {
+    public static func create(withColor color: UIColor = .lightGray, alpha: CGFloat = 1) -> UIView {
         let v = UIView()
         v.backgroundColor = color
+        v.alpha = alpha
         return v
     }
     

@@ -18,6 +18,16 @@ extension UIButton {
         }
     }
     
+    // MARK: - Public / Internal
+    public func setTitleWhileKeepingAttributes(title:String) {
+        if let attributedTitle = currentAttributedTitle {
+            let mutableAttributedTitle = NSMutableAttributedString(attributedString: attributedTitle)
+            mutableAttributedTitle.replaceCharacters(in: NSMakeRange(0, mutableAttributedTitle.length), with: title)
+            self.setAttributedTitle(mutableAttributedTitle, for: .normal)
+        }
+    }
+    
+    
     // MARK: - static
     public static func create(title: String, titleColor: UIColor = .black, fontSize: CGFloat = 10, backgroundColor: UIColor = .clear) -> UIButton {
         let bt = UIButton(type: .system)

@@ -7,25 +7,28 @@
 //
 
 import UIKit
+import Photos
 
 class AlbumDetailCell: ReusableCollectionViewCell {
-    typealias Object = AlbumInfo
+    
+    typealias Object = AlbumDetailInfo
     
     // UI
-    fileprivate var albumImageView: UIImageView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        
     }
     
-   
-    func configure(withObject object: AlbumInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
-
+    func configure(withObject object: AlbumDetailInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {/*no-op*/}
+    
+    public var albumImageView: UIImageView!
+    public var representedAssetIdentifier: String!
+    
+    override func prepareForReuse() {
+        albumImageView.image = nil
+        representedAssetIdentifier = nil
     }
-    
-    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -35,6 +38,7 @@ class AlbumDetailCell: ReusableCollectionViewCell {
 extension AlbumDetailCell {
     fileprivate func setupUI(){
         albumImageView = UIImageView.create()
+        albumImageView.contentMode = .scaleAspectFill
         addSubview(albumImageView)
         albumImageView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalToSuperview()

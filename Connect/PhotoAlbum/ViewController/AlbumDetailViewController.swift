@@ -31,6 +31,7 @@ class AlbumDetailViewController: DefaultViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
+        collectionView.reloadData()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -49,12 +50,11 @@ class AlbumDetailViewController: DefaultViewController {
     
     @objc fileprivate func doneBtnClicked() {
         selectedPhotos.forEach(photoSelectAction)
-        dismiss(animated: true, completion: nil)
+        navigationController?.dismiss(animated: true, completion: nil)
     }
     
     fileprivate func didSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
-        let cell = dataSource.cellForItem(atIndexPath: indexPath)
-
+        
     }
     
     // MARK: - Fileprivate
@@ -67,26 +67,26 @@ class AlbumDetailViewController: DefaultViewController {
     fileprivate var previousPreheatRect = CGRect.zero
     fileprivate let imageManager = PHCachingImageManager()
     
-    fileprivate var dataSource: DefaultCollectionViewDataSource<AlbumDetailCell>!
-    
     fileprivate func setupVC() {
         view.backgroundColor = .white
         PHPhotoLibrary.shared().register(self)
         
-        navigationController?.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneBtnClicked))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneBtnClicked))
     }
     
     fileprivate func setupCollectionView() {
-        let scale = UIScreen.main.scale
-        let cellSize = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-        thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+//        let scale = UIScreen.main.scale
+//        let cellSize = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
+//        thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+        thumbnailSize = CGSize(width: 200, height: 200)
         
-        dataSource = DefaultCollectionViewDataSource<AlbumDetailCell>.init(collectionView: collectionView, parentViewController: self)
         collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(AlbumDetailCell.self, forCellWithReuseIdentifier: AlbumDetailCell.reuseIdentifier)
         collectionView.allowsMultipleSelection = true
         
-        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
-        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
+//        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
+//        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
     }
     
     fileprivate func resetCachedAssets() {
@@ -156,7 +156,27 @@ class AlbumDetailViewController: DefaultViewController {
     }
     
 }
-extension AlbumDetailViewController: UICollectionViewDelegate {
+extension AlbumDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return fetchResult.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let asset = fetchResult.object(at: indexPath.item)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumDetailCell.reuseIdentifier, for: indexPath) as! AlbumDetailCell
+        cell.representedAssetIdentifier = asset.localIdentifier
+        
+        imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
+            // The cell may have been recycled by the time this handler gets called;
+            // set the cell's thumbnail image only if it's still showing the same asset.
+            if cell.representedAssetIdentifier == asset.localIdentifier {
+                cell.albumImageView.image = image
+            }
+        })
+        
+        return cell
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         didSelectCollectionViewItem(atIndexPath: indexPath)
     }
@@ -197,7 +217,14 @@ extension AlbumDetailViewController: PHPhotoLibraryChangeObserver {
 
 extension AlbumDetailViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
+        let collectionKey = MasterAlbumViewController.Keys.collection
+        let fetchKey = MasterAlbumViewController.Keys.fetch
         
+        if let collection = userInfo?[collectionKey] as? PHAssetCollection {
+            assetCollection = collection
+        }
+        
+        fetchResult = userInfo![fetchKey]! as! PHFetchResult<PHAsset>
     }
     
     fileprivate func setupUI() {

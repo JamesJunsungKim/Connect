@@ -93,6 +93,8 @@ extension UIViewController {
     }
     
     func presentDefaultVC<T:DefaultViewController>(targetVC: T, userInfo:[String:Any]?,shouldPushOnNavigationController:Bool = true, completion:((T)->())? = nil) {
+        let _ = targetVC
+        
         shouldPushOnNavigationController ? navigationController?.pushViewController(targetVC, animated: true) : self.present(targetVC, animated: true, completion: nil)
         
         targetVC.setup(fromVC: self, userInfo: userInfo)
