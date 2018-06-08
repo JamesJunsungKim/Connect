@@ -37,8 +37,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
         setupUI()
         setupVC()
         setupTableView()
-//        checkIfAuthorizedAndThenFetch()
-        fetchSampleAssets()
+        checkIfAuthorizedAndThenFetch()
         observePhotoChanges()
     }
     
@@ -50,7 +49,6 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     
     // MARK: - Actions
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
-        
         // Segue to the selected type with data
         guard let indexPath = tableView.indexPathForSelectedRow else {assertionFailure();return}
         var userInfo = [String:Any]()
@@ -59,17 +57,9 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
         case .allPhotos:
             userInfo[Keys.fetch] = allPhoto
         case .smartAlbums, .userCollections:
-            var collection: PHCollection
-            switch Section(rawValue: indexPath.section)! {
-            case .smartAlbums:
-                collection = dataSource.object(atIndexPath: indexPath).assetCollection!
-            case .userCollections:
-                collection = dataSource.object(atIndexPath: indexPath).assetCollection!
-            default: fatalError()
-            }
-            guard let assetCollection = collection as? PHAssetCollection else {assertionFailure(); return}
-            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: assetCollection, options: nil)
-            userInfo[Keys.collection] = assetCollection
+            let collection = dataSource.object(atIndexPath: indexPath).assetCollection!
+            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: collection, options: nil)
+            userInfo[Keys.collection] = collection
         }
         
         presentDefaultVC(targetVC: AlbumDetailViewController(photoSelectAction: photoSelectAction), userInfo: userInfo)
@@ -114,7 +104,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     }
     
     @objc fileprivate func reloadItem() {
-        fetchSampleAssets()
+//        fetchSampleAssets()
     }
     
     fileprivate func checkIfAuthorizedAndThenFetch() {

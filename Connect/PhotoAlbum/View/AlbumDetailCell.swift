@@ -14,16 +14,27 @@ class AlbumDetailCell: ReusableCollectionViewCell {
     typealias Object = AlbumDetailInfo
     
     // UI
+    public var albumImageView: UIImageView!
+    fileprivate var whiteFilterView: UIView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
     }
     
-    func configure(withObject object: AlbumDetailInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {/*no-op*/}
-    
-    public var albumImageView: UIImageView!
+    // MAKR: - Public
     public var representedAssetIdentifier: String!
+    
+    public func didGetSelected() {
+//        albumImageView.blurImage()
+        whiteFilterView.isHidden = false
+    }
+    
+    public func didGetDeselected() {
+//        albumImageView.removeBlurEffect()
+        whiteFilterView.isHidden = true
+    }
+    
     
     override func prepareForReuse() {
         albumImageView.image = nil
@@ -39,9 +50,18 @@ extension AlbumDetailCell {
     fileprivate func setupUI(){
         albumImageView = UIImageView.create()
         albumImageView.contentMode = .scaleAspectFill
-        addSubview(albumImageView)
+        
+        whiteFilterView = UIView.create(withColor: .white, alpha: 0.3)
+        whiteFilterView.isHidden = true
+        
+        let group: [UIView] = [albumImageView, whiteFilterView]
+        group.forEach(addSubview(_:))
+        
         albumImageView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalToSuperview()
+        }
+        whiteFilterView.snp.makeConstraints { (make) in
+            make.left.top.right.bottom.equalTo(albumImageView)
         }
     }
 }

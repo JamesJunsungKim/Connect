@@ -13,21 +13,20 @@ import RxSwift
 extension PHPhotoLibrary {
     public static var authorized: Observable<Bool> {
         return Observable.create({ (observer) in
-            return Disposables.create {
-                DispatchQueue.performOnMain {
-                    if authorizationStatus() == .authorized {
-                        observer.onNext(true)
-                        observer.onNext(true)
+            DispatchQueue.performOnMain {
+                if authorizationStatus() == .authorized {
+                    observer.onNext(true)
+                    observer.onNext(true)
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(false)
+                    requestAuthorization({ (newStatus) in
+                        observer.onNext(newStatus == .authorized)
                         observer.onCompleted()
-                    } else {
-                        observer.onNext(false)
-                        requestAuthorization({ (newStatus) in
-                            observer.onNext(newStatus == .authorized)
-                            observer.onCompleted()
-                        })
-                    }
+                    })
                 }
             }
+            return Disposables.create()
         })
     }
 }

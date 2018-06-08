@@ -12,4 +12,6 @@ import Photos
 struct AlbumDetailInfo {
     let asset : PHAsset
     let representedAssetIdentifier: String
+    
+    var isSelected = false
 }

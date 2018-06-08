@@ -22,6 +22,7 @@ extension Reusable {
     static var reuseIdentifier: String {
         return Self.staticClassName
     }
+    func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]? ){}
     func update(withObject: Object, atIndexPath indexPath: IndexPath){}
     func didGetSelected(){}
     func didGetDeselected(){}
@@ -39,6 +40,7 @@ extension CoredataReusable {
     static var reuseIdentifier: String {
         return Self.staticClassName
     }
+    func configure(withObject object: Object, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo:[String:Any]? ){}
     func update(withObject: Object, atIndexPath indexPath: IndexPath){}
     func didGetSelected(){}
     func didGetDeselected(){}

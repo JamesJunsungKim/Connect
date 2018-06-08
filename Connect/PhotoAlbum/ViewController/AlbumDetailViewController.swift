@@ -17,21 +17,27 @@ class AlbumDetailViewController: DefaultViewController {
         self.photoSelectAction = photoSelectAction
         super.init(nibName: nil, bundle: nil)
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    
+    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
+        let collectionKey = AlbumMasterViewController.Keys.collection
+        let fetchKey = AlbumMasterViewController.Keys.fetch
+        
+        if let collection = userInfo?[collectionKey] as? PHAssetCollection {
+            assetCollection = collection
+        }
+        fetchResult = userInfo![fetchKey]! as! PHFetchResult<PHAsset>
+        
+        // ViewDidLoad
         enterViewControllerMemoryLog(type: self.classForCoder)
         setupUI()
         setupVC()
         setupCollectionView()
         resetCachedAssets()
-        
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
-        collectionView.reloadData()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -54,7 +60,13 @@ class AlbumDetailViewController: DefaultViewController {
     }
     
     fileprivate func didSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
-        
+        let cell_ = cell(forIndexPath: indexPath)
+        cell_.didGetSelected()
+    }
+    
+    fileprivate func didDeSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
+        let cell_ = cell(forIndexPath: indexPath)
+        cell_.didGetDeselected()
     }
     
     // MARK: - Fileprivate
@@ -88,6 +100,7 @@ class AlbumDetailViewController: DefaultViewController {
         
 //        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
 //        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
+        collectionView.reloadData()
     }
     
     fileprivate func resetCachedAssets() {
@@ -96,18 +109,14 @@ class AlbumDetailViewController: DefaultViewController {
     }
     
     fileprivate func updateCachedAssets() {
-        // Update only if the view is visible.
         guard isViewLoaded && view.window != nil else { return }
         
-        // The preheat window is twice the height of the visible rect.
         let visibleRect = CGRect(origin: collectionView!.contentOffset, size: collectionView!.bounds.size)
         let preheatRect = visibleRect.insetBy(dx: 0, dy: -0.5 * visibleRect.height)
         
-        // Update only if the visible area is significantly different from the last preheated area.
         let delta = abs(preheatRect.midY - previousPreheatRect.midY)
         guard delta > view.bounds.height / 3 else { return }
         
-        // Compute the assets to start caching and to stop caching.
         let (addedRects, removedRects) = differencesBetweenRects(previousPreheatRect, preheatRect)
         let addedAssets = addedRects
             .flatMap { rect in collectionView!.indexPathsForElements(in: rect) }
@@ -116,13 +125,11 @@ class AlbumDetailViewController: DefaultViewController {
             .flatMap { rect in collectionView!.indexPathsForElements(in: rect) }
             .map { indexPath in fetchResult.object(at: indexPath.item) }
         
-        // Update the assets the PHCachingImageManager is caching.
         imageManager.startCachingImages(for: addedAssets,
                                         targetSize: thumbnailSize, contentMode: .aspectFill, options: nil)
         imageManager.stopCachingImages(for: removedAssets,
                                        targetSize: thumbnailSize, contentMode: .aspectFill, options: nil)
         
-        // Store the preheat rect to compare against in the future.
         previousPreheatRect = preheatRect
     }
     
@@ -152,6 +159,10 @@ class AlbumDetailViewController: DefaultViewController {
         }
     }
     
+    fileprivate func cell(forIndexPath indexPath:IndexPath) -> AlbumDetailCell {
+        return (collectionView.cellForItem(at: indexPath) as! AlbumDetailCell)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -168,8 +179,6 @@ extension AlbumDetailViewController: UICollectionViewDelegate, UICollectionViewD
         cell.representedAssetIdentifier = asset.localIdentifier
         
         imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: nil, resultHandler: { image, _ in
-            // The cell may have been recycled by the time this handler gets called;
-            // set the cell's thumbnail image only if it's still showing the same asset.
             if cell.representedAssetIdentifier == asset.localIdentifier {
                 cell.albumImageView.image = image
             }
@@ -180,6 +189,9 @@ extension AlbumDetailViewController: UICollectionViewDelegate, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         didSelectCollectionViewItem(atIndexPath: indexPath)
+    }
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        didDeSelectCollectionViewItem(atIndexPath: indexPath)
     }
 }
 
@@ -212,21 +224,10 @@ extension AlbumDetailViewController: PHPhotoLibraryChangeObserver {
             }
             resetCachedAssets()
         }
-        
     }
 }
 
 extension AlbumDetailViewController {
-    func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        let collectionKey = AlbumMasterViewController.Keys.collection
-        let fetchKey = AlbumMasterViewController.Keys.fetch
-        
-        if let collection = userInfo?[collectionKey] as? PHAssetCollection {
-            assetCollection = collection
-        }
-        
-        fetchResult = userInfo![fetchKey]! as! PHFetchResult<PHAsset>
-    }
     
     fileprivate func setupUI() {
         let width = (view.frame.width-3) / 4
