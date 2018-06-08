@@ -10,7 +10,7 @@ import UIKit
 import Photos
 import RxSwift
 
-class MasterAlbumViewController: UIViewController, NameDescribable {
+class AlbumMasterViewController: UIViewController, NameDescribable {
     
     enum Section: Int {
         case allPhotos = 0
@@ -50,6 +50,7 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     
     // MARK: - Actions
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
+        
         // Segue to the selected type with data
         guard let indexPath = tableView.indexPathForSelectedRow else {assertionFailure();return}
         var userInfo = [String:Any]()
@@ -61,9 +62,9 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
             var collection: PHCollection
             switch Section(rawValue: indexPath.section)! {
             case .smartAlbums:
-                collection = smartAlbums.object(at: indexPath.row)
+                collection = dataSource.object(atIndexPath: indexPath).assetCollection!
             case .userCollections:
-                collection = userCollections.object(at: indexPath.row)
+                collection = dataSource.object(atIndexPath: indexPath).assetCollection!
             default: fatalError()
             }
             guard let assetCollection = collection as? PHAssetCollection else {assertionFailure(); return}
@@ -93,7 +94,7 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     fileprivate let sampleOptions = PHFetchOptions.sampleFetchOptions
     fileprivate let targetSize = CGSize(width: 200, height: 200)
     
-    fileprivate var allPhotoInfo: AlbumInfo!
+    fileprivate var allPhotoInfo = [AlbumInfo]()
     fileprivate var smartAlbumsInfo = [AlbumInfo]()
     fileprivate var userCollectionAlbumInfo = [AlbumInfo]()
     fileprivate var needToFetchSample = true
@@ -108,6 +109,12 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
     fileprivate func setupTableView() {
         dataSource = DefaultTableViewDataSource<MasterAlbumCell>.init(tableView: tableView, parentViewController: self)
         tableView.delegate = self
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(reloadItem))
+    }
+    
+    @objc fileprivate func reloadItem() {
+        fetchSampleAssets()
     }
     
     fileprivate func checkIfAuthorizedAndThenFetch() {
@@ -126,12 +133,12 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
         
         AlbumInfo.fetchAndCreate(fromFetchResult: allPhoto, targetSize: targetSize, batchSize: 3, name: "All Photos", collection: nil) {[unowned self] (album) in
-            self.allPhotoInfo = album
+            self.allPhotoInfo.append(album)
         }
         
         for index in 0..<smartAlbums.count {
             let collection = smartAlbums.object(at: index)
-            let fetch = PHAsset.fetchAssets(in: collection, options: sampleOptions)
+            let fetch = PHAsset.fetchAssets(in: collection, options: nil)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle!, collection: collection) {[unowned self] (album) in
                 self.smartAlbumsInfo.append(album)
             }
@@ -140,16 +147,18 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         for index in 0..<userCollections.count {
             let collection = userCollections.object(at: index)
             guard let assetCollection = collection as? PHAssetCollection else {continue}
-            let fetch = PHAsset.fetchAssets(in: assetCollection, options: sampleOptions)
+            let fetch = PHAsset.fetchAssets(in: assetCollection, options: nil)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle.unwrapOr(defaultValue: "Undefined Name"), collection: assetCollection) {[unowned self] (album) in
                 self.userCollectionAlbumInfo.append(album)
             }
         }
         
+        smartAlbumsInfo.removeItem(condition: {$0.name == "Videos" || $0.name == "All Photos" || $0.name != "Camera Roll"})
+        
         let objectDictionary = AlbumInfo.createObjectDictionary()
-            .updateObject(atSection: 0, withData: [self.allPhotoInfo])
-            .updateObject(atSection: 1, withData: self.smartAlbumsInfo)
-            .updateObject(atSection: 2, withData: self.userCollectionAlbumInfo)
+            .updateObject(atSection: Section.allPhotos.rawValue, withData: self.allPhotoInfo)
+            .updateObject(atSection: Section.smartAlbums.rawValue, withData: self.smartAlbumsInfo)
+            .updateObject(atSection: Section.smartAlbums.rawValue, withData: self.userCollectionAlbumInfo)
         
         self.dataSource.update(data: objectDictionary)
     }
@@ -162,7 +171,7 @@ class MasterAlbumViewController: UIViewController, NameDescribable {
         fatalError("init(coder:) has not been implemented")
     }
 }
-extension MasterAlbumViewController: UITableViewDelegate {
+extension AlbumMasterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
     }
@@ -172,7 +181,7 @@ extension MasterAlbumViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: false)
     }
 }
-extension MasterAlbumViewController:PHPhotoLibraryChangeObserver {
+extension AlbumMasterViewController:PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange) {
         DispatchQueue.performOnMain {[unowned self] in
             if let changeDetails = changeInstance.changeDetails(for: self.allPhoto) {
@@ -194,7 +203,7 @@ extension MasterAlbumViewController:PHPhotoLibraryChangeObserver {
     }
 }
 
-extension MasterAlbumViewController {
+extension AlbumMasterViewController {
     fileprivate func setupUI() {
         tableView = UITableView(frame: .zero, style: .plain)
         view.addSubview(tableView)

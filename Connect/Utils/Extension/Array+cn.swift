@@ -11,9 +11,17 @@ import Foundation
 extension Array {
     
     // MARK: - Public
-    public mutating func update(element: Iterator.Element, atIndex index: Int) {
+    public mutating func updateItem(atIndex index: Int, WithElement element: Iterator.Element) {
         remove(at: index)
         insert(element, at: index)
+    }
+    
+    public mutating func removeItem(condition:(Iterator.Element)->Bool) {
+        var result = [Element]()
+        for item in self where !condition(item) {
+            result.append(item)
+        }
+        self = result
     }
     
     public var decomposed:(Iterator.Element, [Iterator.Element])? {

@@ -84,6 +84,7 @@ class AlbumDetailViewController: DefaultViewController {
         collectionView.dataSource = self
         collectionView.register(AlbumDetailCell.self, forCellWithReuseIdentifier: AlbumDetailCell.reuseIdentifier)
         collectionView.allowsMultipleSelection = true
+        collectionView.alwaysBounceVertical = true
         
 //        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
 //        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
@@ -217,8 +218,8 @@ extension AlbumDetailViewController: PHPhotoLibraryChangeObserver {
 
 extension AlbumDetailViewController {
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-        let collectionKey = MasterAlbumViewController.Keys.collection
-        let fetchKey = MasterAlbumViewController.Keys.fetch
+        let collectionKey = AlbumMasterViewController.Keys.collection
+        let fetchKey = AlbumMasterViewController.Keys.fetch
         
         if let collection = userInfo?[collectionKey] as? PHAssetCollection {
             assetCollection = collection

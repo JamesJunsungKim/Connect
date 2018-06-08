@@ -102,7 +102,7 @@
 		6CC281A720A83F4D00DC2F1B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CC281A620A83F4D00DC2F1B /* Assets.xcassets */; };
 		6CC281AC20A8455B00DC2F1B /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC281AB20A8455B00DC2F1B /* ProfileCell.swift */; };
 		6CC281AE20A8457800DC2F1B /* SettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC281AD20A8457800DC2F1B /* SettingCell.swift */; };
-		6CCD41C820C3C0FA0067F3DC /* MasterAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCD41C720C3C0FA0067F3DC /* MasterAlbumViewController.swift */; };
+		6CCD41C820C3C0FA0067F3DC /* AlbumMasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCD41C720C3C0FA0067F3DC /* AlbumMasterViewController.swift */; };
 		6CCD41CA20C3C1040067F3DC /* AlbumDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCD41C920C3C1040067F3DC /* AlbumDetailViewController.swift */; };
 		6CCD41CC20C3C1C00067F3DC /* MasterAlbumCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCD41CB20C3C1C00067F3DC /* MasterAlbumCell.swift */; };
 		6CCD41CE20C3C1C80067F3DC /* AlbumDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCD41CD20C3C1C80067F3DC /* AlbumDetailCell.swift */; };
@@ -239,7 +239,7 @@
 		6CC281A620A83F4D00DC2F1B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6CC281AB20A8455B00DC2F1B /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		6CC281AD20A8457800DC2F1B /* SettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
-		6CCD41C720C3C0FA0067F3DC /* MasterAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterAlbumViewController.swift; sourceTree = "<group>"; };
+		6CCD41C720C3C0FA0067F3DC /* AlbumMasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumMasterViewController.swift; sourceTree = "<group>"; };
 		6CCD41C920C3C1040067F3DC /* AlbumDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailViewController.swift; sourceTree = "<group>"; };
 		6CCD41CB20C3C1C00067F3DC /* MasterAlbumCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterAlbumCell.swift; sourceTree = "<group>"; };
 		6CCD41CD20C3C1C80067F3DC /* AlbumDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailCell.swift; sourceTree = "<group>"; };
@@ -668,7 +668,7 @@
 		6CCD41C620C3C0DA0067F3DC /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				6CCD41C720C3C0FA0067F3DC /* MasterAlbumViewController.swift */,
+				6CCD41C720C3C0FA0067F3DC /* AlbumMasterViewController.swift */,
 				6CCD41C920C3C1040067F3DC /* AlbumDetailViewController.swift */,
 			);
 			path = ViewController;
@@ -1010,7 +1010,7 @@
 				6CC281AC20A8455B00DC2F1B /* ProfileCell.swift in Sources */,
 				6C4E72EA209ED2CA00653058 /* Connect.xcdatamodeld in Sources */,
 				6CBE603120A28C37004C16F0 /* DefaultSegue.swift in Sources */,
-				6CCD41C820C3C0FA0067F3DC /* MasterAlbumViewController.swift in Sources */,
+				6CCD41C820C3C0FA0067F3DC /* AlbumMasterViewController.swift in Sources */,
 				6C4E72E4209ECFB500653058 /* ConnectMergePolicy.swift in Sources */,
 				6CA3ACC520BD51ED0047D8E8 /* MessageDetailViewController.swift in Sources */,
 				6CCD41CE20C3C1C80067F3DC /* AlbumDetailCell.swift in Sources */,
