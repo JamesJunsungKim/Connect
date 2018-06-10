@@ -31,7 +31,10 @@ class MasterAlbumCell: ReusableTableViewCell {
     }
     
     override func prepareForReuse() {
-        array.forEach({$0.image = nil; $0.backgroundColor = .clear})
+        array.forEach({
+            $0.image = nil
+            $0.backgroundColor = .clear
+        })
     }
     
     func configure(withObject object: AlbumInfo, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {

@@ -25,7 +25,7 @@ class AlbumDetailViewController: DefaultViewController {
         if let collection = userInfo?[collectionKey] as? PHAssetCollection {
             assetCollection = collection
         }
-        fetchResult = userInfo![fetchKey]! as! PHFetchResult<PHAsset>
+        fetchResult = userInfo![fetchKey]! as? PHFetchResult<PHAsset>
         
         // ViewDidLoad
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -243,6 +243,3 @@ extension AlbumDetailViewController {
         }
     }
 }
-
-
-

@@ -22,5 +22,14 @@ extension ConstraintMaker {
         self.top.equalToSuperview().offset(value)
         self.bottom.equalToSuperview().offset(-value)
     }
+    
+    public func topRightqualToSuperView(withOffset value: CGFloat) {
+        self.top.equalToSuperview().offset(value)
+        self.right.equalToSuperview().offset(-value)
+    }
+    public func leftBottomEqualToSuperView(withOffset value: CGFloat) {
+        self.left.equalToSuperview().offset(value)
+        self.bottom.equalToSuperview().offset(-value)
+    }
 }
 

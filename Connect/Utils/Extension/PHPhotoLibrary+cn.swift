@@ -14,11 +14,12 @@ extension PHPhotoLibrary {
     public static var authorized: Observable<Bool> {
         return Observable.create({ (observer) in
             DispatchQueue.performOnMain {
-                if authorizationStatus() == .authorized {
+                switch authorizationStatus() {
+                case .authorized:
                     observer.onNext(true)
                     observer.onNext(true)
                     observer.onCompleted()
-                } else {
+                default:
                     observer.onNext(false)
                     requestAuthorization({ (newStatus) in
                         observer.onNext(newStatus == .authorized)

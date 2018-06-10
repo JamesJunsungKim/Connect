@@ -26,9 +26,20 @@ class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableView
         tableView.reloadData()
     }
     
-    public func update(data: [Int:[Object]]) {
+    public var currentData: [Section:[Object]] {
+        return objectDictionary
+    }
+    
+    public func update(data: [Section:[Object]]) {
         objectDictionary = data
         tableView.reloadData()
+    }
+    
+    public func update(data:[Section:[Object]], atSection section: Section) {
+        validate(section: section)
+        objectDictionary[section]! = data[section]!
+        let indexSet = IndexSet.init(integer: section)
+        tableView.reloadSections(indexSet, with: .automatic)
     }
     
     public func append(data:[Object], atSection section: Section) {
@@ -42,6 +53,8 @@ class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableView
         validate(indexPath: indexPath)
         return objectDictionary[indexPath.section]![indexPath.row]
     }
+    
+    
     
     // DataSource
     func numberOfSections(in tableView: UITableView) -> Int {

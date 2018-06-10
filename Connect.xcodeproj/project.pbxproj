@@ -54,6 +54,7 @@
 		6C4E72F0209ED4E000653058 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4E72EF209ED4E000653058 /* HomeViewController.swift */; };
 		6C51315820A682C000C87EA1 /* GlobalProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51315720A682C000C87EA1 /* GlobalProperty.swift */; };
 		6C5FA06720B3B3CA0033B88C /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C5FA06620B3B3CA0033B88C /* ContactCell.swift */; };
+		6C63C92C20CC271600D7737B /* UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C63C92B20CC271600D7737B /* UI.swift */; };
 		6C6A894020C23476000A08FE /* UidFetchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6A893F20C23476000A08FE /* UidFetchable.swift */; };
 		6C6A894220C25725000A08FE /* CoreDataTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6A894120C25725000A08FE /* CoreDataTestHelper.swift */; };
 		6C6AE4D720A28DAA005B016B /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6AE4D620A28DAA005B016B /* SignInViewController.swift */; };
@@ -186,6 +187,7 @@
 		6C4E72EF209ED4E000653058 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		6C51315720A682C000C87EA1 /* GlobalProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperty.swift; sourceTree = "<group>"; };
 		6C5FA06620B3B3CA0033B88C /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
+		6C63C92B20CC271600D7737B /* UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UI.swift; sourceTree = "<group>"; };
 		6C6A893F20C23476000A08FE /* UidFetchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UidFetchable.swift; sourceTree = "<group>"; };
 		6C6A894120C25725000A08FE /* CoreDataTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTestHelper.swift; sourceTree = "<group>"; };
 		6C6AE4D620A28DAA005B016B /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
@@ -581,6 +583,7 @@
 				1A1A22A220BEF3F900045A36 /* CommentInputAccessoryView.swift */,
 				1A5B40FF20C02F51005FDE9E /* ImagePresenter.swift */,
 				1A32FFEF20C97078000A34A2 /* ToggleButton.swift */,
+				6C63C92B20CC271600D7737B /* UI.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -1104,6 +1107,7 @@
 				1A32FFF020C97078000A34A2 /* ToggleButton.swift in Sources */,
 				1A51707C20A09891004383EB /* UserDefault+cn.swift in Sources */,
 				6C90C197209EFF2E006FF995 /* Message.swift in Sources */,
+				6C63C92C20CC271600D7737B /* UI.swift in Sources */,
 				1A51708020A0A102004383EB /* Date+cn.swift in Sources */,
 				6CB3084820A929C800D813B6 /* SettingAttributeCell.swift in Sources */,
 				6C4E72DA209ECCEE00653058 /* Migration.swift in Sources */,

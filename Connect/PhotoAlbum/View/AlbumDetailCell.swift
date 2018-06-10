@@ -15,6 +15,7 @@ class AlbumDetailCell: ReusableCollectionViewCell {
     
     // UI
     public var albumImageView: UIImageView!
+    
     fileprivate var whiteFilterView: UIView!
     
     override init(frame: CGRect) {
@@ -25,14 +26,16 @@ class AlbumDetailCell: ReusableCollectionViewCell {
     // MAKR: - Public
     public var representedAssetIdentifier: String!
     
+
+    
     public func didGetSelected() {
-//        albumImageView.blurImage()
         whiteFilterView.isHidden = false
+        
     }
     
     public func didGetDeselected() {
-//        albumImageView.removeBlurEffect()
         whiteFilterView.isHidden = true
+        
     }
     
     
@@ -54,14 +57,18 @@ extension AlbumDetailCell {
         whiteFilterView = UIView.create(withColor: .white, alpha: 0.3)
         whiteFilterView.isHidden = true
         
+        
         let group: [UIView] = [albumImageView, whiteFilterView]
         group.forEach(addSubview(_:))
         
         albumImageView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalToSuperview()
         }
+        
         whiteFilterView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalTo(albumImageView)
         }
+        
+
     }
 }

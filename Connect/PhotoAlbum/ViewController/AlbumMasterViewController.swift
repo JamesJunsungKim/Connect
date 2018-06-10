@@ -16,6 +16,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
         case allPhotos = 0
         case smartAlbums = 1
         case userCollections = 2
+        case all
     }
     
     struct Keys {
@@ -58,8 +59,9 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
             userInfo[Keys.fetch] = allPhoto
         case .smartAlbums, .userCollections:
             let collection = dataSource.object(atIndexPath: indexPath).assetCollection!
-            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: collection, options: nil)
+            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: collection, options: sampleOption)
             userInfo[Keys.collection] = collection
+        default: assertionFailure()
         }
         
         presentDefaultVC(targetVC: AlbumDetailViewController(photoSelectAction: photoSelectAction), userInfo: userInfo)
@@ -81,11 +83,11 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     fileprivate var allPhoto: PHFetchResult<PHAsset>!
     fileprivate var smartAlbums: PHFetchResult<PHAssetCollection>!
     fileprivate var userCollections: PHFetchResult<PHCollection>!
-    fileprivate let sampleOptions = PHFetchOptions.sampleFetchOptions
     fileprivate let targetSize = CGSize(width: 200, height: 200)
+    fileprivate let sampleOption = PHFetchOptions.fetchOption(configure: {$0.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]})
     
     fileprivate var allPhotoInfo = [AlbumInfo]()
-    fileprivate var smartAlbumsInfo = [AlbumInfo]()
+    fileprivate var smartAlbumInfo = [AlbumInfo]()
     fileprivate var userCollectionAlbumInfo = [AlbumInfo]()
     fileprivate var needToFetchSample = true
     
@@ -97,14 +99,8 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     }
     
     fileprivate func setupTableView() {
-        dataSource = DefaultTableViewDataSource<MasterAlbumCell>.init(tableView: tableView, parentViewController: self)
         tableView.delegate = self
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Reload", style: .plain, target: self, action: #selector(reloadItem))
-    }
-    
-    @objc fileprivate func reloadItem() {
-//        fetchSampleAssets()
+        dataSource = DefaultTableViewDataSource<MasterAlbumCell>.init(tableView: tableView, parentViewController: self)
     }
     
     fileprivate func checkIfAuthorizedAndThenFetch() {
@@ -118,39 +114,69 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
         guard needToFetchSample else {return}
         needToFetchSample = false
         
-        allPhoto = PHAsset.fetchAssets(with: .image, options: nil)
+        allPhoto = PHAsset.fetchAssets(with: .image, options: sampleOption)
         smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
         userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
         
-        AlbumInfo.fetchAndCreate(fromFetchResult: allPhoto, targetSize: targetSize, batchSize: 3, name: "All Photos", collection: nil) {[unowned self] (album) in
+        fetchAllPhoto(fetchResult: allPhoto)
+        fetchSmartAlbums(fetchResult: smartAlbums)
+        fetchUserCollection(fetchResult: userCollections)
+        
+        createObjectDictionaryAndUpdateDataSource(forSection: .all)
+    }
+    
+    fileprivate func fetchAllPhoto(fetchResult: PHFetchResult<PHAsset>) {
+        allPhotoInfo.removeAll()
+        AlbumInfo.fetchAndCreate(fromFetchResult: fetchResult, targetSize: targetSize, batchSize: 3, name: "All Photos", collection: nil) {[unowned self] (album) in
             self.allPhotoInfo.append(album)
         }
-        
-        for index in 0..<smartAlbums.count {
-            let collection = smartAlbums.object(at: index)
-            let fetch = PHAsset.fetchAssets(in: collection, options: nil)
+    }
+    
+    fileprivate func fetchSmartAlbums(fetchResult: PHFetchResult<PHAssetCollection>) {
+        smartAlbumInfo.removeAll()
+        for index in 0..<fetchResult.count {
+            let collection = fetchResult.object(at: index)
+            let fetch = PHAsset.fetchAssets(in: collection, options: sampleOption)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle!, collection: collection) {[unowned self] (album) in
-                self.smartAlbumsInfo.append(album)
+                self.smartAlbumInfo.append(album)
             }
         }
-        
-        for index in 0..<userCollections.count {
-            let collection = userCollections.object(at: index)
+    }
+    
+    fileprivate func fetchUserCollection(fetchResult: PHFetchResult<PHCollection>) {
+        userCollectionAlbumInfo.removeAll()
+        for index in 0..<fetchResult.count {
+            let collection = fetchResult.object(at: index)
             guard let assetCollection = collection as? PHAssetCollection else {continue}
-            let fetch = PHAsset.fetchAssets(in: assetCollection, options: nil)
+            let fetch = PHAsset.fetchAssets(in: assetCollection, options: sampleOption)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle.unwrapOr(defaultValue: "Undefined Name"), collection: assetCollection) {[unowned self] (album) in
-                self.userCollectionAlbumInfo.append(album)
+                if album.name != "Videos" || album.name != "All Photos" || album.name != "Camera Roll"  {
+                    self.userCollectionAlbumInfo.append(album)
+                }
             }
         }
+    }
+    
+    fileprivate func createObjectDictionaryAndUpdateDataSource(forSection section: Section) {
+        var objectDictionary = AlbumInfo.createObjectDictionary()
         
-        smartAlbumsInfo.removeItem(condition: {$0.name == "Videos" || $0.name == "All Photos" || $0.name != "Camera Roll"})
-        
-        let objectDictionary = AlbumInfo.createObjectDictionary()
-            .updateObject(atSection: Section.allPhotos.rawValue, withData: self.allPhotoInfo)
-            .updateObject(atSection: Section.smartAlbums.rawValue, withData: self.smartAlbumsInfo)
-            .updateObject(atSection: Section.smartAlbums.rawValue, withData: self.userCollectionAlbumInfo)
-        
-        self.dataSource.update(data: objectDictionary)
+        switch section {
+        case .allPhotos:
+            objectDictionary = objectDictionary.updateObject(atSection: section.rawValue, withData: allPhotoInfo)
+            dataSource.update(data: objectDictionary, atSection: section.rawValue)
+        case .smartAlbums:
+            objectDictionary = objectDictionary.updateObject(atSection: section.rawValue, withData: smartAlbumInfo)
+            dataSource.update(data: objectDictionary, atSection: section.rawValue)
+        case .userCollections:
+            objectDictionary = objectDictionary.updateObject(atSection: section.rawValue, withData: userCollectionAlbumInfo)
+            dataSource.update(data: objectDictionary, atSection: section.rawValue)
+        case .all:
+            objectDictionary = objectDictionary
+                .updateObject(atSection: Section.allPhotos.rawValue, withData: allPhotoInfo)
+                .updateObject(atSection: Section.smartAlbums.rawValue, withData: smartAlbumInfo)
+                .updateObject(atSection: Section.userCollections.rawValue, withData: userCollectionAlbumInfo)
+            dataSource.update(data: objectDictionary)
+        }
     }
     
     fileprivate func observePhotoChanges() {
@@ -176,19 +202,21 @@ extension AlbumMasterViewController:PHPhotoLibraryChangeObserver {
         DispatchQueue.performOnMain {[unowned self] in
             if let changeDetails = changeInstance.changeDetails(for: self.allPhoto) {
                 self.allPhoto = changeDetails.fetchResultAfterChanges
+                self.fetchAllPhoto(fetchResult: changeDetails.fetchResultAfterChanges)
+                self.createObjectDictionaryAndUpdateDataSource(forSection: .allPhotos)
             }
             
             if let changeDetails = changeInstance.changeDetails(for: self.smartAlbums) {
                 self.smartAlbums = changeDetails.fetchResultAfterChanges
-                
+                self.fetchSmartAlbums(fetchResult: changeDetails.fetchResultAfterChanges)
+                self.createObjectDictionaryAndUpdateDataSource(forSection: .smartAlbums)
             }
             
             if let changeDetails = changeInstance.changeDetails(for: self.userCollections) {
                 self.userCollections = changeDetails.fetchResultAfterChanges
+                self.fetchUserCollection(fetchResult: changeDetails.fetchResultAfterChanges)
+                self.createObjectDictionaryAndUpdateDataSource(forSection: .userCollections)
             }
-            
-            self.needToFetchSample = true
-            self.fetchSampleAssets()
         }
     }
 }
