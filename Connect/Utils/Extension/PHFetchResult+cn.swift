@@ -8,7 +8,11 @@
 
 import Photos
 
-extension PHFetchOptions {    
+extension PHFetchOptions {
+    struct Key {
+        static let creationDate = "creationDate"
+    }
+
     static func fetchOption(configure:((PHFetchOptions)->())) -> PHFetchOptions {
         let op = PHFetchOptions()
         configure(op)

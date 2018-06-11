@@ -13,6 +13,7 @@ extension UIImage {
     enum Name: String {
         case checked
         case uncheked
+        case thichCheck = "thick_check"
         case personPlaceHolder = "placeholder_person"
         case plusIcon = "plus_icon"
         case noImage = "no_image_found"

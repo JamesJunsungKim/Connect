@@ -54,12 +54,15 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
         guard let indexPath = tableView.indexPathForSelectedRow else {assertionFailure();return}
         var userInfo = [String:Any]()
         let section = Section(rawValue: indexPath.section)!
+        let option = PHFetchOptions.fetchOption(configure: {
+            $0.sortDescriptors = [NSSortDescriptor(key: PHFetchOptions.Key.creationDate, ascending: true)]
+        })
         switch section {
         case .allPhotos:
-            userInfo[Keys.fetch] = allPhoto
+            userInfo[Keys.fetch] = PHAsset.fetchAssets(with: .image, options: option)
         case .smartAlbums, .userCollections:
             let collection = dataSource.object(atIndexPath: indexPath).assetCollection!
-            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: collection, options: sampleOption)
+            userInfo[Keys.fetch] = PHAsset.fetchAssets(in: collection, options: option)
             userInfo[Keys.collection] = collection
         default: assertionFailure()
         }
@@ -84,7 +87,8 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     fileprivate var smartAlbums: PHFetchResult<PHAssetCollection>!
     fileprivate var userCollections: PHFetchResult<PHCollection>!
     fileprivate let targetSize = CGSize(width: 200, height: 200)
-    fileprivate let sampleOption = PHFetchOptions.fetchOption(configure: {$0.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]})
+    fileprivate let sampleOption = PHFetchOptions.fetchOption(configure: {
+        $0.sortDescriptors = [NSSortDescriptor(key: PHFetchOptions.Key.creationDate, ascending: false)]})
     
     fileprivate var allPhotoInfo = [AlbumInfo]()
     fileprivate var smartAlbumInfo = [AlbumInfo]()
@@ -138,7 +142,9 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
             let collection = fetchResult.object(at: index)
             let fetch = PHAsset.fetchAssets(in: collection, options: sampleOption)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle!, collection: collection) {[unowned self] (album) in
-                self.smartAlbumInfo.append(album)
+                if album.name != "Videos" && album.name != "All Photos" && album.name != "Camera Roll"  {
+                    self.smartAlbumInfo.append(album)
+                }
             }
         }
     }
@@ -150,9 +156,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
             guard let assetCollection = collection as? PHAssetCollection else {continue}
             let fetch = PHAsset.fetchAssets(in: assetCollection, options: sampleOption)
             AlbumInfo.fetchAndCreate(fromFetchResult: fetch, targetSize: targetSize, batchSize: 3, name: collection.localizedTitle.unwrapOr(defaultValue: "Undefined Name"), collection: assetCollection) {[unowned self] (album) in
-                if album.name != "Videos" || album.name != "All Photos" || album.name != "Camera Roll"  {
-                    self.userCollectionAlbumInfo.append(album)
-                }
+                self.userCollectionAlbumInfo.append(album)
             }
         }
     }
@@ -224,6 +228,7 @@ extension AlbumMasterViewController:PHPhotoLibraryChangeObserver {
 extension AlbumMasterViewController {
     fileprivate func setupUI() {
         tableView = UITableView(frame: .zero, style: .plain)
+        tableView.separatorStyle = .none
         view.addSubview(tableView)
         tableView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
