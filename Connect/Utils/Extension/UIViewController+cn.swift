@@ -110,8 +110,9 @@ extension UIViewController {
         self.present(imagePicker, animated: true, completion: nil)
     }
     
-    public func presentMasterAlbumViewController(photoSelectAction: @escaping ((UIImage)->())) {
-        let destination = AlbumMasterViewController(photoSelectAction: photoSelectAction)
+    public func presentMasterAlbumViewController() {
+        let destination = AlbumMasterViewController()
+        destination.fromVC = self
         let nav = UINavigationController(rootViewController: destination)
         nav.navigationBar.setupToMainBlueTheme(withLargeTitle: false)
         present(nav, animated: true, completion: nil)

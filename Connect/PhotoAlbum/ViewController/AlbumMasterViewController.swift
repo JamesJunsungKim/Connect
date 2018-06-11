@@ -27,11 +27,6 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     // UI
     fileprivate var tableView: UITableView!
     
-    init(photoSelectAction: @escaping ((UIImage)->())) {
-        self.photoSelectAction = photoSelectAction
-        super.init(nibName: nil, bundle: nil)
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -47,6 +42,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     }
     
     // MARK: - Public/Internal
+    public weak var fromVC: UIViewController?
     
     // MARK: - Actions
     fileprivate func didSelectTableViewCell(atIndexPath indexPath: IndexPath) {
@@ -66,8 +62,9 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
             userInfo[Keys.collection] = collection
         default: assertionFailure()
         }
-        
-        presentDefaultVC(targetVC: AlbumDetailViewController(photoSelectAction: photoSelectAction), userInfo: userInfo)
+        let targetVC = AlbumDetailViewController()
+        targetVC.albumDetailViewControllerDelegate = fromVC as? AlbumDetailViewControllerDelegate
+        presentDefaultVC(targetVC: targetVC, userInfo: userInfo)
     }
     
     fileprivate lazy var observePhotoAcceessPermission: (Bool)->() = {[unowned self] (authorized)in
@@ -81,7 +78,6 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     
     // MARK: - Filepriavte
     fileprivate var dataSource: DefaultTableViewDataSource<MasterAlbumCell>!
-    fileprivate let photoSelectAction:((UIImage)->())
     
     fileprivate var allPhoto: PHFetchResult<PHAsset>!
     fileprivate var smartAlbums: PHFetchResult<PHAssetCollection>!
@@ -185,10 +181,6 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     
     fileprivate func observePhotoChanges() {
         PHPhotoLibrary.shared().register(self)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 extension AlbumMasterViewController: UITableViewDelegate {

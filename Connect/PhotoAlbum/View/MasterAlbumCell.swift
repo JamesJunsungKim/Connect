@@ -95,13 +95,13 @@ extension MasterAlbumCell {
         
         secondImageView.snp.makeConstraints { (make) in
             make.centerX.equalTo(firstImageView)
-            make.bottom.equalToSuperview().offset(-17)
+            make.bottom.equalToSuperview().offset(-16.5)
             make.sizeEqualTo(width: 65, height: 65)
         }
         
         thirdImageView.snp.makeConstraints { (make) in
             make.centerX.equalTo(firstImageView)
-            make.bottom.equalToSuperview().offset(-25)
+            make.bottom.equalToSuperview().offset(-24.5)
             make.sizeEqualTo(width: 60, height: 60)
         }
         

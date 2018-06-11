@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupThirdPartyLogin(application:application, launchOptions: launchOptions)
         setupScreenAndRootVC()
         
-        testMode(targetVC: UIViewController())
+//        testMode(targetVC: UIViewController())
         return true
     }
     
@@ -86,9 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         textWindow = UIWindow(frame: UIScreen.main.bounds)
         textWindow?.makeKeyAndVisible()
-        textWindow?.rootViewController = UIViewController()
-        let a: (UIImage)-> () = {_ in }
-        textWindow?.rootViewController?.presentMasterAlbumViewController(photoSelectAction: a)
+        textWindow?.rootViewController = targetVC
     }
     
     private func setFlag() {
