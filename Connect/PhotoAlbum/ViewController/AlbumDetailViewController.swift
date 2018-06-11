@@ -12,6 +12,7 @@ import Photos
 class AlbumDetailViewController: DefaultViewController {
     // UI
     fileprivate var collectionView: UICollectionView!
+    fileprivate var doneButton: UIBarButtonItem!
     
     init(photoSelectAction: @escaping ((UIImage)->())) {
         self.photoSelectAction = photoSelectAction
@@ -62,18 +63,22 @@ class AlbumDetailViewController: DefaultViewController {
     fileprivate func didSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
         let cell_ = cell(forIndexPath: indexPath)
         cell_.didGetSelected()
+        _ = selectedPhotos.insert(cell_.albumImageView.image!)
+        enableOrDisableDoneButton()
     }
     
     fileprivate func didDeSelectCollectionViewItem(atIndexPath indexPath: IndexPath) {
         let cell_ = cell(forIndexPath: indexPath)
         cell_.didGetDeselected()
+        _ = selectedPhotos.remove(cell_.albumImageView.image!)
+        enableOrDisableDoneButton()
     }
     
     // MARK: - Fileprivate
     fileprivate var fetchResult: PHFetchResult<PHAsset>!
     fileprivate var assetCollection: PHAssetCollection!
     fileprivate let photoSelectAction: ((UIImage)->())
-    fileprivate var selectedPhotos = [UIImage]()
+    fileprivate var selectedPhotos = Set<UIImage>()
     
     fileprivate var thumbnailSize: CGSize!
     fileprivate var previousPreheatRect = CGRect.zero
@@ -82,14 +87,12 @@ class AlbumDetailViewController: DefaultViewController {
     fileprivate func setupVC() {
         view.backgroundColor = .white
         PHPhotoLibrary.shared().register(self)
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneBtnClicked))
+        doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneBtnClicked))
+        navigationItem.rightBarButtonItem = doneButton
+        enableOrDisableDoneButton()
     }
     
     fileprivate func setupCollectionView() {
-//        let scale = UIScreen.main.scale
-//        let cellSize = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-//        thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
         thumbnailSize = CGSize(width: 200, height: 200)
         
         collectionView.delegate = self
@@ -98,8 +101,6 @@ class AlbumDetailViewController: DefaultViewController {
         collectionView.allowsMultipleSelection = true
         collectionView.alwaysBounceVertical = true
         
-//        let indexPathForLast = IndexPath(item: fetchResult.count-1, section: 0)
-//        collectionView.scrollToItem(at: indexPathForLast, at: .bottom, animated: false)
         collectionView.reloadData()
     }
     
@@ -161,6 +162,10 @@ class AlbumDetailViewController: DefaultViewController {
     
     fileprivate func cell(forIndexPath indexPath:IndexPath) -> AlbumDetailCell {
         return (collectionView.cellForItem(at: indexPath) as! AlbumDetailCell)
+    }
+    
+    fileprivate func enableOrDisableDoneButton() {
+        doneButton.isEnabled = selectedPhotos.count != 0
     }
     
     required init?(coder aDecoder: NSCoder) {

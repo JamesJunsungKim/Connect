@@ -244,7 +244,7 @@ extension SignInViewController {
         
         thirdPartyLoginView = {
             let v = UIView()
-            let elements = [facebookStackView, orSeparatorLine, orLabel]
+            let elements:[UIView] = [facebookStackView, orSeparatorLine, orLabel]
             elements.forEach(v.addSubview(_:))
             return v
         }()
