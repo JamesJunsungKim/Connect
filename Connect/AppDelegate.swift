@@ -14,47 +14,95 @@ import FBSDKCoreKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var persistentContainer: NSPersistentContainer!
-    var window: UIWindow?
+    fileprivate var persistentContainer: NSPersistentContainer!
+    
+    public func saveData_Temporaryfunc() {
+        _ = persistentContainer.viewContext.saveOrRollback()
+    }
+    
+    fileprivate var mainWindow: UIWindow?
+    fileprivate var signupWindow: UIWindow?
+    fileprivate var textWindow: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let mainTabbarController = MainTabBarController()
-    
-        setupScreen()
-        setupCoreStack { context in mainTabbarController.context = context }
+//        UserDefaults.removeValue(forKey: .uidForSignedInUser)
+        
+        setFlag()
+        setupCoreStack()
         setupFirebase()
-        setupThirdPartyLogin(application:application,launchOptions: launchOptions)
+        setupThirdPartyLogin(application:application, launchOptions: launchOptions)
+        setupScreenAndRootVC()
         
-        window?.rootViewController = mainTabbarController
-        
+//        testMode(targetVC: UIViewController())
         return true
     }
     
-    private func setupCoreStack(context:@escaping (NSManagedObjectContext)->()) {
-        createConnectContainer { (container) in
-            self.persistentContainer = container
-            context(container.viewContext)
+    //MARK: - Public
+    public func switchToMainWindow(user: User) {
+        let appStatus = AppStatus(currentUser: user, mainContext: persistentContainer.viewContext)
+        mainWindow = UIWindow(frame: UIScreen.main.bounds)
+        mainWindow?.makeKeyAndVisible()
+        mainWindow?.windowLevel = UIWindowLevelAlert
+        mainWindow?.rootViewController = MainTabBarController(appStatus: appStatus)
+        
+        signupWindow = nil
+    }
+    
+    public func switchToSignUpWindow() {
+        signupWindow = UIWindow(frame: UIScreen.main.bounds)
+        signupWindow?.makeKeyAndVisible()
+        signupWindow?.windowLevel = UIWindowLevelAlert
+        
+        signupWindow?.rootViewController = UINavigationController.createDefaultNavigationController(rootViewController: WalkThroughViewController(context: persistentContainer.viewContext) )
+        
+        mainWindow = nil
+    }
+    
+    //MARK: - Private
+    private func setupScreenAndRootVC() {
+        if UserDefaults.checkIfValueExist(forKey: .uidForSignedInUser) {
+            let uid = (UserDefaults.retrieveValueOrFatalError(forKey: .uidForSignedInUser) as! String)
+            let user = User.findOrFetch(forUID: uid, fromMOC: persistentContainer.viewContext)!
+            switchToMainWindow(user: user)
+        } else {
+            switchToSignUpWindow()
         }
     }
     
-    private func setupScreen() {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.makeKeyAndVisible()
+    private func setupCoreStack() {
+        createConnectContainer {[unowned self] (container) in
+            self.persistentContainer = container
+        }
     }
     
     private func setupFirebase() {
-        FirebaseApp.configure()
         FirebaseConfiguration.shared.setLoggerLevel(.min)
+        FirebaseApp.configure()
     }
     
     private func setupThirdPartyLogin(application: UIApplication,launchOptions:[UIApplicationLaunchOptionsKey: Any]?) {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
+    private func testMode(targetVC: UIViewController) {
+        mainWindow = nil
+        signupWindow = nil
+        
+        textWindow = UIWindow(frame: UIScreen.main.bounds)
+        textWindow?.makeKeyAndVisible()
+        textWindow?.rootViewController = targetVC
+    }
+    
+    private func setFlag() {
+        if let _ = NSClassFromString("XCTest") {
+            isTesting = true
+            print("\n\n\n\nTesting is running\n\n\n\n")
+        }
+    }
+    
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         let handled = FBSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String, annotation: options[UIApplicationOpenURLOptionsKey.annotation])
         return handled
-        
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -77,6 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        _ = persistentContainer.viewContext.saveOrRollback()
     }
 
 

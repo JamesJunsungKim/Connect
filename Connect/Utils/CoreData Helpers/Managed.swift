@@ -57,9 +57,21 @@ extension Managed {
 
 extension Managed where Self:NSManagedObject {
     public static var entity: NSEntityDescription { return entity() }
+    
     public static var entityName: String {
-        guard let name = entity.name else {fatalError("must have entity name")}
-        return name
+//        guard let name = entity.name else {fatalError("must have entity name")}
+//        return name
+        return String(describing: Self.self)
+    }
+    
+    public static func deleteAll(fromMOC context: NSManagedObjectContext) {
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        do {
+            try context.execute(deleteRequest)
+        } catch let error{
+            logError(error.localizedDescription)
+        }
     }
     
     public static func findOrCreate(in context: NSManagedObjectContext, matching predicate: NSPredicate, configure:(Self)->())->Self {
@@ -103,8 +115,9 @@ extension Managed where Self:NSManagedObject {
         }
         return nil
     }
+    
+    
 }
-
 
 
 
