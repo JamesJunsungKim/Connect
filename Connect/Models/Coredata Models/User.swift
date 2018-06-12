@@ -376,6 +376,14 @@ final class User: CDBaseModel {
         group.notify(queue: DispatchQueue.main, execute: success)
     }
     
+    public static func fetchAllUsers(fromMOC moc: NSManagedObjectContext, excludingUID uid:String) -> [User] {
+        return User.fetch(in: moc) { (request) in
+            let predicate = NSPredicate(format: "%K != %@", #keyPath(User.uid), uid)
+            request.predicate = predicate
+            request.returnsObjectsAsFaults = false
+        }
+    }
+    
     // MARK: - Fileprivate
     
     @NSManaged fileprivate var primitiveIsFavorite: Bool

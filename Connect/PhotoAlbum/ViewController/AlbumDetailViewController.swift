@@ -46,7 +46,7 @@ class AlbumDetailViewController: DefaultViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
     

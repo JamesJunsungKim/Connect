@@ -16,6 +16,7 @@ class NotificationCell: CoreDataReusableTableViewCell {
     fileprivate var profileImageView: UIImageView!
     fileprivate var descriptionLabel: UILabel!
     fileprivate var actionButton: UIButton!
+    fileprivate var sentDateLabel: UILabel!
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -28,12 +29,11 @@ class NotificationCell: CoreDataReusableTableViewCell {
     }
     
     // MARK: - Public
-    public var clickObservable: Observable<Request> {
-        return clickSubject.asObservable()
+    public var actionButtnClickObservable: Observable<Request> {
+        return requestSubject.asObservable()
     }
     
-    public func configure(withObject object: Request, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
-        
+    public func setup(withObject object: Request, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         configure(withRequest: object)
     }
     
@@ -43,21 +43,22 @@ class NotificationCell: CoreDataReusableTableViewCell {
         
         switch request.requestType {
         case .friendRequest:
-            actionButton.setTitle("Aceept", for: .normal)
+            descriptionLabel.text = "\(request.fromUser.name) sent you a friend request"
+            actionButton.setTitleWhileKeepingAttributes(title: "Accept")
         }
     }
     
     // MARK: - Actions
-    @objc fileprivate func buttonClicked() {
-        clickSubject.onNext(request)
+    @objc fileprivate func actionBtnClicked() {
+        requestSubject.onNext(request)
     }
     
     // MARK: - Fileprivate
     fileprivate weak var request: Request!
-    fileprivate let clickSubject = PublishSubject<Request>()
+    fileprivate let requestSubject = PublishSubject<Request>()
     
     fileprivate func addTarget() {
-        actionButton.addTarget(self, action: #selector(buttonClicked), for: .touchUpInside)
+        actionButton.addTarget(self, action: #selector(actionBtnClicked), for: .touchUpInside)
     }
     
 }
@@ -70,8 +71,9 @@ extension NotificationCell {
         descriptionLabel = UILabel.create(text: "Someone sent you a friend request", textAlignment: .left, textColor: .black, fontSize: 12, numberofLine: 0)
         
         actionButton = UIButton.create(title: "Action", titleColor: .white, fontSize: 14, backgroundColor: .mainBlue)
+        sentDateLabel = UILabel.create(text: "2 days ago", textAlignment: .left, textColor: .gray, fontSize: 10, boldFont: false, numberofLine: 1)
         
-        let group: [UIView] = [profileImageView, descriptionLabel, actionButton]
+        let group: [UIView] = [profileImageView, descriptionLabel, actionButton, sentDateLabel]
         group.forEach(self.addSubview(_:))
         
         let height = bounds.height
@@ -94,6 +96,11 @@ extension NotificationCell {
             make.centerY.equalTo(profileImageView)
             make.right.equalToSuperview().offset(-10)
             make.size.equalTo(CGSize(width: 90, height: 30))
+        }
+        
+        sentDateLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(descriptionLabel)
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(2)
         }
     }
 }

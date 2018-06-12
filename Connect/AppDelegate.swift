@@ -16,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     fileprivate var persistentContainer: NSPersistentContainer!
     
+    public func saveData_Temporaryfunc() {
+        _ = persistentContainer.viewContext.saveOrRollback()
+    }
+    
     fileprivate var mainWindow: UIWindow?
     fileprivate var signupWindow: UIWindow?
     fileprivate var textWindow: UIWindow?

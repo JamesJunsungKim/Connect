@@ -90,6 +90,7 @@
 		6C94EC3920BAB50400C91B0C /* CoreDataTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C94EC3820BAB50400C91B0C /* CoreDataTableViewDataSource.swift */; };
 		6CA3ACC120BD38310047D8E8 /* ConstraintMaker+cn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA3ACC020BD38310047D8E8 /* ConstraintMaker+cn.swift */; };
 		6CA3ACC520BD51ED0047D8E8 /* MessageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA3ACC420BD51ED0047D8E8 /* MessageDetailViewController.swift */; };
+		6CAEF11420CF64B2005581B1 /* NewContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAEF11320CF64B2005581B1 /* NewContactCell.swift */; };
 		6CB3084620A9263B00D813B6 /* SettingAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3084520A9263B00D813B6 /* SettingAttribute.swift */; };
 		6CB3084820A929C800D813B6 /* SettingAttributeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3084720A929C800D813B6 /* SettingAttributeCell.swift */; };
 		6CBE603120A28C37004C16F0 /* DefaultSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBE603020A28C37004C16F0 /* DefaultSegue.swift */; };
@@ -223,6 +224,7 @@
 		6C94EC3820BAB50400C91B0C /* CoreDataTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTableViewDataSource.swift; sourceTree = "<group>"; };
 		6CA3ACC020BD38310047D8E8 /* ConstraintMaker+cn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConstraintMaker+cn.swift"; sourceTree = "<group>"; };
 		6CA3ACC420BD51ED0047D8E8 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
+		6CAEF11320CF64B2005581B1 /* NewContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewContactCell.swift; sourceTree = "<group>"; };
 		6CB3084520A9263B00D813B6 /* SettingAttribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingAttribute.swift; sourceTree = "<group>"; };
 		6CB3084720A929C800D813B6 /* SettingAttributeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingAttributeCell.swift; sourceTree = "<group>"; };
 		6CBE603020A28C37004C16F0 /* DefaultSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultSegue.swift; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 			isa = PBXGroup;
 			children = (
 				6C5FA06620B3B3CA0033B88C /* ContactCell.swift */,
+				6CAEF11320CF64B2005581B1 /* NewContactCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -948,6 +951,7 @@
 				6C8130BF209EB13B00CEDA18 /* Array+cn.swift in Sources */,
 				6CD46B1720A13D7A0085740B /* Page.swift in Sources */,
 				6CC281AC20A8455B00DC2F1B /* ProfileCell.swift in Sources */,
+				6CAEF11420CF64B2005581B1 /* NewContactCell.swift in Sources */,
 				6C4E72EA209ED2CA00653058 /* Connect.xcdatamodeld in Sources */,
 				6CBE603120A28C37004C16F0 /* DefaultSegue.swift in Sources */,
 				6CCD41C820C3C0FA0067F3DC /* AlbumMasterViewController.swift in Sources */,
@@ -1169,7 +1173,10 @@
 					"TESTING=1",
 				);
 				INFOPLIST_FILE = Connect/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.Connect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1186,7 +1193,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCUZX8H94B;
 				INFOPLIST_FILE = ConnectTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.ConnectTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1317,7 +1328,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCUZX8H94B;
 				INFOPLIST_FILE = Connect/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.Connect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1333,7 +1347,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCUZX8H94B;
 				INFOPLIST_FILE = Connect/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.Connect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1350,7 +1367,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCUZX8H94B;
 				INFOPLIST_FILE = ConnectTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.ConnectTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -1368,7 +1389,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCUZX8H94B;
 				INFOPLIST_FILE = ConnectTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = James.ConnectTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

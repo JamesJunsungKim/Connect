@@ -19,8 +19,6 @@ class MessageListViewController: DefaultViewController {
         
     }
     
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         enterViewControllerMemoryLog(type: self.classForCoder)
@@ -30,7 +28,7 @@ class MessageListViewController: DefaultViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -47,8 +45,7 @@ class MessageListViewController: DefaultViewController {
     
     // MARK: - Filepriavte
     fileprivate let appStatus: AppStatus
-//    fileprivate var dataSource: CoreDataTableViewDataSource<Message,MessageListViewController>!
-    fileprivate var dataSource__: DefaultTableViewDataSource<MessageListCell>!
+    fileprivate var dataSource: CoreDataTableViewDataSource<MessageListCell>!
     
     fileprivate func setupVC() {
         view.backgroundColor = .white
@@ -59,15 +56,20 @@ class MessageListViewController: DefaultViewController {
     
     fileprivate func setupTableView(){
         tableview.delegate = self
-        dataSource__ = DefaultTableViewDataSource<MessageListCell>.init(tableView: tableview, parentViewController: self, initialData: [0:[Dummy(),Dummy(),Dummy(),Dummy(),Dummy(),Dummy()]], userInfo: nil, observableCell: nil)
         
-//        let request = Message.sortedFetchRequest
-//        request.returnsObjectsAsFaults = false
-//        request.fetchBatchSize = 12
-//
-//        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
-//
-//        dataSource = CoreDataTableViewDataSource(tableView: tableview, fetchedResultsController: frc, dataSource: self)
+        let allUids = User.fetchAllUsers(fromMOC: appStatus.mainContext, excludingUID: appStatus.user.uid!).map({$0.uid!})
+        let predicate = NSPredicate(format: "%K IN %@", #keyPath(Message.fromUser.uid), allUids)
+        
+        //TODO: How to fetch only one message for all of those.
+        Message.fetch(in: appStatus.mainContext) { (request) in
+            
+        }
+        let request = Message.sortedFetchRequest(with: predicate)
+        request.returnsObjectsAsFaults = false
+        request.fetchBatchSize = 12
+
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: appStatus.mainContext, sectionNameKeyPath: nil, cacheName: nil)
+        dataSource = CoreDataTableViewDataSource<MessageListCell>.init(tableView: tableview, fetchedResultsController: frc, parentViewController: self)
         
     }
     required init?(coder aDecoder: NSCoder) {

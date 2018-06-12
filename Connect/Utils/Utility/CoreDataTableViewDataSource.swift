@@ -65,7 +65,7 @@ class CoreDataTableViewDataSource<A:CoreDataReusableTableViewCell>:NSObject, UIT
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as? Cell else {fatalError()}
-        cell.configure(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
+        cell.setup(withObject: objectAtIndexPath(indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
         observe?(cell)
         return cell
     }

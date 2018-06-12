@@ -9,8 +9,8 @@
 import UIKit
 import SDWebImage
 
-class ContactCell: CoreDataReusableTableViewCell {
-    typealias Object = User
+class NewContactCell: ReusableTableViewCell {
+    typealias Object = NonCDUser
     
     // UI
     fileprivate var profileImageView :UIImageView!
@@ -20,16 +20,16 @@ class ContactCell: CoreDataReusableTableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    func setup(withObject object: User, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         setupUI()
-        configure(withUser: object)
     }
     
-    public func configure(withUser user: User, isSelectMode: Bool = false) {
-        profileImageView.image = user.profilePhoto?.image
+    func setup(withObject object: NonCDUser, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        configure(withNonCDUser: object)
+    }
+    
+    public func configure(withNonCDUser user: NonCDUser, isSelectMode: Bool = false) {
         nameLabel.text = user.name
+        profileImageView.sd_setImage(with: user.profilePhoto!.url.convertToURL(), completed: nil)
         checkImageView.isHidden = !isSelectMode
     }
     
@@ -38,7 +38,7 @@ class ContactCell: CoreDataReusableTableViewCell {
     }
 }
 
-extension ContactCell {
+extension NewContactCell {
     fileprivate func setupUI() {
         
         profileImageView = UIImageView.create(withImageKey: .personPlaceHolder)
@@ -76,15 +76,3 @@ extension ContactCell {
         
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

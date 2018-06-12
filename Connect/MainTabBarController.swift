@@ -57,7 +57,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         
         // Observe for completed Requests
         FireDatabase.approvedRequests(uid: appStatus.user.uid!).reference.observe(.childAdded) {(snapshot) in
-            guard let result = snapshot.value as? [String:Any], let uid = result[Request.Key.uid] as? String else {return}
+            guard let result = snapshot.value as? [String:Any], let uid = result[Request.Key.uid] as? String else {assertionFailure();return}
             
             let targetRequest = Request.findOrFetch(forUID: uid, fromMOC: appStatus.mainContext)!
             targetRequest.completedByFromUser(updatedTo: appStatus)

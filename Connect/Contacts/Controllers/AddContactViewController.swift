@@ -33,7 +33,7 @@ class AddContactViewController: DefaultViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -86,7 +86,7 @@ class AddContactViewController: DefaultViewController {
     
     // MARK: - Fileprivate
     fileprivate let appStatus: AppStatus
-    fileprivate var dataSource : DefaultTableViewDataSource<ContactCell>!
+    fileprivate var dataSource : DefaultTableViewDataSource<NewContactCell>!
     fileprivate let emailPlaceholder = "Search your contacts by email"
     fileprivate let namePlaceholder = "Search your contacts by name"
     
@@ -143,7 +143,7 @@ extension AddContactViewController {
         
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = self
-        dataSource = DefaultTableViewDataSource<ContactCell>.init(tableView: tableView, parentViewController: self, initialData: nil)
+        dataSource = DefaultTableViewDataSource<NewContactCell>.init(tableView: tableView, parentViewController: self, initialData: nil)
 
         let group: [UIView] = [typeSegment, textfield, searchButton, tableView]
         

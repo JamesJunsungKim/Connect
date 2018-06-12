@@ -31,7 +31,7 @@ class EditSettingDetailViewController: DefaultViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     // MARK: - Actions

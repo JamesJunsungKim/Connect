@@ -63,7 +63,7 @@ class DefaultCollectionViewDataSource<A:ReusableCollectionViewCell>:NSObject, UI
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        cell.configure(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
+        cell.setup(withObject: selectedObject(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
         observeCell?(cell)
         return cell
     }

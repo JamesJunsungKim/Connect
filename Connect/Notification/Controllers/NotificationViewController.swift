@@ -30,7 +30,7 @@ class NotificationViewController: DefaultViewController{
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
 
     // MARK: - Public
@@ -45,7 +45,7 @@ class NotificationViewController: DefaultViewController{
     }
     
     fileprivate lazy var observeCell: (NotificationCell)->() = {[unowned self](cell) in
-        cell.clickObservable.subscribe(onNext: { (request) in
+        cell.actionButtnClickObservable.subscribe(onNext: { (request) in
             // what's the main goal here.
             // actions might be different depending on which request type it is
             
@@ -56,6 +56,7 @@ class NotificationViewController: DefaultViewController{
                 self.appStatus.addUserToContact(user: request.fromUser)
                 request.completedByToUser(success: {[unowned self] in
                     //TODO: Think about what to do when it's completed.
+                    
                 }) {[unowned self] (error) in
                     self.presentDefaultError(message: error.localizedDescription, okAction: nil)
                 }

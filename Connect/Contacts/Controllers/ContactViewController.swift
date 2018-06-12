@@ -29,7 +29,7 @@ class ContactViewController: DefaultViewController {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     // MARK: - Actions
@@ -44,8 +44,7 @@ class ContactViewController: DefaultViewController {
     
     // MARK: - Filepriavte
     fileprivate let appStatus : AppStatus
-    fileprivate var dataSource___: DefaultTableViewDataSource<ContactCell>!
-//    fileprivate var datasource : CoreDataTableViewDataSource<User,ContactViewController>!
+    fileprivate var datasource : CoreDataTableViewDataSource<ContactCell>!
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     fileprivate var searchbarIsPresent = false
     
@@ -62,16 +61,15 @@ class ContactViewController: DefaultViewController {
     
     fileprivate func setupTableView() {
         tableview.delegate = self
-        dataSource___ = DefaultTableViewDataSource<ContactCell>.init(tableView: tableview, parentViewController: self, initialData: [0:[NonCDUser(uid: "A", name: "HI", phoneNumber: nil, emailAddress: "B", isPrivate: false, isFavorite: false, isOwner: true, isSelected: false, contacts: [], profilePhoto: nil, groups: [])]], userInfo: nil, observableCell: nil)
         
+        let predicate = NSPredicate(format: "%K != %@", #keyPath(User.uid), appStatus.user.uid!)
+        let request = User.sortedFetchRequest(with: predicate)
+        request.returnsObjectsAsFaults = false
+        request.fetchBatchSize = 20
+
+        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: appStatus.mainContext, sectionNameKeyPath: nil, cacheName: nil)
         
-//        let request = User.sortedFetchRequest
-//        request.returnsObjectsAsFaults = false
-//        request.fetchBatchSize = 20
-//
-//        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: mainContext, sectionNameKeyPath: nil, cacheName: nil)
-//
-//        datasource = CoreDataTableViewDataSource(tableView: tableview, fetchedResultsController: frc, dataSource: self)
+        datasource = CoreDataTableViewDataSource<ContactCell>.init(tableView: tableview, fetchedResultsController: frc, parentViewController: self)
     }
     
     fileprivate func hideOrShowNavigationItems(needsToShow flag: Bool) {
@@ -101,8 +99,6 @@ class ContactViewController: DefaultViewController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
 }
 
 extension ContactViewController: UISearchBarDelegate, UISearchResultsUpdating {

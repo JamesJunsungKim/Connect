@@ -68,7 +68,7 @@ class DefaultTableViewDataSource<A:ReusableTableViewCell>: NSObject, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath) as! Cell
-        cell.configure(withObject: object(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
+        cell.setup(withObject: object(atIndexPath: indexPath), parentViewController: parentViewController, currentIndexPath: indexPath, userInfo: userInfo)
         observe?(cell)
         return cell
     }

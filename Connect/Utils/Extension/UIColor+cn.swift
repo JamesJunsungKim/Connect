@@ -45,6 +45,10 @@ extension UIColor {
         return eateryBlue
     }
     
+    static var shadowBlue: UIColor {
+        return UIColor.create(R: 26, G: 178, B: 255)
+    }
+    
     static var mainGray: UIColor {
         return UIColor.create(R: 85, G: 85, B: 85)
     }

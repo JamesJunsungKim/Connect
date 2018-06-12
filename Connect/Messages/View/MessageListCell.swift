@@ -8,8 +8,8 @@
 
 import UIKit
 
-class MessageListCell: ReusableTableViewCell {
-    typealias Object = Dummy
+class MessageListCell: CoreDataReusableTableViewCell {
+    typealias Object = Message
     // UI
     
     fileprivate var profileImageView: UIImageView!
@@ -20,13 +20,13 @@ class MessageListCell: ReusableTableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupUI()
     }
     
     
     // MARK: - Public
-    func configure(withObject object: Dummy, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
-        //        configure(withMessage: object)
+    func setup(withObject object: Message, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+        setupUI()
+        configure(withMessage: object)
     }
     
     public func configure(withMessage: Message) {

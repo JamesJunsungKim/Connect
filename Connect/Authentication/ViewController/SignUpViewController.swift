@@ -53,7 +53,7 @@ class SignUpViewController: DefaultViewController {
         
     }
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     override func viewWillAppear(_ animated: Bool) {

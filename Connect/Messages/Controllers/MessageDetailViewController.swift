@@ -77,7 +77,8 @@ class MessageDetailViewController: DefaultViewController{
         
         let fromUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.fromUser.uid), targetUser.uid!)
         let toUserPredicate = NSPredicate(format: "%K == %@", #keyPath(Message.toUser.uid), targetUser.uid!)
-        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [fromUserPredicate, toUserPredicate])
+        let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [fromUserPredicate, toUserPredicate])
+        
         let request = Message.sortedFetchRequest(with: predicate)
         request.returnsObjectsAsFaults = false
         request.fetchBatchSize = 20
@@ -121,7 +122,7 @@ extension MessageDetailViewController: UITableViewDelegate {
 extension MessageDetailViewController {
     
     func setup(fromVC: UIViewController, userInfo: [String : Any]?) {
-//        targetUser = User.unwrapFrom(userInfo: userInfo)
+        targetUser = User.unwrapSingleInstanceFrom(userInfo: userInfo)
     }
     
     fileprivate func setupUI() {

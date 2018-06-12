@@ -28,7 +28,7 @@ extension Dictionary where Key == String, Value == Any {
         if value != nil {
             dict[key] = configuration != nil ? configuration!(value!): value!
         }
-        return self
+        return dict
     }
 }
 

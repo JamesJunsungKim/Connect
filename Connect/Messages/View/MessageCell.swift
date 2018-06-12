@@ -22,7 +22,6 @@ class MessageCell: CoreDataReusableTableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -30,7 +29,7 @@ class MessageCell: CoreDataReusableTableViewCell {
     }
     
     // MARK: - Public
-    func configure(withObject object: Message, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
+    func setup(withObject object: Message, parentViewController: UIViewController, currentIndexPath: IndexPath, userInfo: [String : Any]?) {
         setupUI()
         adjustUI(forMessage: object)
     }

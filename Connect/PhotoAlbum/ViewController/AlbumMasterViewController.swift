@@ -38,7 +38,7 @@ class AlbumMasterViewController: UIViewController, NameDescribable {
     }
     
     deinit {
-        leaveViewControllerMomeryLog(type: self.classForCoder)
+        leaveViewControllerMomeryLogSaveData(type: self.classForCoder)
     }
     
     // MARK: - Public/Internal
