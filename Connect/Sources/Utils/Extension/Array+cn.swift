@@ -11,7 +11,8 @@ import Foundation
 extension Array {
     
     // MARK: - Public
-    public mutating func updateItem(atIndex index: Int, WithElement element: Iterator.Element) {
+    public mutating func replace(element: Iterator.Element, atIndex index: Int) {
+        assert(index < self.count)
         remove(at: index)
         insert(element, at: index)
     }
@@ -48,7 +49,7 @@ extension Array {
 }
 
 extension Array where Iterator.Element: Equatable {
-    public mutating func update(element: Element) {
+    public mutating func replace(element: Element) {
         guard let targetIndex = self.index(of: element) else {assertionFailure(); return}
         remove(at: targetIndex)
         insert(element, at: targetIndex)

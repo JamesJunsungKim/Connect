@@ -19,6 +19,8 @@ extension UIButton {
     }
     
     // MARK: - Public / Internal
+
+    
     public func setTitleWhileKeepingAttributes(title:String) {
         if let attributedTitle = currentAttributedTitle {
             let mutableAttributedTitle = NSMutableAttributedString(attributedString: attributedTitle)

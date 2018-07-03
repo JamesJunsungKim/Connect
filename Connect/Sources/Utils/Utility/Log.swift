@@ -10,27 +10,27 @@ import UIKit
 import DateToolsSwift
 
 enum LogEvent: String {
-    case error = "[Error ‼️]"
-    case info = "[Info ℹ️]"
-    case debug = "[Debug 🔦]"
-    case verbose = "[Verbose 🔬]"
-    case warning = "[Warning ⚠️]"
-    case severe = "[Severe 🔥]"
+    case error = "Error:"
+    case info = "Info:"
+    case debug = "Debug:"
+    case verbose = "Verbose:"
+    case warning = "Warning:"
+    case severe = "Severe:"
 }
 
 func enterViewControllerMemoryLog(type: AnyClass) {
     let newEntry = nameFor(type: type)
     viewControllerMemoryArray.append(newEntry)
-    let sum = reduce(array: viewControllerMemoryArray)
-    logInfo("New entry in Memery \nnew:\(newEntry)\n"+sum+"\n")
+    _ = reduce(array: viewControllerMemoryArray)
+    logInfo("New entry in Memery: \(newEntry)")
 }
 
 func leaveViewControllerMomeryLogSaveData(type:AnyClass) {
     let deletedEntry = nameFor(type: type)
     guard let index = viewControllerMemoryArray.index(of: deletedEntry) else {return}
     viewControllerMemoryArray.remove(at: index)
-    let sum = reduce(array: viewControllerMemoryArray)
-    logInfo("Instance removed from memory \ndeleted: \(deletedEntry)\n"+sum+"\n")
+    _ = reduce(array: viewControllerMemoryArray)
+    logInfo("Instance removed from memory: \(deletedEntry)")
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     appDelegate.saveData_Temporaryfunc()
 }
@@ -70,41 +70,45 @@ private func reduce(array: [String])->String {
     return sum
 }
 
-func logDebug(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logDebug(_ message: String?, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.debug, fileName: fileName, line: line, column: column, funcName: funcName)
 }
 
-func logInfo(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logInfo(_ message: String? = nil, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.info, fileName: fileName, line: line, column: column, funcName: funcName)
 }
-func logError(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logError(_ message: String?, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.error, fileName: fileName, line: line, column: column, funcName: funcName)
 }
-func logVerbose(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logVerbose(_ message: String?, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.verbose, fileName: fileName, line: line, column: column, funcName: funcName)
 }
-func logWarning(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logWarning(_ message: String? = nil, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.warning, fileName: fileName, line: line, column: column, funcName: funcName)
 }
-func logSevere(_ message: String, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
+func logSevere(_ message: String?, fileName: String = #file, line: Int = #line, column: Int = #column, funcName: String = #function) {
     capturingLog(message, event: LogEvent.severe, fileName: fileName, line: line, column: column, funcName: funcName)
 }
 
-fileprivate func capturingLog(_ message: String, event: LogEvent, fileName: String, line: Int, column: Int, funcName: String) {
-    let date = Date().format(with: "yyyy-MM-dd hh:mm:ss.SSS")
+fileprivate func capturingLog(_ message: String?, event: LogEvent, fileName: String, line: Int, column: Int, funcName: String) {
+    _ = Date().format(with: "yyyy-MM-dd hh:mm:ss.SSS")
     let fileName = sourceFileName(fileName)
     
-    let mainMessage = "\(event.rawValue)[\(fileName)][\(line):\(column)] \(funcName) \(message)"
-    let localMsg = "\(date) \(mainMessage)"
-    //#if TARGET_OS_SIMULATOR
-    print(localMsg)
-    //#else
-    // CFShow(localMsg as CFTypeRef)
-    //#endif
+    
+    if message != nil {
+        print("\n\(event.rawValue) on line \(line) in \(fileName) \n\(funcName) \ncontent: \(message!)")
+    } else {
+        print("\n\(event.rawValue) on line \(line) in \(fileName) \n\(funcName)")
+    }
+//    let localMsg = "\(date)\n\(mainMessage)"
+//    #if TARGET_OS_SIMULATOR
+//    #else
+//    #endif
 }
 
 fileprivate func sourceFileName(_ filePath: String) -> String {
-    let component = filePath.components(separatedBy: "/")
-    return component.isEmpty ? "" : component.last!
+    let components = filePath.components(separatedBy: "/")
+    let lastComponent = components.last.unwrapOrBlank()
+    return lastComponent.components(separatedBy: ".").first.unwrapOrBlank()
 }
 

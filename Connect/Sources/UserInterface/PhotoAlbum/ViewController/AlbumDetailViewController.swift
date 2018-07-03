@@ -244,5 +244,11 @@ extension AlbumDetailViewController {
         collectionView.snp.makeConstraints { (make) in
             make.left.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
+//        constraint(collectionView, collectionView, collectionView, collectionView) { (a, b, c, d) in
+//
+//        }
+//        constraint(<#T##first: A##A#>, <#T##second: B##B#>, <#T##third: C##C#>, <#T##fourth: D##D#>) { , <#B#>, <#C#>, <#D#>) in
+//            <#code#>
+//        }
     }
 }

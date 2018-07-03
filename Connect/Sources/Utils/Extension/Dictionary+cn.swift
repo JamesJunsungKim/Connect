@@ -8,6 +8,16 @@
 
 import Foundation
 
+extension Dictionary {
+    func cn_keyvalues() -> [[String:Any]] {
+        return self.keys.map({["key": $0, "value": self[$0]!]})
+    }
+    func cn_sortedKeyValues() -> [[String:Any]] {
+        let sortByKey = NSSortDescriptor(key: "key", ascending: true)
+        return (self.cn_keyvalues() as NSArray).sortedArray(using: [sortByKey]) as! [[String : Any]]
+    }
+}
+
 extension Dictionary where Key == Int {
     public func updateObject(atSection section: Int, withData data:Value)->[Int:Value] {
         var dict = self

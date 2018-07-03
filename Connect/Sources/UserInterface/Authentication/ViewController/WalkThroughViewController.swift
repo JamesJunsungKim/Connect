@@ -47,10 +47,12 @@ class WalkThroughViewController: DefaultViewController {
     // MARK: - Actions
     
     @objc fileprivate func createButtonClicked() {
+        logInfo()
         presentDefaultVC(targetVC: SignUpViewController(context: context), userInfo: nil)
     }
     
     @objc fileprivate func signInButtonClicked() {
+        logInfo()
         presentDefaultVC(targetVC: SignInViewController(context: context), userInfo: nil)
     }
     

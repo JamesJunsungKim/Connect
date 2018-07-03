@@ -13,7 +13,7 @@ import ARSLineProgress
 extension ARSLineProgress {
     static func showSuccess(andThen completion:@escaping ()->()) {
         ARSLineProgress.showSuccess()
-        DispatchTime.waitFor(milliseconds: 1000) {
+        DispatchQueue.main.waitFor(milliseconds: 1000) {
             completion()
         }
     }

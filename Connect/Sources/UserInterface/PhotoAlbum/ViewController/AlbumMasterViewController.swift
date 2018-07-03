@@ -195,7 +195,7 @@ extension AlbumMasterViewController: UITableViewDelegate {
 }
 extension AlbumMasterViewController:PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange) {
-        DispatchQueue.performOnMain {[unowned self] in
+        performOnMain {[unowned self] in
             if let changeDetails = changeInstance.changeDetails(for: self.allPhoto) {
                 self.allPhoto = changeDetails.fetchResultAfterChanges
                 self.fetchAllPhoto(fetchResult: changeDetails.fetchResultAfterChanges)

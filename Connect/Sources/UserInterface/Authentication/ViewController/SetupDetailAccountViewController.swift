@@ -39,10 +39,12 @@ class SetupDetailAccountViewController: DefaultViewController {
     
     // MARK: - Actions
     @objc fileprivate func didTapImage() {
+        logInfo()
         presentImagePicker(pickerDelegate: self)
     }
     
     @objc fileprivate func finishBtnClicked() {
+        logInfo()
         ARSLineProgress.ars_showOnView(view)
         Photo.createAndUpload(into: context, toReference: FireStorage.profilePhoto(user).reference , withImage: profileImageButton.currentImage!, withType: .profileResolution, success: {[unowned self] (photo) in
             self.user.setProfilePhoto(with: photo)

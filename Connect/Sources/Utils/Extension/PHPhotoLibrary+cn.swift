@@ -13,7 +13,7 @@ import RxSwift
 extension PHPhotoLibrary {
     public static var authorized: Observable<Bool> {
         return Observable.create({ (observer) in
-            DispatchQueue.performOnMain {
+            performOnMain {
                 switch authorizationStatus() {
                 case .authorized:
                     observer.onNext(true)

@@ -14,6 +14,8 @@ extension UserDefaults {
         case defaultResolution
         case uidForSignedInUser
         
+        // Cache
+        case lastAppBuildKey
         
     }
     
