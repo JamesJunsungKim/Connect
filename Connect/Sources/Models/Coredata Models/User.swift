@@ -254,7 +254,6 @@ final class User: CDBaseModel {
     }
     
     public static func fetchUserFromServerAndCreate(withUID uid: String, intoMOC moc: NSManagedObjectContext, needContactAndGroupNode flag: Bool, success:@escaping success, failure:@escaping failure) {
-        
         FireDatabase.user(uid: uid).reference.observeSingleEvent(of: .value) { (snapshot) in
             guard let dict = snapshot.value else{
                 assertionFailure()
